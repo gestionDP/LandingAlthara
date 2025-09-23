@@ -1,26 +1,232 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Cursor personalizado */
+* {
+  cursor: none !important;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  cursor: none !important;
+}
+
+@theme {
+  /* Colores personalizados de Althara */
+  --color-althara-black: #0f0f0f;
+  --color-althara-dark-blue: #19243c;
+  --color-althara-primary: #004aaa;
+  --color-althara-secondary: #567eb3;
+  --color-althara-light-blue: #95a1b8;
+  --color-althara-light-gray: #eef0f4;
+
+  /* Sistema de colores para shadcn/ui */
+  --color-background: #0f0f0f;
+  --color-foreground: #ffffff;
+  --color-card: #19243c;
+  --color-card-foreground: #ffffff;
+  --color-popover: #19243c;
+  --color-popover-foreground: #ffffff;
+  --color-primary: #004aaa;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #567eb3;
+  --color-secondary-foreground: #ffffff;
+  --color-muted: #19243c;
+  --color-muted-foreground: #95a1b8;
+  --color-accent: #567eb3;
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #95a1b8;
+  --color-input: #95a1b8;
+  --color-ring: #004aaa;
+
+  /* Border radius */
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-poppins), sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Clases personalizadas para Althara */
+  .althara-gradient {
+    background: linear-gradient(
+      135deg,
+      var(--color-althara-primary) 0%,
+      var(--color-althara-secondary) 100%
+    );
+  }
+
+  .althara-text-gradient {
+    background: linear-gradient(
+      135deg,
+      var(--color-althara-primary) 0%,
+      var(--color-althara-secondary) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .althara-glass {
+    background: rgba(25, 36, 60, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(149, 161, 184, 0.1);
+  }
+
+  .althara-card {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .althara-button-primary {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    transition: all 0.2s;
+  }
+
+  .althara-button-primary:hover {
+    background-color: hsl(var(--primary) / 0.9);
+  }
+
+  .althara-button-secondary {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    transition: all 0.2s;
+  }
+
+  .althara-button-secondary:hover {
+    background-color: hsl(var(--secondary) / 0.9);
+  }
+
+  .althara-button-outline {
+    border: 1px solid hsl(var(--primary));
+    color: hsl(var(--primary));
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    transition: all 0.2s;
+  }
+
+  .althara-button-outline:hover {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* Animaciones personalizadas */
+  .althara-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .althara-slide-up {
+    animation: slideUp 0.8s ease-out;
+  }
+
+  .althara-scale-in {
+    animation: scaleIn 0.5s ease-out;
+  }
+
+  /* Clases de tipografía Poppins */
+  .font-thin {
+    font-weight: 100;
+  }
+  .font-extralight {
+    font-weight: 200;
+  }
+  .font-light {
+    font-weight: 300;
+  }
+  .font-normal {
+    font-weight: 400;
+  }
+  .font-medium {
+    font-weight: 500;
+  }
+  .font-semibold {
+    font-weight: 600;
+  }
+  .font-bold {
+    font-weight: 700;
+  }
+  .font-extrabold {
+    font-weight: 800;
+  }
+  .font-black {
+    font-weight: 900;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Utilidades adicionales */
+.text-balance {
+  text-wrap: balance;
+}
+
+.gradient-border {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    var(--color-althara-primary),
+    var(--color-althara-secondary)
+  );
+  padding: 1px;
+  border-radius: 0.5rem;
+}
+
+.gradient-border > * {
+  background: hsl(var(--background));
+  border-radius: calc(0.5rem - 1px);
 }
