@@ -5,7 +5,6 @@ import Image from "next/image";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { contactService, ContactFormData } from "@/lib/api";
 
 interface ContactModalProps {
@@ -15,11 +14,8 @@ interface ContactModalProps {
 
 export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const [formData, setFormData] = useState<ContactFormData>({
-    name: "",
     email: "",
     phone: "",
-    message: "",
-    userType: "comprador",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<
@@ -36,11 +32,8 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     if (result.success) {
       setSubmitStatus("success");
       setFormData({
-        name: "",
         email: "",
         phone: "",
-        message: "",
-        userType: "comprador",
       });
       setTimeout(() => {
         onClose();
@@ -90,74 +83,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
           <div className="p-12 flex flex-col justify-center bg-white">
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Soy un/a:
-                </label>
-                <div className="flex space-x-3">
-                  <label
-                    className={`flex-1 flex items-center justify-center p-4 border cursor-pointer transition-all ${
-                      formData.userType === "comprador"
-                        ? "border-althara-primary bg-althara-primary/10"
-                        : "border-gray-400 hover:border-althara-primary hover:bg-althara-light-gray"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="userType"
-                      value="comprador"
-                      checked={formData.userType === "comprador"}
-                      onChange={handleChange}
-                      className="sr-only"
-                    />
-                    <span
-                      className={`text-sm font-medium ${
-                        formData.userType === "comprador"
-                          ? "text-althara-primary font-semibold"
-                          : "text-gray-600"
-                      }`}
-                    >
-                      Comprador
-                    </span>
-                  </label>
-                  <label
-                    className={`flex-1 flex items-center justify-center p-4 border cursor-pointer transition-all ${
-                      formData.userType === "vendedor"
-                        ? "border-althara-primary bg-althara-primary/10"
-                        : "border-gray-400 hover:border-althara-primary hover:bg-althara-light-gray"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="userType"
-                      value="vendedor"
-                      checked={formData.userType === "vendedor"}
-                      onChange={handleChange}
-                      className="sr-only"
-                    />
-                    <span
-                      className={`text-sm font-medium ${
-                        formData.userType === "vendedor"
-                          ? "text-althara-primary font-semibold"
-                          : "text-gray-600"
-                      }`}
-                    >
-                      Vendedor
-                    </span>
-                  </label>
-                </div>
-              </div>
-
               <div className="space-y-4">
-                <Input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  placeholder="Nombre completo *"
-                  className="h-12"
-                />
                 <Input
                   type="email"
                   name="email"
@@ -174,14 +100,6 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   onChange={handleChange}
                   placeholder="Teléfono"
                   className="h-12"
-                />
-                <Textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={3}
-                  placeholder="Cuéntanos sobre tus necesidades..."
-                  className="min-h-[100px]"
                 />
               </div>
 
