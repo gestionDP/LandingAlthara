@@ -1,7 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function Footer() {
+  const t = useTranslations("footer");
+
   return (
     <footer className="bg-white text-black pb-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -17,15 +22,13 @@ export default function Footer() {
               />
             </div>
             <p className="text-gray-600 text-sm leading-relaxed max-w-md">
-              Plataforma privada que conecta propietarios e inversores en
-              operaciones singulares, con coinversión estructurada y procesos
-              seguros.
+              {t("description")}
             </p>
           </div>
 
           <div>
             <h3 className="text-sm font-semibold text-black mb-4 uppercase tracking-wider">
-              Enlaces Rápidos
+              {t("quickLinks.title")}
             </h3>
             <ul className="space-y-3">
               <li>
@@ -33,7 +36,7 @@ export default function Footer() {
                   href="#como-funciona"
                   className="text-gray-600 hover:text-black text-sm transition-colors"
                 >
-                  Cómo Funciona
+                  {t("quickLinks.howItWorks")}
                 </Link>
               </li>
               <li>
@@ -41,7 +44,7 @@ export default function Footer() {
                   href="#que-es"
                   className="text-gray-600 hover:text-black text-sm transition-colors"
                 >
-                  Qué Es Althara
+                  {t("quickLinks.whatIs")}
                 </Link>
               </li>
               <li>
@@ -49,7 +52,7 @@ export default function Footer() {
                   href="#nuestro-proceso"
                   className="text-gray-600 hover:text-black text-sm transition-colors"
                 >
-                  Nuestro Proceso
+                  {t("quickLinks.process")}
                 </Link>
               </li>
               <li>
@@ -57,7 +60,7 @@ export default function Footer() {
                   href="#para-quien-es"
                   className="text-gray-600 hover:text-black text-sm transition-colors"
                 >
-                  Para Quién Es
+                  {t("quickLinks.whoIsItFor")}
                 </Link>
               </li>
             </ul>
@@ -65,7 +68,7 @@ export default function Footer() {
 
           <div>
             <h3 className="text-sm font-semibold text-black mb-4 uppercase tracking-wider">
-              Contacto
+              {t("contact.title")}
             </h3>
             <ul className="space-y-3">
               <li>
@@ -73,7 +76,7 @@ export default function Footer() {
                   href="mailto:info@althara.com"
                   className="text-gray-600 hover:text-black text-sm transition-colors"
                 >
-                  info@gestiondelpapeleo.com{" "}
+                  {t("contact.email")}
                 </Link>
               </li>
               <li>
@@ -81,10 +84,10 @@ export default function Footer() {
                   href="tel:+34600000000"
                   className="text-gray-600 hover:text-black text-sm transition-colors"
                 >
-                  +34 695 09 33 33
+                  {t("contact.phone")}
                 </Link>
               </li>
-              <li className="text-gray-600 text-sm">Mallorca, España</li>
+              <li className="text-gray-600 text-sm">{t("contact.location")}</li>
             </ul>
           </div>
         </div>
@@ -92,7 +95,7 @@ export default function Footer() {
         <div className="border-t border-gray-300 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-600 text-sm mb-4 md:mb-0">
-              © 2025 Althara. Todos los derechos reservados.
+              {t("copyright")}
             </div>
           </div>
         </div>

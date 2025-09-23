@@ -2,8 +2,11 @@
 
 import Image from "next/image";
 import AnimatedSection from "./AnimatedSection";
+import { useTranslations } from "next-intl";
 
 export default function Hero() {
+  const t = useTranslations("hero");
+
   return (
     <section className="relative h-screen w-full overflow-hidden">
       <div className="absolute inset-0">
@@ -26,15 +29,20 @@ export default function Hero() {
             autoAnimate={true}
           >
             <span className="text-white text-sm font-regular tracking-wider">
-              #ACCESO EXCLUSIVO
+              {t("tagline")}
             </span>
           </AnimatedSection>
 
           <AnimatedSection animation="fadeInUp" delay={0.4} autoAnimate={true}>
             <h1 className="text-5xl sm:text-6xl font-normal text-white mb-4 leading-tight">
-              ¿Dónde Están las
-              <br />
-              Verdaderas Oportunidades?
+              {t("title")
+                .split("\n")
+                .map((line, index) => (
+                  <span key={index}>
+                    {line}
+                    {index === 0 && <br />}
+                  </span>
+                ))}
             </h1>
           </AnimatedSection>
 
@@ -47,13 +55,13 @@ export default function Hero() {
             <div className="w-px h-16 bg-white mr-4 mt-1"></div>
             <div className="flex-1">
               <p className="text-base text-white font-light">
-                Encuentra las mejores oportunidades de
+                {t("description.line1")}
               </p>
               <p className="text-base text-white font-light">
-                inversión que no están en el mercado público.
+                {t("description.line2")}
               </p>
               <p className="text-base text-white font-light">
-                Matching inteligente para activos off-market
+                {t("description.line3")}
               </p>
             </div>
           </AnimatedSection>

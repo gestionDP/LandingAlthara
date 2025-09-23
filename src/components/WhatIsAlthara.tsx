@@ -3,29 +3,28 @@
 import Image from "next/image";
 import SectionHeader from "./SectionHeader";
 import AnimatedSection, { AnimatedSequence } from "./AnimatedSection";
+import { useTranslations } from "next-intl";
 
 export default function WhatIsAlthara() {
+  const t = useTranslations("whatIsAlthara");
+
   return (
     <section id="que-es" className=" bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-12" animation="fadeInLeft" delay={0.2}>
-          <SectionHeader letter="B" title="QUE ES" />
+          <SectionHeader letter="B" title={t("title")} />
         </AnimatedSection>
 
         <AnimatedSection className="mb-16" animation="fadeInLeft" delay={0.4}>
           <h2 className="text-4xl font-normal text-althara-black leading-tight mb-6">
-            Que es Althara
+            {t("heading")}
           </h2>
           <div
             className="text-base font-normal leading-relaxed max-w-4xl"
             style={{ color: "#555555" }}
           >
-            <p>
-              <b>Althara</b> no es un portal.
-            </p>
-            <p>
-              Es una <b>plataforma privada de conexión inteligente</b> donde:
-            </p>
+            <p>{t("intro.line1")}</p>
+            <p>{t("intro.line2")}</p>
           </div>
         </AnimatedSection>
 
@@ -41,11 +40,17 @@ export default function WhatIsAlthara() {
                 className="text-sm font-medium uppercase tracking-wider"
                 style={{ color: "#95A1B8" }}
               >
-                DIFERENCIADOR 1
+                {t("differentiators.diff1.title")}
               </div>
               <h3 className="text-2xl font-medium text-althara-black leading-tight">
-                Plataforma <br />
-                Exclusiva
+                {t("differentiators.diff1.heading")
+                  .split("\n")
+                  .map((line, index) => (
+                    <span key={index}>
+                      {line}
+                      {index === 0 && <br />}
+                    </span>
+                  ))}
               </h3>
             </div>
 
@@ -63,7 +68,7 @@ export default function WhatIsAlthara() {
                 className="text-base font-normal leading-relaxed"
                 style={{ color: "#555555" }}
               >
-                Validamos y verificamos cada perfil, inversor o propietario.
+                {t("differentiators.diff1.description")}
               </p>
             </div>
           </div>
@@ -76,10 +81,17 @@ export default function WhatIsAlthara() {
                 className="text-sm font-medium uppercase tracking-wider"
                 style={{ color: "#95A1B8" }}
               >
-                DIFERENCIADOR 2
+                {t("differentiators.diff2.title")}
               </div>
               <h3 className="text-2xl font-medium text-althara-black leading-tight">
-                Algoritmo <br /> Avanzado{" "}
+                {t("differentiators.diff2.heading")
+                  .split("\n")
+                  .map((line, index) => (
+                    <span key={index}>
+                      {line}
+                      {index === 0 && <br />}
+                    </span>
+                  ))}
               </h3>
             </div>
 
@@ -97,8 +109,7 @@ export default function WhatIsAlthara() {
                 className="text-base font-normal leading-relaxed"
                 style={{ color: "#555555" }}
               >
-                Prioriza compatibilidad real según perfil de riesgo y
-                presupuesto
+                {t("differentiators.diff2.description")}
               </p>
             </div>
           </div>
@@ -111,10 +122,17 @@ export default function WhatIsAlthara() {
                 className="text-sm font-medium uppercase tracking-wider"
                 style={{ color: "#95A1B8" }}
               >
-                DIFERENCIADOR 3
+                {t("differentiators.diff3.title")}
               </div>
               <h3 className="text-2xl font-medium text-althara-black leading-tight">
-                Intermediación <br /> Profesional{" "}
+                {t("differentiators.diff3.heading")
+                  .split("\n")
+                  .map((line, index) => (
+                    <span key={index}>
+                      {line}
+                      {index === 0 && <br />}
+                    </span>
+                  ))}
               </h3>
             </div>
 
@@ -132,8 +150,7 @@ export default function WhatIsAlthara() {
                 className="text-base font-normal leading-relaxed"
                 style={{ color: "#555555" }}
               >
-                NDA automático y documentación estandarizada con intermedación
-                profesional.
+                {t("differentiators.diff3.description")}
               </p>
             </div>
           </div>

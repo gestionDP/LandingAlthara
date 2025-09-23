@@ -7,11 +7,14 @@ import Link from "next/link";
 import ContactModal from "./ContactModal";
 import { Button } from "@/components/ui/button";
 import { useScrollEffect } from "@/hooks/useScrollEffect";
+import { useTranslations } from "next-intl";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isScrolled = useScrollEffect(50);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const t = useTranslations("navbar");
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -57,56 +60,56 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-3 items-center h-16">
           <div className="hidden xl:flex justify-start">
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-4">
               <Link
                 href="#como-funciona"
-                className={`text-xs font-medium transition-colors ${
+                className={`text-xs font-medium transition-colors whitespace-nowrap ${
                   isScrolled
                     ? "text-black hover:text-gray-600"
                     : "text-white hover:text-gray-300"
                 }`}
               >
-                FUNCIONA
+                {t("menu.howItWorks")}
               </Link>
               <Link
                 href="#que-es"
-                className={`text-xs font-medium transition-colors ${
+                className={`text-xs font-medium transition-colors whitespace-nowrap ${
                   isScrolled
                     ? "text-black hover:text-gray-600"
                     : "text-white hover:text-gray-300"
                 }`}
               >
-                QUE ES
+                {t("menu.whatIs")}
               </Link>
               <Link
                 href="#nuestro-proceso"
-                className={`text-xs font-medium transition-colors ${
+                className={`text-xs font-medium transition-colors whitespace-nowrap ${
                   isScrolled
                     ? "text-black hover:text-gray-600"
                     : "text-white hover:text-gray-300"
                 }`}
               >
-                PROCESO
+                {t("menu.process")}
               </Link>
               <Link
                 href="#para-quien-es"
-                className={`text-xs font-medium transition-colors ${
+                className={`text-xs font-medium transition-colors whitespace-nowrap ${
                   isScrolled
                     ? "text-black hover:text-gray-600"
                     : "text-white hover:text-gray-300"
                 }`}
               >
-                PARA QUIEN
+                {t("menu.whoIsItFor")}
               </Link>
               <Link
                 href="#por-que-confiar"
-                className={`text-xs font-medium transition-colors ${
+                className={`text-xs font-medium transition-colors whitespace-nowrap ${
                   isScrolled
                     ? "text-black hover:text-gray-600"
                     : "text-white hover:text-gray-300"
                 }`}
               >
-                CONFIAR
+                {t("menu.whyTrust")}
               </Link>
             </div>
           </div>
@@ -123,7 +126,8 @@ export default function Navbar() {
             />
           </div>
 
-          <div className="hidden xl:flex justify-end">
+          <div className="hidden xl:flex justify-end items-center space-x-4">
+            <LanguageSwitcher isScrolled={isScrolled} />
             <Button
               onClick={openModal}
               variant="ghost"
@@ -133,7 +137,7 @@ export default function Navbar() {
                   : "text-white hover:text-gray-300"
               }`}
             >
-              CONTACT US
+              {t("contactUs")}
             </Button>
           </div>
 
@@ -142,10 +146,10 @@ export default function Navbar() {
               onClick={toggleMenu}
               variant="ghost"
               size="icon"
-              className={`h-10 w-10 bg-transparent hover:bg-transparent focus:outline-none transition-colors ${
+              className={`h-10 w-10 bg-transparent hover:bg-gray-100 focus:outline-none transition-colors border border-gray-200 hover:border-gray-300 ${
                 isScrolled
                   ? "text-black hover:text-gray-600"
-                  : "text-white hover:text-gray-300"
+                  : "text-black hover:text-gray-600"
               }`}
               aria-label="Toggle menu"
             >
@@ -166,36 +170,39 @@ export default function Navbar() {
                 className="text-gray-800 hover:text-althara-primary block px-3 py-3 text-sm font-medium transition-colors border-b border-gray-100"
                 onClick={() => setIsMenuOpen(false)}
               >
-                FUNCIONA
+                {t("menu.howItWorks")}
               </Link>
               <Link
                 href="#que-es"
                 className="text-gray-800 hover:text-althara-primary block px-3 py-3 text-sm font-medium transition-colors border-b border-gray-100"
                 onClick={() => setIsMenuOpen(false)}
               >
-                QUE ES
+                {t("menu.whatIs")}
               </Link>
               <Link
                 href="#nuestro-proceso"
                 className="text-gray-800 hover:text-althara-primary block px-3 py-3 text-sm font-medium transition-colors border-b border-gray-100"
                 onClick={() => setIsMenuOpen(false)}
               >
-                PROCESO
+                {t("menu.process")}
               </Link>
               <Link
                 href="#para-quien-es"
                 className="text-gray-800 hover:text-althara-primary block px-3 py-3 text-sm font-medium transition-colors border-b border-gray-100"
                 onClick={() => setIsMenuOpen(false)}
               >
-                PARA QUIEN
+                {t("menu.whoIsItFor")}
               </Link>
               <Link
                 href="#por-que-confiar"
                 className="text-gray-800 hover:text-althara-primary block px-3 py-3 text-sm font-medium transition-colors border-b border-gray-100"
                 onClick={() => setIsMenuOpen(false)}
               >
-                CONFIAR
+                {t("menu.whyTrust")}
               </Link>
+              <div className="flex items-center justify-between px-3 py-3 border-b border-gray-100">
+                <LanguageSwitcher isScrolled={true} />
+              </div>
               <Button
                 onClick={() => {
                   openModal();
@@ -203,7 +210,7 @@ export default function Navbar() {
                 }}
                 className="w-full mt-4"
               >
-                CONTACT US
+                {t("contactUs")}
               </Button>
             </div>
           </div>

@@ -1,0 +1,183 @@
+{
+  "metadata": {
+    "title": "Althara - Tinder for Off-Market Luxury Assets",
+    "description": "Exclusive platform connecting discrete sellers with qualified buyers through intelligent matching for premium assets. Real estate, jewelry, art and more.",
+    "keywords": "real estate investment, premium assets, co-investment, Mallorca, luxury properties, intelligent matching"
+  },
+  "navbar": {
+    "menu": {
+      "howItWorks": "WORKS",
+      "whatIs": "ALTHARA",
+      "process": "PROCESS",
+      "whoIsItFor": "CLIENTS",
+      "whyTrust": "TRUST"
+    },
+    "contactUs": "CONTACT US"
+  },
+  "hero": {
+    "tagline": "#EXCLUSIVE ACCESS",
+    "title": "Where Are the\nReal Opportunities?",
+    "description": {
+      "line1": "Find the best investment opportunities",
+      "line2": "that are not in the public market.",
+      "line3": "Intelligent matching for off-market assets"
+    }
+  },
+  "howItWorks": {
+    "title": "HOW IT WORKS",
+    "heading": "Discover Our Intelligent Matching Process",
+    "description": {
+      "line1": "Althara is the first intelligent matching platform for off-market luxury assets.",
+      "line2": "Our algorithm connects premium asset owners with qualified buyers through a verified and secure process.",
+      "line3": "With years of experience in the real estate sector, our team combines advanced technology with market knowledge to ensure successful and discrete connections."
+    },
+    "stats": {
+      "stat1": {
+        "number": "80%",
+        "text": "of premium real estate market moves off-market"
+      },
+      "stat2": {
+        "number": "90%",
+        "text": "Of Althara access requests are filtered."
+      }
+    }
+  },
+  "whatIsAlthara": {
+    "title": "WHAT IS",
+    "heading": "What is Althara",
+    "intro": {
+      "line1": "Althara is not a portal.",
+      "line2": "It's a private intelligent connection platform where:"
+    },
+    "differentiators": {
+      "diff1": {
+        "title": "DIFFERENTIATOR 1",
+        "heading": "Exclusive\nPlatform",
+        "description": "We validate and verify every profile, investor or owner."
+      },
+      "diff2": {
+        "title": "DIFFERENTIATOR 2",
+        "heading": "Advanced\nAlgorithm",
+        "description": "Prioritizes real compatibility based on risk profile and budget"
+      },
+      "diff3": {
+        "title": "DIFFERENTIATOR 3",
+        "heading": "Professional\nIntermediation",
+        "description": "Automatic NDA and standardized documentation with professional intermediation."
+      }
+    }
+  },
+  "ourProcess": {
+    "title": "PROCESS",
+    "heading": "Our matching process",
+    "steps": {
+      "step1": {
+        "number": "#01",
+        "title": "Verification And Profiling",
+        "description": "Every user, whether owner or buyer, goes through a rigorous verification process. We define their needs and preferences to ensure precise and discrete matching."
+      },
+      "step2": {
+        "number": "#02",
+        "title": "Preference Configuration",
+        "description": "Owners and buyers define their specific parameters. Our system analyzes these preferences to automatically identify compatibilities."
+      },
+      "step3": {
+        "number": "#03",
+        "title": "Intelligent Matching",
+        "description": "Our advanced algorithm analyzes thousands of data points to identify perfect compatibilities, connecting exclusive opportunities with qualified investors."
+      },
+      "step4": {
+        "number": "#04",
+        "title": "Secure Connection And Advisory",
+        "description": "Once there's a match, we facilitate the connection under NDA. Our team provides the necessary support to ensure transparency and security of the operation."
+      },
+      "step5": {
+        "number": "#05",
+        "title": "Opportunity Closure",
+        "description": "After connection and advisory, the parties proceed to close the transaction outside the platform, confident of having found the ideal opportunity or buyer."
+      }
+    }
+  },
+  "whoIsItFor": {
+    "title": "WHO IS IT FOR",
+    "heading": "Who Is Althara For",
+    "description": "Our platform is designed for exclusive profiles who value discretion, efficiency and access to unique opportunities in the off-market luxury assets market.",
+    "profiles": {
+      "investors": {
+        "title": "Investors",
+        "description": "For those seeking to diversify their portfolio with unique assets that offer superior appreciation potential to the traditional market."
+      },
+      "owners": {
+        "title": "Owners",
+        "description": "For those who value total discretion and don't want their assets to appear on public portals or social networks."
+      },
+      "advisors": {
+        "title": "Advisors",
+        "description": "For professionals who need advanced tools to connect exclusive opportunities with qualified clients."
+      }
+    }
+  },
+  "whyTrustUs": {
+    "heading": "Why trust Althara",
+    "contactButton": "CONTACT US",
+    "title": "WHY ALTHARA",
+    "cards": {
+      "card1": {
+        "description": "80% of luxury assets are traded discretely. Althara opens the doors to this exclusive market.",
+        "title": "Privileged access",
+        "subtitle": "Unique opportunities"
+      },
+      "card2": {
+        "description": "Our algorithm connects your preferences with assets that really interest you, saving you time and effort.",
+        "title": "Intelligent connection",
+        "subtitle": "Define your preferences"
+      },
+      "card3": {
+        "description": "Every interaction and transaction is managed with maximum professionalism, discretion and a transparent legal process.",
+        "title": "Security and trust",
+        "subtitle": "Verification and support"
+      }
+    }
+  },
+  "footer": {
+    "description": "Private platform connecting owners and investors in singular operations, with structured co-investment and secure processes.",
+    "quickLinks": {
+      "title": "Quick Links",
+      "howItWorks": "How It Works",
+      "whatIs": "What Is Althara",
+      "process": "Our Process",
+      "whoIsItFor": "Who Is It For"
+    },
+    "contact": {
+      "title": "Contact",
+      "email": "info@gestiondelpapeleo.com",
+      "phone": "+34 695 09 33 33",
+      "location": "Mallorca, Spain"
+    },
+    "copyright": "© 2025 Althara. All rights reserved."
+  },
+  "contactModal": {
+    "title": "Contact Althara",
+    "joinTitle": "Join Althara",
+    "description": "We connect investors and premium asset owners intelligently and securely.",
+    "form": {
+      "name": "Name *",
+      "email": "Email *",
+      "phone": "Phone",
+      "message": "Message",
+      "userType": "User type",
+      "submit": "Submit Request",
+      "submitting": "Submitting..."
+    },
+    "messages": {
+      "success": "Perfect! We'll contact you soon.",
+      "error": "Error sending. Please try again."
+    }
+  },
+  "common": {
+    "learnMore": "Learn more",
+    "getStarted": "Get started",
+    "contactUs": "Contact us",
+    "readMore": "Read more"
+  }
+}

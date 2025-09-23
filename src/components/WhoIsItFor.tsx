@@ -4,26 +4,27 @@ import Image from "next/image";
 import SectionHeader from "./SectionHeader";
 import AnimatedSection, { AnimatedSequence } from "./AnimatedSection";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 export default function WhoIsItFor() {
+  const t = useTranslations("whoIsItFor");
+
   return (
     <section id="para-quien-es" className="bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-12" animation="fadeInUp" delay={0.2}>
-          <SectionHeader letter="D" title="PARA QUIEN" />
+          <SectionHeader letter="D" title={t("title")} />
         </AnimatedSection>
 
         <AnimatedSection className="mb-16" animation="fadeInUp" delay={0.4}>
           <h2 className="text-4xl font-normal text-althara-black leading-tight mb-6">
-            Para Quién Es Althara
+            {t("heading")}
           </h2>
           <p
             className="text-base font-normal leading-relaxed max-w-4xl"
             style={{ color: "#555555" }}
           >
-            Nuestra plataforma está diseñada para perfiles exclusivos que
-            valoran la discreción, la eficiencia y el acceso a oportunidades
-            únicas en el mercado de activos de lujo off-market.
+            {t("description")}
           </p>
         </AnimatedSection>
 
@@ -42,7 +43,7 @@ export default function WhoIsItFor() {
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
               <motion.h3 className="text-2xl font-medium text-althara-black leading-tight transition-colors duration-500">
-                Inversores
+                {t("profiles.investors.title")}
               </motion.h3>
             </motion.div>
 
@@ -57,9 +58,7 @@ export default function WhoIsItFor() {
                 className="text-base font-normal leading-relaxed transition-colors duration-500"
                 style={{ color: "#555555" }}
               >
-                Para quienes buscan diversificar su cartera con activos únicos
-                que ofrecen potencial de revalorización superior al mercado
-                tradicional.
+                {t("profiles.investors.description")}
               </motion.p>
             </motion.div>
 
@@ -92,7 +91,7 @@ export default function WhoIsItFor() {
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
               <motion.h3 className="text-2xl font-medium text-althara-black leading-tight transition-colors duration-500">
-                Propietarios
+                {t("profiles.owners.title")}
               </motion.h3>
             </motion.div>
 
@@ -107,8 +106,7 @@ export default function WhoIsItFor() {
                 className="text-base font-normal leading-relaxed transition-colors duration-500"
                 style={{ color: "#555555" }}
               >
-                Para quienes valoran la discreción total y no quieren que sus
-                activos aparezcan en portales públicos o redes sociales.
+                {t("profiles.owners.description")}
               </motion.p>
             </motion.div>
 
@@ -142,7 +140,7 @@ export default function WhoIsItFor() {
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
               <motion.h3 className="text-2xl font-medium text-althara-black leading-tight transition-colors duration-500">
-                Asesores
+                {t("profiles.advisors.title")}
               </motion.h3>
             </motion.div>
 
@@ -157,8 +155,7 @@ export default function WhoIsItFor() {
                 className="text-base font-normal leading-relaxed transition-colors duration-500"
                 style={{ color: "#555555" }}
               >
-                Para profesionales que necesitan herramientas avanzadas para
-                conectar oportunidades exclusivas con clientes cualificados.
+                {t("profiles.advisors.description")}
               </motion.p>
             </motion.div>
 

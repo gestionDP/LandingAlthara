@@ -6,9 +6,11 @@ import SectionHeader from "./SectionHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import ContactModal from "./ContactModal";
 import AnimatedSection, { AnimatedSequence } from "./AnimatedSection";
+import { useTranslations } from "next-intl";
 
 export default function WhyTrustUs() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const t = useTranslations("whyTrustUs");
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -27,7 +29,7 @@ export default function WhyTrustUs() {
 
         <div className="relative z-10 h-full flex flex-col justify-center items-center">
           <h2 className="text-4xl font-normal text-white text-center mb-8">
-            Por qué confiar en Althara
+            {t("heading")}
           </h2>
           <button
             onClick={openModal}
@@ -42,7 +44,9 @@ export default function WhyTrustUs() {
                 className="text-white"
               />
             </div>
-            <span className="font-medium ml-3 cursor-pointer">CONTACT US</span>
+            <span className="font-medium ml-3 cursor-pointer">
+              {t("contactButton")}
+            </span>
           </button>
         </div>
       </div>
@@ -54,7 +58,7 @@ export default function WhyTrustUs() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="mb-12" animation="fadeInUp" delay={0.4}>
-            <SectionHeader letter="E" title="POR QUÉ ALTHARA" variant="dark" />
+            <SectionHeader letter="E" title={t("title")} variant="dark" />
           </AnimatedSection>
 
           <AnimatedSequence
@@ -67,8 +71,7 @@ export default function WhyTrustUs() {
               <Card className="p-8 h-full flex flex-col hover:scale-105 transition-transform duration-300 ease-out cursor-pointer">
                 <CardContent className="p-0 flex flex-col h-full">
                   <p className="text-lg font-normal text-black leading-relaxed mb-8 flex-grow">
-                    El 80% de los activos de lujo se negocian discretamente.
-                    Althara te abre las puertas a este mercado exclusivo.
+                    {t("cards.card1.description")}
                   </p>
                   <div className="flex items-center space-x-6 mt-auto">
                     <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
@@ -82,10 +85,10 @@ export default function WhyTrustUs() {
                     </div>
                     <div>
                       <div className="text-md font-semibold text-black">
-                        Acceso privilegiado
+                        {t("cards.card1.title")}
                       </div>
                       <div className="text-sm text-gray-600">
-                        Oportunidades únicas
+                        {t("cards.card1.subtitle")}
                       </div>
                     </div>
                   </div>
@@ -97,8 +100,7 @@ export default function WhyTrustUs() {
               <Card className="p-8 h-full flex flex-col shadow-sm hover:scale-105 transition-transform duration-300 ease-out cursor-pointer">
                 <CardContent className="p-0 flex flex-col h-full">
                   <p className="text-lg font-normal text-black leading-relaxed mb-8 flex-grow">
-                    Nuestro algoritmo conecta tus preferencias con activos que
-                    realmente te interesan, ahorrándote tiempo y esfuerzo.
+                    {t("cards.card2.description")}
                   </p>
                   <div className="flex items-center space-x-6 mt-auto">
                     <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
@@ -112,10 +114,10 @@ export default function WhyTrustUs() {
                     </div>
                     <div>
                       <div className="text-md font-semibold text-black">
-                        Conexión inteligente
+                        {t("cards.card2.title")}
                       </div>
                       <div className="text-sm text-gray-600">
-                        Define tus preferencias
+                        {t("cards.card2.subtitle")}
                       </div>
                     </div>
                   </div>
@@ -127,8 +129,7 @@ export default function WhyTrustUs() {
               <Card className="p-8 h-full flex flex-col shadow-sm hover:scale-105 transition-transform duration-300 ease-out cursor-pointer">
                 <CardContent className="p-0 flex flex-col h-full">
                   <p className="text-lg font-normal text-black leading-relaxed mb-8 flex-grow">
-                    Cada interacción y transacción se gestiona con la máxima
-                    profesionalidad, discreción y un proceso legal transparente.
+                    {t("cards.card3.description")}
                   </p>
                   <div className="flex items-center space-x-6 mt-auto">
                     <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
@@ -142,10 +143,10 @@ export default function WhyTrustUs() {
                     </div>
                     <div>
                       <div className="text-md font-semibold text-black">
-                        Seguridad y confianza
+                        {t("cards.card3.title")}
                       </div>
                       <div className="text-sm text-gray-600">
-                        Verificación y soporte
+                        {t("cards.card3.subtitle")}
                       </div>
                     </div>
                   </div>

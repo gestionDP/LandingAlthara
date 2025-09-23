@@ -3,13 +3,16 @@
 import Image from "next/image";
 import SectionHeader from "./SectionHeader";
 import AnimatedSection, { AnimatedSequence } from "./AnimatedSection";
+import { useTranslations } from "next-intl";
 
 export default function HowItWorks() {
+  const t = useTranslations("howItWorks");
+
   return (
     <section id="como-funciona" className=" bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-12" animation="fadeInUp" delay={0.2}>
-          <SectionHeader letter="A" title="CÓMO FUNCIONA" />
+          <SectionHeader letter="A" title={t("title")} />
         </AnimatedSection>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
@@ -20,7 +23,7 @@ export default function HowItWorks() {
           >
             <AnimatedSection animation="fadeInUp" delay={0.5}>
               <h3 className="text-4xl font-normal text-althara-black leading-tight">
-                Descubre Nuestro Proceso de Matching Inteligente
+                {t("heading")}
               </h3>
             </AnimatedSection>
 
@@ -34,25 +37,19 @@ export default function HowItWorks() {
                 className="text-base font-normal leading-relaxed"
                 style={{ color: "#555555" }}
               >
-                <b>Althara</b> es la primera plataforma de matching inteligente
-                para activos de lujo off-market.
+                {t("description.line1")}
               </p>
               <p
                 className="text-base font-normal leading-relaxed"
                 style={{ color: "#555555" }}
               >
-                Nuestro algoritmo conecta propietarios de activos premium con
-                compradores cualificados mediante un proceso verificado y
-                seguro.
+                {t("description.line2")}
               </p>
               <p
                 className="text-base font-normal leading-relaxed"
                 style={{ color: "#555555" }}
               >
-                Con años de experiencia en el sector inmobiliario, nuestro
-                equipo combina{" "}
-                <b>tecnología avanzada con conocimiento del mercado </b>
-                para garantizar conexiones exitosas y discretas.
+                {t("description.line3")}
               </p>
             </AnimatedSequence>
           </AnimatedSection>
@@ -93,15 +90,19 @@ export default function HowItWorks() {
               delayIncrement={0.2}
             >
               <div className="text-left">
-                <div className="text-4xl font-normal text-black mb-2">80%</div>
+                <div className="text-4xl font-normal text-black mb-2">
+                  {t("stats.stat1.number")}
+                </div>
                 <p className="text-sm text-gray-600 leading-tight">
-                  del mercado inmobiliario premium se mueve off-market
+                  {t("stats.stat1.text")}
                 </p>
               </div>
               <div className="text-left">
-                <div className="text-4xl font-normal text-black mb-2">90%</div>
+                <div className="text-4xl font-normal text-black mb-2">
+                  {t("stats.stat2.number")}
+                </div>
                 <p className="text-sm text-gray-600 leading-tight">
-                  De las solicitudes de acceso a Althara son filtradas.{" "}
+                  {t("stats.stat2.text")}
                 </p>
               </div>
             </AnimatedSequence>

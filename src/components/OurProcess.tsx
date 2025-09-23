@@ -2,13 +2,16 @@
 
 import SectionHeader from "./SectionHeader";
 import AnimatedSection, { AnimatedSequence } from "./AnimatedSection";
+import { useTranslations } from "next-intl";
 
 export default function OurProcess() {
+  const t = useTranslations("ourProcess");
+
   return (
     <section id="nuestro-proceso" className="py-20 bg-althara-dark-blue">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-12" animation="fadeInUp" delay={0.2}>
-          <SectionHeader letter="C" title="PROCESO" variant="dark" />
+          <SectionHeader letter="C" title={t("title")} variant="dark" />
         </AnimatedSection>
 
         <div className="space-y-16">
@@ -19,7 +22,7 @@ export default function OurProcess() {
           >
             <AnimatedSection animation="fadeInLeft" delay={0.6}>
               <h2 className="text-5xl font-normal text-white leading-tight">
-                Nuestro proceso de matching
+                {t("heading")}
               </h2>
             </AnimatedSection>
 
@@ -28,14 +31,14 @@ export default function OurProcess() {
               animation="fadeInRight"
               delay={0.8}
             >
-              <div className="text-lg font-medium text-white">#01</div>
+              <div className="text-lg font-medium text-white">
+                {t("steps.step1.number")}
+              </div>
               <h3 className="text-xl font-medium text-white">
-                Verificación Y Perfilado
+                {t("steps.step1.title")}
               </h3>
               <p className="text-base font-light text-gray-300 leading-relaxed">
-                Cada usuario, sea propietario o comprador, pasa por un riguroso
-                proceso de verificación. Definimos sus necesidades y
-                preferencias para asegurar un matching preciso y discreto.
+                {t("steps.step1.description")}
               </p>
             </AnimatedSection>
 
@@ -44,14 +47,14 @@ export default function OurProcess() {
               animation="fadeInRight"
               delay={1.0}
             >
-              <div className="text-lg font-medium text-white">#02</div>
+              <div className="text-lg font-medium text-white">
+                {t("steps.step2.number")}
+              </div>
               <h3 className="text-xl font-medium text-white">
-                Configuración De Preferencias
+                {t("steps.step2.title")}
               </h3>
               <p className="text-base font-light text-gray-300 leading-relaxed">
-                Propietarios y compradores definen sus parámetros específicos.
-                Nuestro sistema analiza estas preferencias para identificar
-                compatibilidades automáticamente.
+                {t("steps.step2.description")}
               </p>
             </AnimatedSection>
           </AnimatedSection>
@@ -63,39 +66,38 @@ export default function OurProcess() {
             delayIncrement={0.2}
           >
             <div className="space-y-4">
-              <div className="text-lg font-medium text-white">#03</div>
+              <div className="text-lg font-medium text-white">
+                {t("steps.step3.number")}
+              </div>
               <h3 className="text-xl font-medium text-white">
-                Matching Inteligente
+                {t("steps.step3.title")}
               </h3>
               <p className="text-base font-light text-gray-300 leading-relaxed">
-                Nuestro algoritmo avanzado analiza miles de puntos de datos para
-                identificar las compatibilidades perfectas, conectando
-                oportunidades exclusivas con inversores cualificados.
+                {t("steps.step3.description")}
               </p>
             </div>
 
             <div className="space-y-4">
-              <div className="text-lg font-medium text-white">#04</div>
+              <div className="text-lg font-medium text-white">
+                {t("steps.step4.number")}
+              </div>
               <h3 className="text-xl font-medium text-white">
-                Conexión Segura Y Asesoramiento
+                {t("steps.step4.title")}
               </h3>
               <p className="text-base font-light text-gray-300 leading-relaxed">
-                Una vez hay un match, facilitamos la conexión bajo NDA. Nuestro
-                equipo brinda el soporte necesario para asegurar la
-                transparencia y seguridad de la operación.
+                {t("steps.step4.description")}
               </p>
             </div>
 
             <div className="space-y-4">
-              <div className="text-lg font-medium text-white">#05</div>
+              <div className="text-lg font-medium text-white">
+                {t("steps.step5.number")}
+              </div>
               <h3 className="text-xl font-medium text-white">
-                Cierre De La Oportunidad
+                {t("steps.step5.title")}
               </h3>
               <p className="text-base font-light text-gray-300 leading-relaxed">
-                Tras la conexión y el asesoramiento, las partes proceden al
-                cierre de la transacción fuera de la plataforma, con la
-                confianza de haber encontrado la oportunidad o el comprador
-                ideal.
+                {t("steps.step5.description")}
               </p>
             </div>
           </AnimatedSequence>
