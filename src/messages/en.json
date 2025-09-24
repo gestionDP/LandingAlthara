@@ -15,7 +15,7 @@
     "contactUs": "CONTACT US"
   },
   "hero": {
-    "tagline": "#EXCLUSIVE ACCESS",
+    "tagline": "#UNIQUE OPPORTUNITIES",
     "title": "Where Are the\nReal Opportunities?",
     "description": {
       "line1": "Find the best investment opportunities",
@@ -28,7 +28,7 @@
     "heading": "Discover Our Intelligent Matching Process",
     "description": {
       "line1": "Althara is the first intelligent matching platform for off-market luxury assets.",
-      "line2": "Our algorithm connects premium asset owners with qualified buyers through a verified and secure process.",
+      "line2": "Our algorithm connects owners with qualified buyers through a verified and secure process.",
       "line3": "With years of experience in the real estate sector, our team combines advanced technology with market knowledge to ensure successful and discrete connections."
     },
     "stats": {
@@ -37,8 +37,8 @@
         "text": "of premium real estate market moves off-market"
       },
       "stat2": {
-        "number": "90%",
-        "text": "Of Althara access requests are filtered."
+        "number": "72h",
+        "text": "Average response time to access requests"
       }
     }
   },
@@ -53,17 +53,17 @@
       "diff1": {
         "title": "DIFFERENTIATOR 1",
         "heading": "Exclusive\nPlatform",
-        "description": "We validate and verify every profile, investor or owner."
+        "description": "We validate and verify every profile, to ensure a precise matching."
       },
       "diff2": {
         "title": "DIFFERENTIATOR 2",
         "heading": "Advanced\nAlgorithm",
-        "description": "Prioritizes real compatibility based on risk profile and budget"
+        "description": "Prioritizes real compatibility based on preferences and needs."
       },
       "diff3": {
         "title": "DIFFERENTIATOR 3",
         "heading": "Professional\nIntermediation",
-        "description": "Automatic NDA and standardized documentation with professional intermediation."
+        "description": "We ensure the transparency and security of the operation. With legal support and process tracking."
       }
     }
   },
@@ -89,27 +89,27 @@
       "step4": {
         "number": "#04",
         "title": "Secure Connection And Advisory",
-        "description": "Once there's a match, we facilitate the connection under NDA. Our team provides the necessary support to ensure transparency and security of the operation."
+        "description": "Once there's a match, we facilitate the connection under confidentiality agreements. Our team provides the necessary support to ensure transparency and security of the operation."
       },
       "step5": {
         "number": "#05",
         "title": "Opportunity Closure",
-        "description": "After connection and advisory, the parties proceed to close the transaction outside the platform, confident of having found the ideal opportunity or buyer."
+        "description": "After connection and advisory, the parties proceed to close the transaction outside the platform, confident of having found the ideal opportunity."
       }
     }
   },
   "whoIsItFor": {
     "title": "WHO IS IT FOR",
     "heading": "Who Is Althara For",
-    "description": "Our platform is designed for exclusive profiles who value discretion, efficiency and access to unique opportunities in the off-market luxury assets market.",
+    "description": "Our platform is designed for verified profiles who value security, efficiency and access to unique opportunities in the off-market assets market.",
     "profiles": {
       "investors": {
         "title": "Investors",
-        "description": "For those seeking to diversify their portfolio with unique assets that offer superior appreciation potential to the traditional market."
+        "description": "For those seeking to diversify their portfolio with unique assets that offer superior appreciation potential to the average."
       },
       "owners": {
         "title": "Owners",
-        "description": "For those who value total discretion and don't want their assets to appear on public portals or social networks."
+        "description": "For those who opt for qualified buyers to ensure the transparency and security of the operation."
       },
       "advisors": {
         "title": "Advisors",

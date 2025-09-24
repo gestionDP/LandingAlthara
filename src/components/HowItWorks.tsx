@@ -15,7 +15,7 @@ export default function HowItWorks() {
           <SectionHeader letter="A" title={t("title")} />
         </AnimatedSection>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start overflow-hidden">
           <AnimatedSection
             className="space-y-8"
             animation="fadeInUp"
@@ -60,12 +60,12 @@ export default function HowItWorks() {
             delay={0.6}
           >
             <AnimatedSequence
-              className="grid grid-cols-2 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 overflow-hidden"
               animation="fadeInUp"
               baseDelay={0.8}
               delayIncrement={0.2}
             >
-              <div className="relative h-96 overflow-hidden">
+              <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
                 <Image
                   src="/png/About1.png"
                   alt="Modern Building Facade"
@@ -73,7 +73,7 @@ export default function HowItWorks() {
                   className="object-cover"
                 />
               </div>
-              <div className="relative h-96 overflow-hidden">
+              <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
                 <Image
                   src="/png/About.png"
                   alt="Professional Meeting"
@@ -84,7 +84,7 @@ export default function HowItWorks() {
             </AnimatedSequence>
 
             <AnimatedSequence
-              className="grid grid-cols-2 gap-8"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 overflow-hidden"
               animation="fadeInUp"
               baseDelay={1.2}
               delayIncrement={0.2}

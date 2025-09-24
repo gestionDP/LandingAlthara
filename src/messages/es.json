@@ -15,7 +15,7 @@
     "contactUs": "CONTACTAR"
   },
   "hero": {
-    "tagline": "#ACCESO EXCLUSIVO",
+    "tagline": "#OPORTUNIDADES ÚNICAS",
     "title": "¿Dónde Están las\nVerdaderas Oportunidades?",
     "description": {
       "line1": "Encuentra las mejores oportunidades de",
@@ -28,7 +28,7 @@
     "heading": "Descubre Nuestro Proceso de Matching Inteligente",
     "description": {
       "line1": "Althara es la primera plataforma de matching inteligente para activos de lujo off-market.",
-      "line2": "Nuestro algoritmo conecta propietarios de activos premium con compradores cualificados mediante un proceso verificado y seguro.",
+      "line2": "Nuestro algoritmo conecta propietarios con compradores cualificados mediante un proceso verificado y seguro.",
       "line3": "Con años de experiencia en el sector inmobiliario, nuestro equipo combina tecnología avanzada con conocimiento del mercado para garantizar conexiones exitosas y discretas."
     },
     "stats": {
@@ -37,14 +37,14 @@
         "text": "del mercado inmobiliario premium se mueve off-market"
       },
       "stat2": {
-        "number": "90%",
-        "text": "De las solicitudes de acceso a Althara son filtradas."
+        "number": "72h",
+        "text": "Tiempo medio de respuesta a las solicitudes de acceso"
       }
     }
   },
   "whatIsAlthara": {
-    "title": "QUE ES",
-    "heading": "Que es Althara",
+    "title": "QUÉ ES",
+    "heading": "Qué es Althara",
     "intro": {
       "line1": "Althara no es un portal.",
       "line2": "Es una plataforma privada de conexión inteligente donde:"
@@ -53,17 +53,17 @@
       "diff1": {
         "title": "DIFERENCIADOR 1",
         "heading": "Plataforma\nExclusiva",
-        "description": "Validamos y verificamos cada perfil, inversor o propietario."
+        "description": "Validamos y verificamos cada perfil, para asegurar un matching preciso."
       },
       "diff2": {
         "title": "DIFERENCIADOR 2",
         "heading": "Algoritmo\nAvanzado",
-        "description": "Prioriza compatibilidad real según perfil de riesgo y presupuesto"
+        "description": "Prioriza compatibilidad real según las preferencias y necesidades."
       },
       "diff3": {
         "title": "DIFERENCIADOR 3",
         "heading": "Intermediación\nProfesional",
-        "description": "NDA automático y documentación estandarizada con intermedación profesional."
+        "description": "Aseguramos la transparencia y seguridad de la operación. Con soporte legal y seguimiento del proceso."
       }
     }
   },
@@ -74,12 +74,12 @@
       "step1": {
         "number": "#01",
         "title": "Verificación Y Perfilado",
-        "description": "Cada usuario, sea propietario o comprador, pasa por un riguroso proceso de verificación. Definimos sus necesidades y preferencias para asegurar un matching preciso y discreto."
+        "description": "Cada usuario, pasa por un riguroso proceso de verificación."
       },
       "step2": {
         "number": "#02",
         "title": "Configuración De Preferencias",
-        "description": "Propietarios y compradores definen sus parámetros específicos. Nuestro sistema analiza estas preferencias para identificar compatibilidades automáticamente."
+        "description": "Los usuarios definen sus parámetros específicos. Nuestro sistema analiza estas preferencias para identificar compatibilidades automáticamente."
       },
       "step3": {
         "number": "#03",
@@ -89,27 +89,27 @@
       "step4": {
         "number": "#04",
         "title": "Conexión Segura Y Asesoramiento",
-        "description": "Una vez hay un match, facilitamos la conexión bajo NDA. Nuestro equipo brinda el soporte necesario para asegurar la transparencia y seguridad de la operación."
+        "description": "Una vez que se produce un match, facilitamos la conexión bajo acuerdos de confidencialidad. Nuestro equipo brinda el soporte necesario para asegurar la transparencia y seguridad de la operación."
       },
       "step5": {
         "number": "#05",
         "title": "Cierre De La Oportunidad",
-        "description": "Tras la conexión y el asesoramiento, las partes proceden al cierre de la transacción fuera de la plataforma, con la confianza de haber encontrado la oportunidad o el comprador ideal."
+        "description": "Tras la conexión y el asesoramiento, las partes proceden al cierre de la transacción fuera de la plataforma, con la confianza de haber encontrado la oportunidad."
       }
     }
   },
   "whoIsItFor": {
     "title": "PARA QUIEN",
     "heading": "Para Quién Es Althara",
-    "description": "Nuestra plataforma está diseñada para perfiles exclusivos que valoran la discreción, la eficiencia y el acceso a oportunidades únicas en el mercado de activos de lujo off-market.",
+    "description": "Nuestra plataforma está diseñada para perfiles verificados que valoran la seguridad, la eficiencia y el acceso a oportunidades únicas en el mercado de activos off-market.",
     "profiles": {
       "investors": {
         "title": "Inversores",
-        "description": "Para quienes buscan diversificar su cartera con activos únicos que ofrecen potencial de revalorización superior al mercado tradicional."
+        "description": "Para quienes buscan diversificar su cartera con activos únicos que ofrecen potencial de revalorización superior al promedio."
       },
       "owners": {
         "title": "Propietarios",
-        "description": "Para quienes valoran la discreción total y no quieren que sus activos aparezcan en portales públicos o redes sociales."
+        "description": "Para quienes optan por compradores cualificados para asegurar la transparencia y seguridad de la operación."
       },
       "advisors": {
         "title": "Asesores",

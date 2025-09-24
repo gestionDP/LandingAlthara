@@ -29,16 +29,16 @@ export default function WhoIsItFor() {
         </AnimatedSection>
 
         <AnimatedSequence
-          className="space-y-10"
+          className="space-y-10 overflow-hidden"
           animation="fadeInUp"
           baseDelay={0.6}
           delayIncrement={0.2}
         >
-          <div className="grid grid-cols-12 gap-4 lg:gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
             <motion.div
-              className="col-span-12 lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
+              className="lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
-                scale: 1.05,
+                scale: 1.02,
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
@@ -48,9 +48,9 @@ export default function WhoIsItFor() {
             </motion.div>
 
             <motion.div
-              className="col-span-7 lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
+              className="lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
-                scale: 1.05,
+                scale: 1.02,
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
@@ -63,10 +63,9 @@ export default function WhoIsItFor() {
             </motion.div>
 
             <motion.div
-              className="col-span-5 lg:col-span-4 flex justify-center lg:justify-end rounded-lg transition-all duration-500 cursor-pointer"
+              className="lg:col-span-4 flex justify-center lg:justify-end rounded-lg transition-all duration-500 cursor-pointer overflow-hidden"
               whileHover={{
-                scale: 1.1,
-                x: 10,
+                scale: 1.05,
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
@@ -82,11 +81,11 @@ export default function WhoIsItFor() {
           </div>
           <div className="h-px bg-gray-300"></div>
 
-          <div className="grid grid-cols-12 gap-4 lg:gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
             <motion.div
-              className="col-span-12 lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
+              className="lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
-                scale: 1.05,
+                scale: 1.02,
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
@@ -96,9 +95,9 @@ export default function WhoIsItFor() {
             </motion.div>
 
             <motion.div
-              className="col-span-7 lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
+              className="lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
-                scale: 1.05,
+                scale: 1.02,
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
@@ -111,10 +110,9 @@ export default function WhoIsItFor() {
             </motion.div>
 
             <motion.div
-              className="col-span-5 lg:col-span-4 flex justify-center lg:justify-end rounded-lg transition-all duration-500 cursor-pointer"
+              className="lg:col-span-4 flex justify-center lg:justify-end rounded-lg transition-all duration-500 cursor-pointer overflow-hidden"
               whileHover={{
-                scale: 1.1,
-                x: 10,
+                scale: 1.05,
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
@@ -131,11 +129,11 @@ export default function WhoIsItFor() {
 
           <div className="h-px bg-gray-300"></div>
 
-          <div className="grid grid-cols-12 gap-4 lg:gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
             <motion.div
-              className="col-span-12 lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
+              className="lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
-                scale: 1.05,
+                scale: 1.02,
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
@@ -145,9 +143,9 @@ export default function WhoIsItFor() {
             </motion.div>
 
             <motion.div
-              className="col-span-7 lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
+              className="lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
-                scale: 1.05,
+                scale: 1.02,
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
@@ -160,10 +158,9 @@ export default function WhoIsItFor() {
             </motion.div>
 
             <motion.div
-              className="col-span-5 lg:col-span-4 flex justify-center lg:justify-end rounded-lg transition-all duration-500 cursor-pointer"
+              className="lg:col-span-4 flex justify-center lg:justify-end rounded-lg transition-all duration-500 cursor-pointer overflow-hidden"
               whileHover={{
-                scale: 1.1,
-                x: 10,
+                scale: 1.05,
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
