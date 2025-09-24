@@ -159,7 +159,7 @@
   "contactModal": {
     "title": "Contact Althara",
     "joinTitle": "Join Althara",
-    "description": "We connect investors and premium asset owners intelligently and securely.",
+    "description": "We connect investors and premium asset owners intelligently.",
     "form": {
       "name": "Name *",
       "email": "Email *",

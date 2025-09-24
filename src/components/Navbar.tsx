@@ -141,15 +141,16 @@ export default function Navbar() {
             </Button>
           </div>
 
-          <div className="xl:hidden col-start-3 flex justify-end">
+          <div className="xl:hidden col-start-3 flex justify-end items-center space-x-2">
+            <LanguageSwitcher isScrolled={isScrolled} />
             <Button
               onClick={toggleMenu}
               variant="ghost"
               size="icon"
-              className={`h-10 w-10 bg-transparent hover:bg-gray-100 focus:outline-none transition-colors border border-gray-200 hover:border-gray-300 ${
+              className={`h-10 w-10 bg-transparent hover:bg-gray-100 focus:outline-none transition-colors border border-transparent hover:border-gray-300 ${
                 isScrolled
                   ? "text-black hover:text-gray-600"
-                  : "text-black hover:text-gray-600"
+                  : "text-white hover:text-gray-300"
               }`}
               aria-label="Toggle menu"
             >
@@ -200,9 +201,6 @@ export default function Navbar() {
               >
                 {t("menu.whyTrust")}
               </Link>
-              <div className="flex items-center justify-between px-3 py-3 border-b border-gray-100">
-                <LanguageSwitcher isScrolled={true} />
-              </div>
               <Button
                 onClick={() => {
                   openModal();

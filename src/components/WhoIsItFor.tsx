@@ -34,9 +34,9 @@ export default function WhoIsItFor() {
           baseDelay={0.6}
           delayIncrement={0.2}
         >
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+          <div className="grid grid-cols-12 gap-4 lg:gap-8 items-center">
             <motion.div
-              className=" rounded-lg transition-all duration-500 cursor-pointer"
+              className="col-span-12 lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
                 scale: 1.05,
               }}
@@ -48,7 +48,7 @@ export default function WhoIsItFor() {
             </motion.div>
 
             <motion.div
-              className="rounded-lg transition-all duration-500 cursor-pointer"
+              className="col-span-7 lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
                 scale: 1.05,
               }}
@@ -63,14 +63,14 @@ export default function WhoIsItFor() {
             </motion.div>
 
             <motion.div
-              className="flex justify-center lg:justify-end rounded-lg transition-all duration-500 cursor-pointer"
+              className="col-span-5 lg:col-span-4 flex justify-center lg:justify-end rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
                 scale: 1.1,
                 x: 10,
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
-              <div className="relative h-48 w-48 sm:h-40 sm:w-40 lg:h-32 lg:w-32 overflow-hidden">
+              <div className="relative h-32 w-32 sm:h-40 sm:w-40 lg:h-32 lg:w-32 overflow-hidden">
                 <Image
                   src="/png/Service.png"
                   alt="Elegant Interior Space"
@@ -82,9 +82,9 @@ export default function WhoIsItFor() {
           </div>
           <div className="h-px bg-gray-300"></div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+          <div className="grid grid-cols-12 gap-4 lg:gap-8 items-center">
             <motion.div
-              className=" rounded-lg transition-all duration-500 cursor-pointer"
+              className="col-span-12 lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
                 scale: 1.05,
               }}
@@ -96,7 +96,7 @@ export default function WhoIsItFor() {
             </motion.div>
 
             <motion.div
-              className=" rounded-lg transition-all duration-500 cursor-pointer"
+              className="col-span-7 lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
                 scale: 1.05,
               }}
@@ -111,14 +111,14 @@ export default function WhoIsItFor() {
             </motion.div>
 
             <motion.div
-              className="flex justify-center lg:justify-end rounded-lg transition-all duration-500 cursor-pointer"
+              className="col-span-5 lg:col-span-4 flex justify-center lg:justify-end rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
                 scale: 1.1,
                 x: 10,
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
-              <div className="relative h-48 w-48 sm:h-40 sm:w-40 lg:h-32 lg:w-32 overflow-hidden">
+              <div className="relative h-32 w-32 sm:h-40 sm:w-40 lg:h-32 lg:w-32 overflow-hidden">
                 <Image
                   src="/png/Service1.png"
                   alt="Warm Interior Space"
@@ -131,9 +131,9 @@ export default function WhoIsItFor() {
 
           <div className="h-px bg-gray-300"></div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+          <div className="grid grid-cols-12 gap-4 lg:gap-8 items-center">
             <motion.div
-              className=" rounded-lg transition-all duration-500 cursor-pointer"
+              className="col-span-12 lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
                 scale: 1.05,
               }}
@@ -145,7 +145,7 @@ export default function WhoIsItFor() {
             </motion.div>
 
             <motion.div
-              className=" rounded-lg transition-all duration-500 cursor-pointer"
+              className="col-span-7 lg:col-span-4 rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
                 scale: 1.05,
               }}
@@ -160,14 +160,14 @@ export default function WhoIsItFor() {
             </motion.div>
 
             <motion.div
-              className="flex justify-center lg:justify-end rounded-lg transition-all duration-500 cursor-pointer"
+              className="col-span-5 lg:col-span-4 flex justify-center lg:justify-end rounded-lg transition-all duration-500 cursor-pointer"
               whileHover={{
                 scale: 1.1,
                 x: 10,
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
-              <div className="relative h-48 w-48 sm:h-40 sm:w-40 lg:h-32 lg:w-32 overflow-hidden">
+              <div className="relative h-32 w-32 sm:h-40 sm:w-40 lg:h-32 lg:w-32 overflow-hidden">
                 <Image
                   src="/png/Service2.png"
                   alt="Modern Architectural Facade"

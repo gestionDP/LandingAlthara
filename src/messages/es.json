@@ -12,7 +12,7 @@
       "whoIsItFor": "CLIENTES",
       "whyTrust": "CONFIANZA"
     },
-    "contactUs": "CONTACT US"
+    "contactUs": "CONTACTAR"
   },
   "hero": {
     "tagline": "#ACCESO EXCLUSIVO",
@@ -159,7 +159,7 @@
   "contactModal": {
     "title": "Contacta con Althara",
     "joinTitle": "Únete a Althara",
-    "description": "Conectamos inversores y propietarios de activos premium de forma inteligente y segura.",
+    "description": "Conectamos inversores y propietarios de activos premium de forma inteligente.",
     "form": {
       "name": "Nombre *",
       "email": "Email *",

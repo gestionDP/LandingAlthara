@@ -6,6 +6,7 @@ import { useEffect, useState, useCallback } from "react";
 export default function CustomCursor() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const updateMousePosition = useCallback((e: MouseEvent) => {
     setMousePosition({ x: e.clientX, y: e.clientY });
@@ -15,29 +16,49 @@ export default function CustomCursor() {
   const handleMouseLeave = useCallback(() => setIsHovering(false), []);
 
   useEffect(() => {
-    window.addEventListener("mousemove", updateMousePosition);
-    document.addEventListener("mouseenter", handleMouseEnter);
-    document.addEventListener("mouseleave", handleMouseLeave);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || "ontouchstart" in window);
+    };
 
-    const interactiveElements = document.querySelectorAll(
-      "a, button, [role='button']"
-    );
-    interactiveElements.forEach((el) => {
-      el.addEventListener("mouseenter", handleMouseEnter);
-      el.addEventListener("mouseleave", handleMouseLeave);
-    });
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    if (!isMobile) {
+      window.addEventListener("mousemove", updateMousePosition);
+      document.addEventListener("mouseenter", handleMouseEnter);
+      document.addEventListener("mouseleave", handleMouseLeave);
+
+      const interactiveElements = document.querySelectorAll(
+        "a, button, [role='button']"
+      );
+      interactiveElements.forEach((el) => {
+        el.addEventListener("mouseenter", handleMouseEnter);
+        el.addEventListener("mouseleave", handleMouseLeave);
+      });
+    }
 
     return () => {
-      window.removeEventListener("mousemove", updateMousePosition);
-      document.removeEventListener("mouseenter", handleMouseEnter);
-      document.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("resize", checkMobile);
 
-      interactiveElements.forEach((el) => {
-        el.removeEventListener("mouseenter", handleMouseEnter);
-        el.removeEventListener("mouseleave", handleMouseLeave);
-      });
+      if (!isMobile) {
+        window.removeEventListener("mousemove", updateMousePosition);
+        document.removeEventListener("mouseenter", handleMouseEnter);
+        document.removeEventListener("mouseleave", handleMouseLeave);
+
+        const interactiveElements = document.querySelectorAll(
+          "a, button, [role='button']"
+        );
+        interactiveElements.forEach((el) => {
+          el.removeEventListener("mouseenter", handleMouseEnter);
+          el.removeEventListener("mouseleave", handleMouseLeave);
+        });
+      }
     };
-  }, [updateMousePosition, handleMouseEnter, handleMouseLeave]);
+  }, [updateMousePosition, handleMouseEnter, handleMouseLeave, isMobile]);
+
+  if (isMobile) {
+    return null;
+  }
 
   return (
     <>
