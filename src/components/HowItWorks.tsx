@@ -34,19 +34,19 @@ export default function HowItWorks() {
               delayIncrement={0.2}
             >
               <p
-                className="text-base font-normal leading-relaxed"
+                className="text-lg font-light leading-relaxed"
                 style={{ color: "#555555" }}
               >
                 {t("description.line1")}
               </p>
               <p
-                className="text-base font-normal leading-relaxed"
+                className="text-lg font-light leading-relaxed"
                 style={{ color: "#555555" }}
               >
                 {t("description.line2")}
               </p>
               <p
-                className="text-base font-normal leading-relaxed"
+                className="text-lg font-light leading-relaxed"
                 style={{ color: "#555555" }}
               >
                 {t("description.line3")}

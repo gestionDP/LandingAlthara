@@ -21,7 +21,7 @@ export default function WhoIsItFor() {
             {t("heading")}
           </h2>
           <p
-            className="text-base font-normal leading-relaxed max-w-4xl"
+            className="text-lg font-light leading-relaxed max-w-4xl"
             style={{ color: "#555555" }}
           >
             {t("description")}
@@ -55,7 +55,7 @@ export default function WhoIsItFor() {
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
               <motion.p
-                className="text-base font-normal leading-relaxed transition-colors duration-500"
+                className="text-lg font-light leading-relaxed transition-colors duration-500"
                 style={{ color: "#555555" }}
               >
                 {t("profiles.investors.description")}
@@ -103,7 +103,7 @@ export default function WhoIsItFor() {
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
               <motion.p
-                className="text-base font-normal leading-relaxed transition-colors duration-500"
+                className="text-lg font-light leading-relaxed transition-colors duration-500"
                 style={{ color: "#555555" }}
               >
                 {t("profiles.owners.description")}
@@ -152,7 +152,7 @@ export default function WhoIsItFor() {
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
               <motion.p
-                className="text-base font-normal leading-relaxed transition-colors duration-500"
+                className="text-lg font-light leading-relaxed transition-colors duration-500"
                 style={{ color: "#555555" }}
               >
                 {t("profiles.advisors.description")}

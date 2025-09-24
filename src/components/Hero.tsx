@@ -8,7 +8,7 @@ export default function Hero() {
   const t = useTranslations("hero");
 
   return (
-    <section className="relative h-[80vh] md:h-screen w-full overflow-hidden">
+    <section className="relative h-[100vh] md:h-screen w-full overflow-hidden">
       <div className="absolute inset-0">
         <Image
           src="/png/Hero1.png"

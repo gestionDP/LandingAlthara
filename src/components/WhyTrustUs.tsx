@@ -70,7 +70,7 @@ export default function WhyTrustUs() {
             <div className="h-full">
               <Card className="p-8 h-full flex flex-col hover:scale-105 transition-transform duration-300 ease-out cursor-pointer">
                 <CardContent className="p-0 flex flex-col h-full">
-                  <p className="text-lg font-normal text-black leading-relaxed mb-8 flex-grow">
+                  <p className="text-lg font-light text-black leading-relaxed mb-8 flex-grow">
                     {t("cards.card1.description")}
                   </p>
                   <div className="flex items-center space-x-6 mt-auto">
@@ -99,7 +99,7 @@ export default function WhyTrustUs() {
             <div className="h-full">
               <Card className="p-8 h-full flex flex-col shadow-sm hover:scale-105 transition-transform duration-300 ease-out cursor-pointer">
                 <CardContent className="p-0 flex flex-col h-full">
-                  <p className="text-lg font-normal text-black leading-relaxed mb-8 flex-grow">
+                  <p className="text-lg font-light text-black leading-relaxed mb-8 flex-grow">
                     {t("cards.card2.description")}
                   </p>
                   <div className="flex items-center space-x-6 mt-auto">
@@ -128,7 +128,7 @@ export default function WhyTrustUs() {
             <div className="h-full">
               <Card className="p-8 h-full flex flex-col shadow-sm hover:scale-105 transition-transform duration-300 ease-out cursor-pointer">
                 <CardContent className="p-0 flex flex-col h-full">
-                  <p className="text-lg font-normal text-black leading-relaxed mb-8 flex-grow">
+                  <p className="text-lg font-light text-black leading-relaxed mb-8 flex-grow">
                     {t("cards.card3.description")}
                   </p>
                   <div className="flex items-center space-x-6 mt-auto">

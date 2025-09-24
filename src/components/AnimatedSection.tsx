@@ -47,12 +47,12 @@ export default function AnimatedSection({
   delay = 0,
   duration = 0.8,
   className = "",
-  margin = "-100px",
+  margin = "-50px",
   once = true,
   autoAnimate = false,
 }: AnimatedSectionProps) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once, margin: margin as "-100px" });
+  const isInView = useInView(ref, { once, margin: margin as "-50px" });
 
   return (
     <motion.div
@@ -86,11 +86,11 @@ export function AnimatedSequence({
   delayIncrement = 0.2,
   duration = 0.8,
   className = "",
-  margin = "-100px",
+  margin = "-50px",
   once = true,
 }: AnimatedSequenceProps) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once, margin: margin as "-100px" });
+  const isInView = useInView(ref, { once, margin: margin as "-50px" });
 
   return (
     <div ref={ref} className={className}>
@@ -112,9 +112,9 @@ export function AnimatedSequence({
   );
 }
 
-export function useAnimationInView(margin = "-100px", once = true) {
+export function useAnimationInView(margin = "-50px", once = true) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once, margin: margin as "-100px" });
+  const isInView = useInView(ref, { once, margin: margin as "-50px" });
 
   return { ref, isInView };
 }
