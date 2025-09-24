@@ -5,6 +5,7 @@ import WhatIsAlthara from "@/components/WhatIsAlthara";
 import OurProcess from "@/components/OurProcess";
 import WhoIsItFor from "@/components/WhoIsItFor";
 import WhyTrustUs from "@/components/WhyTrustUs";
+import SuccessCases from "@/components/SuccessCases";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -28,6 +29,8 @@ export default function Home() {
       <div className="py-20">
         <WhyTrustUs />
       </div>
+
+      <SuccessCases />
 
       <Footer />
     </div>

@@ -63,7 +63,7 @@ export default function Navbar() {
             <div className="flex items-center space-x-4">
               <Link
                 href="#como-funciona"
-                className={`text-xs font-medium transition-colors whitespace-nowrap ${
+                className={`text-xs  font-medium transition-colors whitespace-nowrap ${
                   isScrolled
                     ? "text-black hover:text-gray-600"
                     : "text-white hover:text-gray-300"
@@ -110,6 +110,16 @@ export default function Navbar() {
                 }`}
               >
                 {t("menu.whyTrust")}
+              </Link>
+              <Link
+                href="#casos-de-exito"
+                className={`text-xs font-medium transition-colors whitespace-nowrap ${
+                  isScrolled
+                    ? "text-black hover:text-gray-600"
+                    : "text-white hover:text-gray-300"
+                }`}
+              >
+                {t("menu.successCases")}
               </Link>
             </div>
           </div>
@@ -200,6 +210,13 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 {t("menu.whyTrust")}
+              </Link>
+              <Link
+                href="#casos-de-exito"
+                className="text-gray-800 hover:text-althara-primary block px-3 py-3 text-sm font-medium transition-colors border-b border-gray-100"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {t("menu.successCases")}
               </Link>
               <Button
                 onClick={() => {

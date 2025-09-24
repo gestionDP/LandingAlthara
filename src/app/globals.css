@@ -2,11 +2,11 @@
 
 /* Cursor personalizado */
 * {
-  cursor: none !important;
+  cursor: auto;
 }
 
 body {
-  cursor: none !important;
+  cursor: auto;
 }
 
 @theme {

@@ -10,7 +10,8 @@
       "whatIs": "ALTHARA",
       "process": "PROCESS",
       "whoIsItFor": "CLIENTS",
-      "whyTrust": "TRUST"
+      "whyTrust": "TRUST",
+      "successCases": "SUCCESS CASES"
     },
     "contactUs": "CONTACT US"
   },
@@ -136,6 +137,51 @@
         "description": "Every interaction and transaction is managed with maximum professionalism, discretion and a transparent legal process.",
         "title": "Security and trust",
         "subtitle": "Verification and support"
+      }
+    }
+  },
+  "successCases": {
+    "title": "SUCCESS CASES",
+    "labels": {
+      "assetType": "ASSET TYPE",
+      "initialInvestment": "INITIAL INVESTMENT",
+      "time": "TIME",
+      "exitPrice": "EXIT PRICE",
+      "roi": "NET ROI",
+      "operationType": "OPERATION TYPE",
+      "project": "PROJECT",
+      "description": "DESCRIPTION"
+    },
+    "cases": {
+      "case1": {
+        "assetType": "Parking Spaces",
+        "initialInvestment": "76,000 €",
+        "time": "6 months (closed)",
+        "exitPrice": "114,000 € total (19,000 €/unit)",
+        "roi": "50%",
+        "operationType": "Direct intermediation",
+        "projectName": "JOAN RIPOLL I TROBAT",
+        "description": "6 parking spaces in Palma de Mallorca. With a strategic location in a high-demand area and scarce parking supply, these spaces are positioned as a secure investment with revaluation potential."
+      },
+      "case2": {
+        "assetType": "Residential building (14 units)",
+        "initialInvestment": "360,000 €",
+        "time": "1 month + 6 planned (10 units)",
+        "exitPrice": "1,330,000 € (140,000 €/unit)",
+        "roi": "269%",
+        "operationType": "Investment for resale",
+        "projectName": "MATEO DE ALBA, CÁDIZ",
+        "description": "Residential building of 14 homes in Cádiz. Built in 1995, in good condition, represents potential either for resale or exploitation. Strategic area with tourist appeal."
+      },
+      "case3": {
+        "assetType": "Housing (1 floor)",
+        "initialInvestment": "75,000 €",
+        "time": "13 months (closed)",
+        "exitPrice": "180,000 €",
+        "roi": "140%",
+        "operationType": "Investment for resale",
+        "projectName": "JOSEP MARTÍNEZ",
+        "description": "Apartment at Josep Martínez 29, Palma de Mallorca. Housing occupied in a building, where 2 of four floors have been bought by an investor and fully renovated. Area with possibility of high growth in the future."
       }
     }
   },

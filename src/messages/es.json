@@ -10,7 +10,8 @@
       "whatIs": "ALTHARA",
       "process": "PROCESO",
       "whoIsItFor": "CLIENTES",
-      "whyTrust": "CONFIANZA"
+      "whyTrust": "CONFIANZA",
+      "successCases": "CASOS DE ÉXITO"
     },
     "contactUs": "CONTACTAR"
   },
@@ -136,6 +137,51 @@
         "description": "Cada interacción y transacción se gestiona con la máxima profesionalidad, discreción y un proceso legal transparente.",
         "title": "Seguridad y confianza",
         "subtitle": "Verificación y soporte"
+      }
+    }
+  },
+  "successCases": {
+    "title": "CASOS DE ÉXITO",
+    "labels": {
+      "assetType": "TIPO DE ACTIVO",
+      "initialInvestment": "INVERSIÓN INICIAL",
+      "time": "TIEMPO",
+      "exitPrice": "PRECIO DE SALIDA",
+      "roi": "ROI NETO",
+      "operationType": "TIPO OPERACIÓN",
+      "project": "PROYECTO",
+      "description": "DESCRIPCIÓN"
+    },
+    "cases": {
+      "case1": {
+        "assetType": "Plazas de Parkings",
+        "initialInvestment": "76.000 €",
+        "time": "6 meses (cerrado)",
+        "exitPrice": "114.000 € total (19.000 €/ud)",
+        "roi": "50%",
+        "operationType": "Intermediación directa",
+        "projectName": "JOAN RIPOLL I TROBAT",
+        "description": "6 plazas de parkings en Palma de Mallorca. Con una ubicación estratégica en una zona de alta demanda y escasa oferta de estacionamiento, estas plazas se perfilan como una inversión segura y con potencial de revalorización."
+      },
+      "case2": {
+        "assetType": "Edificio residencial (14 uds)",
+        "initialInvestment": "360.000 €",
+        "time": "1 mes + 6 previstos (10uds)",
+        "exitPrice": "1.330.000 € (140.000 €/ud)",
+        "roi": "269%",
+        "operationType": "Inversión para reventa",
+        "projectName": "MATEO DE ALBA, CÁDIZ",
+        "description": "Edificio residencial de 14 viviendas en Cádiz. Construido en 1995, en buen estado, representa un potencial o bien en la reventa o en la explotación del mismo. Zona estratégica de atractivo turístico."
+      },
+      "case3": {
+        "assetType": "Vivienda (1 piso)",
+        "initialInvestment": "75.000 €",
+        "time": "13 meses (cerrado)",
+        "exitPrice": "180.000 €",
+        "roi": "140%",
+        "operationType": "Inversión para reventa",
+        "projectName": "JOSEP MARTÍNEZ",
+        "description": "Piso en Josep Martínez 29, Palma de Mallorca. Vivienda ocupada en un edificio, donde 2 de cuatro pisos han sido comprados por un inversor y reformados en su totalidad. Zona con posibilidad de alto crecimiento en el futuro."
       }
     }
   },

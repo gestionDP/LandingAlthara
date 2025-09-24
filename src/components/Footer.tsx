@@ -8,7 +8,7 @@ export default function Footer() {
   const t = useTranslations("footer");
 
   return (
-    <footer className="bg-white text-black pb-4">
+    <footer className="bg-althara-dark-blue text-white py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-2">
@@ -18,23 +18,23 @@ export default function Footer() {
                 alt="Althara Logo"
                 width={200}
                 height={50}
-                className="h-10 w-auto brightness-0"
+                className="h-10 w-auto brightness-0 invert"
               />
             </div>
-            <p className="text-gray-600 text-sm leading-relaxed max-w-md">
+            <p className="text-white text-sm leading-relaxed max-w-md">
               {t("description")}
             </p>
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-black mb-4 uppercase tracking-wider">
+            <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
               {t("quickLinks.title")}
             </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="#como-funciona"
-                  className="text-gray-600 hover:text-black text-sm transition-colors"
+                  className="text-white hover:text-black text-sm transition-colors"
                 >
                   {t("quickLinks.howItWorks")}
                 </Link>
@@ -42,7 +42,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="#que-es"
-                  className="text-gray-600 hover:text-black text-sm transition-colors"
+                  className="text-white hover:text-black text-sm transition-colors"
                 >
                   {t("quickLinks.whatIs")}
                 </Link>
@@ -50,7 +50,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="#nuestro-proceso"
-                  className="text-gray-600 hover:text-black text-sm transition-colors"
+                  className="text-white hover:text-black text-sm transition-colors"
                 >
                   {t("quickLinks.process")}
                 </Link>
@@ -58,7 +58,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="#para-quien-es"
-                  className="text-gray-600 hover:text-black text-sm transition-colors"
+                  className="text-white hover:text-black text-sm transition-colors"
                 >
                   {t("quickLinks.whoIsItFor")}
                 </Link>
@@ -67,14 +67,14 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-black mb-4 uppercase tracking-wider">
+            <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
               {t("contact.title")}
             </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="mailto:info@althara.com"
-                  className="text-gray-600 hover:text-black text-sm transition-colors"
+                  className="text-white hover:text-black text-sm transition-colors"
                 >
                   {t("contact.email")}
                 </Link>
@@ -82,19 +82,19 @@ export default function Footer() {
               <li>
                 <Link
                   href="tel:+34600000000"
-                  className="text-gray-600 hover:text-black text-sm transition-colors"
+                  className="text-white hover:text-black text-sm transition-colors"
                 >
                   {t("contact.phone")}
                 </Link>
               </li>
-              <li className="text-gray-600 text-sm">{t("contact.location")}</li>
+              <li className="text-white text-sm">{t("contact.location")}</li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-300 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-gray-600 text-sm mb-4 md:mb-0">
+            <div className="text-white text-sm mb-4 md:mb-0">
               {t("copyright")}
             </div>
           </div>
