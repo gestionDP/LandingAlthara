@@ -89,6 +89,34 @@ export default function SuccessCases() {
                     </div>
                   </div>
 
+                  <div className="absolute top-2/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg">
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="text-gray-700"
+                      >
+                        <path
+                          d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M9 22V12H15V22"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6">
                     <h3 className="text-lg font-medium text-white mb-1">
                       ALTHARA
