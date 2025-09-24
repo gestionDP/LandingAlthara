@@ -75,7 +75,7 @@ export default function HowItWorks() {
               </div>
               <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
                 <Image
-                  src="/png/About.png"
+                  src="/png/About.jpg"
                   alt="Professional Meeting"
                   fill
                   className="object-cover"

@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "Althara - Tinder para Activos de Lujo Off-Market",
+    "title": "Althara - Activos de Lujo Off-Market",
     "description": "Plataforma exclusiva que conecta vendedores discretos con compradores cualificados mediante matching inteligente para activos premium. Inmuebles, joyas, arte y más.",
     "keywords": "inversión inmobiliaria, activos premium, coinversión, Mallorca, propiedades de lujo, matching inteligente"
   },
@@ -29,7 +29,7 @@
     "heading": "Descubre Nuestro Proceso de Matching Inteligente",
     "description": {
       "line1": "Althara es la primera plataforma de matching inteligente para activos de lujo off-market.",
-      "line2": "Nuestro algoritmo conecta propietarios con compradores cualificados mediante un proceso verificado y seguro.",
+      "line2": "Nuestro algoritmo conecta proyectos con inversores cualificados mediante un proceso verificado y seguro.",
       "line3": "Con años de experiencia en el sector inmobiliario, nuestro equipo combina tecnología avanzada con conocimiento del mercado para garantizar conexiones exitosas y discretas."
     },
     "stats": {
@@ -59,7 +59,7 @@
       "diff2": {
         "title": "DIFERENCIADOR 2",
         "heading": "Algoritmo\nAvanzado",
-        "description": "Prioriza compatibilidad real según las preferencias y necesidades."
+        "description": "Prioriza compatibilidad real según las preferencias y necesidades. Con los datos proptech más innovadores"
       },
       "diff3": {
         "title": "DIFERENCIADOR 3",
@@ -75,7 +75,7 @@
       "step1": {
         "number": "#01",
         "title": "Verificación Y Perfilado",
-        "description": "Cada usuario, pasa por un riguroso proceso de verificación."
+        "description": "Cada usuario, ya sea propietario o comprador, pasa por un riguroso proceso de verificación. Definimos sus necesidades y preferencias para asegurar un matching preciso y discreto."
       },
       "step2": {
         "number": "#02",

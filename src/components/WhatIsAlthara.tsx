@@ -35,7 +35,6 @@ export default function WhatIsAlthara() {
           baseDelay={0.6}
           delayIncrement={0.2}
         >
-          {/* Primera sección */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
@@ -70,7 +69,7 @@ export default function WhatIsAlthara() {
             <div className="flex gap-4">
               <div className="relative h-80 w-3/5 overflow-hidden">
                 <Image
-                  src="/png/WhatSection.png"
+                  src="/png/WhatSection.jpg"
                   alt="Plataforma Exclusiva"
                   fill
                   className="object-cover"
@@ -78,7 +77,7 @@ export default function WhatIsAlthara() {
               </div>
               <div className="relative h-80 w-2/5 overflow-hidden">
                 <Image
-                  src="/png/WhatSection1.png"
+                  src="/png/WhatSection1.jpg"
                   alt="Plataforma Exclusiva"
                   fill
                   className="object-cover"
@@ -87,10 +86,8 @@ export default function WhatIsAlthara() {
             </div>
           </div>
 
-          {/* Línea divisoria */}
           <div className="h-px bg-gray-200"></div>
 
-          {/* Segunda sección */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
@@ -125,7 +122,7 @@ export default function WhatIsAlthara() {
             <div className="flex gap-4">
               <div className="relative h-80 w-3/5 overflow-hidden">
                 <Image
-                  src="/png/WhatSection2.png"
+                  src="/png/WhatSection2.jpg"
                   alt="Algoritmo Avanzado"
                   fill
                   className="object-cover"
@@ -133,7 +130,7 @@ export default function WhatIsAlthara() {
               </div>
               <div className="relative h-80 w-2/5 overflow-hidden">
                 <Image
-                  src="/png/WhatSection3.png"
+                  src="/png/WhatSection3.jpg"
                   alt="Algoritmo Avanzado"
                   fill
                   className="object-cover"
@@ -142,10 +139,8 @@ export default function WhatIsAlthara() {
             </div>
           </div>
 
-          {/* Línea divisoria */}
           <div className="h-px bg-gray-200"></div>
 
-          {/* Tercera sección */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
@@ -180,7 +175,7 @@ export default function WhatIsAlthara() {
             <div className="flex gap-4">
               <div className="relative h-80 w-3/5 overflow-hidden">
                 <Image
-                  src="/png/WhatSection4.png"
+                  src="/png/WhatSection4.jpg"
                   alt="Intermediación Profesional"
                   fill
                   className="object-cover"
@@ -188,7 +183,7 @@ export default function WhatIsAlthara() {
               </div>
               <div className="relative h-80 w-2/5 overflow-hidden">
                 <Image
-                  src="/png/WhatSection5.png"
+                  src="/png/WhatSection5.jpg"
                   alt="Intermediación Profesional"
                   fill
                   className="object-cover"

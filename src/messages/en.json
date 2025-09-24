@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "title": "Althara - Tinder for Off-Market Luxury Assets",
-    "description": "Exclusive platform connecting discrete sellers with qualified buyers through intelligent matching for premium assets. Real estate, jewelry, art and more.",
+    "title": "Althara - Off-Market Investments Assets",
+    "description": "Exclusive platform connecting discrete sellers with qualified investors through intelligent matching for premium assets. Real estate, jewelry, art and more.",
     "keywords": "real estate investment, premium assets, co-investment, Mallorca, luxury properties, intelligent matching"
   },
   "navbar": {
@@ -28,8 +28,8 @@
     "title": "HOW IT WORKS",
     "heading": "Discover Our Intelligent Matching Process",
     "description": {
-      "line1": "Althara is the first intelligent matching platform for off-market luxury assets.",
-      "line2": "Our algorithm connects owners with qualified buyers through a verified and secure process.",
+      "line1": "Althara is the first intelligent matching platform for off-market investment assets.",
+      "line2": "Our algorithm connects projects with qualified investorsthrough a verified and secure process.",
       "line3": "With years of experience in the real estate sector, our team combines advanced technology with market knowledge to ensure successful and discrete connections."
     },
     "stats": {
@@ -54,12 +54,12 @@
       "diff1": {
         "title": "DIFFERENTIATOR 1",
         "heading": "Exclusive\nPlatform",
-        "description": "We validate and verify every profile, to ensure a precise matching."
+        "description": "We validate and verify every profile and project, to ensure a precise matching."
       },
       "diff2": {
         "title": "DIFFERENTIATOR 2",
         "heading": "Advanced\nAlgorithm",
-        "description": "Prioritizes real compatibility based on preferences and needs."
+        "description": "Prioritizes real compatibility based on preferences and needs. With the most innovative proptech data"
       },
       "diff3": {
         "title": "DIFFERENTIATOR 3",
