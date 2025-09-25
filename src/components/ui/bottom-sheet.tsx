@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const VisuallyHidden = ({ children }: { children: React.ReactNode }) => (
@@ -154,7 +155,13 @@ function BottomSheetContent({
           className="fixed right-8 top-8 z-[70] flex size-12 cursor-pointer items-center justify-center opacity-70 transition-opacity duration-200 hover:opacity-100"
           style={{ pointerEvents: "auto" }}
         >
-          <img src="/svg/closeModal.svg" alt="Cerrar" className="size-12" />
+          <Image
+            src="/svg/closeModal.svg"
+            alt="Cerrar"
+            className="size-12"
+            width={48}
+            height={48}
+          />
         </DialogPrimitive.Close>
       )}
     </DialogPrimitive.Portal>

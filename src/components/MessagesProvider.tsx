@@ -8,7 +8,9 @@ interface MessagesProviderProps {
 }
 
 export default function MessagesProvider({ children }: MessagesProviderProps) {
-  const [messages, setMessages] = useState<any>(null);
+  const [messages, setMessages] = useState<Record<string, unknown> | null>(
+    null
+  );
   const [locale, setLocale] = useState<"es" | "en">("es");
 
   useEffect(() => {
