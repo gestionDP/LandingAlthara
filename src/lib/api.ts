@@ -8,6 +8,7 @@ export interface ContactResponse {
   message?: string;
 }
 
+
 export const contactService = {
   async submitContactForm(formData: ContactFormData): Promise<ContactResponse> {
     try {
