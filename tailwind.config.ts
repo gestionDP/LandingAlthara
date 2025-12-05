@@ -56,12 +56,12 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
         // Colores personalizados de Althara
-        "althara-black": "#0f0f0f",
-        "althara-dark-blue": "#19243c",
-        "althara-primary": "#004aaa",
-        "althara-secondary": "#567eb3",
-        "althara-light-blue": "#95a1b8",
-        "althara-light-gray": "#eef0f4",
+        "althara-black": "#1c3742",
+        "althara-dark-blue": "#102027",
+        "althara-primary": "#1c3742",
+        "althara-secondary": "#102027",
+        "althara-light-blue": "#d9dad7",
+        "althara-light-gray": "#e6e2d7",
       },
       borderRadius: {
         lg: "var(--radius)",

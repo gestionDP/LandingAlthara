@@ -11,33 +11,33 @@ body {
 
 @theme {
   /* Colores personalizados de Althara */
-  --color-althara-black: #0f0f0f;
-  --color-althara-dark-blue: #19243c;
-  --color-althara-primary: #004aaa;
-  --color-althara-secondary: #567eb3;
-  --color-althara-light-blue: #95a1b8;
-  --color-althara-light-gray: #eef0f4;
+  --color-althara-black: #1c3742;
+  --color-althara-dark-blue: #102027;
+  --color-althara-primary: #1c3742;
+  --color-althara-secondary: #102027;
+  --color-althara-light-blue: #d9dad7;
+  --color-althara-light-gray: #e6e2d7;
 
   /* Sistema de colores para shadcn/ui */
-  --color-background: #0f0f0f;
+  --color-background: #1c3742;
   --color-foreground: #ffffff;
-  --color-card: #19243c;
+  --color-card: #102027;
   --color-card-foreground: #ffffff;
-  --color-popover: #19243c;
+  --color-popover: #102027;
   --color-popover-foreground: #ffffff;
-  --color-primary: #004aaa;
+  --color-primary: #1c3742;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #567eb3;
+  --color-secondary: #102027;
   --color-secondary-foreground: #ffffff;
-  --color-muted: #19243c;
-  --color-muted-foreground: #95a1b8;
-  --color-accent: #567eb3;
+  --color-muted: #102027;
+  --color-muted-foreground: #d9dad7;
+  --color-accent: #102027;
   --color-accent-foreground: #ffffff;
   --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
-  --color-border: #95a1b8;
-  --color-input: #95a1b8;
-  --color-ring: #004aaa;
+  --color-border: #d9dad7;
+  --color-input: #d9dad7;
+  --color-ring: #1c3742;
 
   /* Border radius */
   --radius: 0.5rem;
@@ -104,9 +104,9 @@ body {
   }
 
   .althara-glass {
-    background: rgba(25, 36, 60, 0.8);
+    background: rgba(16, 32, 39, 0.8);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(149, 161, 184, 0.1);
+    border: 1px solid rgba(217, 218, 215, 0.1);
   }
 
   .althara-card {
