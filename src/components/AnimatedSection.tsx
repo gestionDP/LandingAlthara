@@ -38,7 +38,7 @@ interface AnimatedSectionProps {
   className?: string;
   margin?: string;
   once?: boolean;
-  autoAnimate?: boolean; // Para animaciones que se ejecutan automáticamente sin scroll
+  autoAnimate?: boolean;
 }
 
 export default function AnimatedSection({

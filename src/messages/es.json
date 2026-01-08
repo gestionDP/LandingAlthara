@@ -10,7 +10,7 @@
       "whatIs": "ALTHARA",
       "process": "PROCESO",
       "whoIsItFor": "CLIENTES",
-      "whyTrust": "CONFIANZA",
+      "whyTrust": "POR QUÉ ALTHARA",
       "successCases": "CASOS DE ÉXITO"
     },
     "contactUs": "CONTACTAR"
@@ -47,24 +47,24 @@
     "title": "QUÉ ES",
     "heading": "Qué es Althara",
     "intro": {
-      "line1": "Althara no es un portal.",
-      "line2": "Es una plataforma privada de conexión inteligente donde:"
+      "line1": "Althara no es un portal. Es una plataforma privada de conexión inteligente donde:",
+      "line2": ""
     },
     "differentiators": {
       "diff1": {
         "title": "DIFERENCIADOR 1",
         "heading": "Plataforma\nExclusiva",
-        "description": "Validamos y verificamos cada perfil, para asegurar un matching preciso."
+        "description": "Validamos y verificamos cada perfil para asegurar un matching preciso."
       },
       "diff2": {
         "title": "DIFERENCIADOR 2",
         "heading": "Algoritmo\nAvanzado",
-        "description": "Prioriza compatibilidad real según las preferencias y necesidades. Con los datos proptech más innovadores"
+        "description": "Prioriza compatibilidad real según preferencias y necesidades con datos proptech innovadores."
       },
       "diff3": {
         "title": "DIFERENCIADOR 3",
         "heading": "Intermediación\nProfesional",
-        "description": "Aseguramos la transparencia y seguridad de la operación. Con soporte legal y seguimiento del proceso."
+        "description": "Aseguramos transparencia y seguridad con soporte legal y seguimiento del proceso."
       }
     }
   },
@@ -75,27 +75,27 @@
       "step1": {
         "number": "#01",
         "title": "Verificación Y Perfilado",
-        "description": "Cada usuario, ya sea propietario o comprador, pasa por un riguroso proceso de verificación. Definimos sus necesidades y preferencias para asegurar un matching preciso y discreto."
+        "description": "Verificación rigurosa de cada usuario. Definimos necesidades y preferencias para un matching preciso y discreto."
       },
       "step2": {
         "number": "#02",
         "title": "Configuración De Preferencias",
-        "description": "Los usuarios definen sus parámetros específicos. Nuestro sistema analiza estas preferencias para identificar compatibilidades automáticamente."
+        "description": "Los usuarios definen sus parámetros. Nuestro sistema analiza y identifica compatibilidades automáticamente."
       },
       "step3": {
         "number": "#03",
         "title": "Matching Inteligente",
-        "description": "Nuestro algoritmo avanzado analiza miles de puntos de datos para identificar las compatibilidades perfectas, conectando oportunidades exclusivas con inversores cualificados."
+        "description": "Nuestro algoritmo analiza miles de datos para identificar compatibilidades perfectas entre oportunidades e inversores."
       },
       "step4": {
         "number": "#04",
         "title": "Conexión Segura Y Asesoramiento",
-        "description": "Una vez que se produce un match, facilitamos la conexión bajo acuerdos de confidencialidad. Nuestro equipo brinda el soporte necesario para asegurar la transparencia y seguridad de la operación."
+        "description": "Facilitamos la conexión bajo acuerdos de confidencialidad con soporte profesional para garantizar transparencia y seguridad."
       },
       "step5": {
         "number": "#05",
         "title": "Cierre De La Oportunidad",
-        "description": "Tras la conexión y el asesoramiento, las partes proceden al cierre de la transacción fuera de la plataforma, con la confianza de haber encontrado la oportunidad."
+        "description": "Las partes proceden al cierre de la transacción con la confianza de haber encontrado la oportunidad ideal."
       }
     }
   },
@@ -157,7 +157,7 @@
         "assetType": "Plazas de Parkings",
         "initialInvestment": "76.000 €",
         "time": "6 meses (cerrado)",
-        "exitPrice": "114.000 € total (19.000 €/ud)",
+        "exitPrice": "114.000)",
         "roi": "50%",
         "operationType": "Intermediación directa",
         "projectName": "JOAN RIPOLL I TROBAT",
@@ -167,7 +167,7 @@
         "assetType": "Edificio residencial (14 uds)",
         "initialInvestment": "360.000 €",
         "time": "1 mes + 6 previstos (10uds)",
-        "exitPrice": "1.330.000 € (140.000 €/ud)",
+        "exitPrice": "1.330.000 € ",
         "roi": "269%",
         "operationType": "Inversión para reventa",
         "projectName": "MATEO DE ALBA, CÁDIZ",

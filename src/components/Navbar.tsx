@@ -1,20 +1,30 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import ContactModal from "./ContactModal";
-import { Button } from "@/components/ui/button";
-import { useScrollEffect } from "@/hooks/useScrollEffect";
-import { useTranslations } from "next-intl";
-import LanguageSwitcher from "./LanguageSwitcher";
+import { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import ContactModal from './ContactModal';
+import { Button } from '@/components/ui/button';
+import { useScrollEffect } from '@/hooks/useScrollEffect';
+import { useTranslations } from 'next-intl';
+import LanguageSwitcher from './LanguageSwitcher';
+
+const navLinks = [
+  { href: '#como-funciona', key: 'menu.howItWorks' },
+  { href: '#que-es', key: 'menu.whatIs' },
+  { href: '#nuestro-proceso', key: 'menu.process' },
+  { href: '#para-quien-es', key: 'menu.whoIsItFor' },
+  { href: '#por-que-confiar', key: 'menu.whyTrust' },
+  { href: '#casos-de-exito', key: 'menu.successCases' },
+];
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isScrolled = useScrollEffect(50);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const t = useTranslations("navbar");
+  const [activeSection, setActiveSection] = useState('');
+  const t = useTranslations('navbar');
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -24,143 +34,153 @@ export default function Navbar() {
   const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
+    const handleScroll = () => {
+      const sections = navLinks.map((link) => link.href.substring(1));
+      const scrollPosition = window.scrollY + 100;
+
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (
+            scrollPosition >= offsetTop &&
+            scrollPosition < offsetTop + offsetHeight
+          ) {
+            setActiveSection(sectionId);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (isMenuOpen) {
         const target = event.target as Element;
-        if (!target.closest("nav")) {
+        if (!target.closest('nav')) {
           setIsMenuOpen(false);
         }
       }
     };
 
     if (isMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
       return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [isMenuOpen]);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && isMenuOpen) {
+      if (event.key === 'Escape' && isMenuOpen) {
         setIsMenuOpen(false);
       }
     };
 
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      const handleScroll = () => setIsMenuOpen(false);
+      window.addEventListener('scroll', handleScroll, { once: true });
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
   }, [isMenuOpen]);
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white shadow-md" : "bg-transparent backdrop-blur-sm"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled
+          ? 'bg-[#e6e2d7] backdrop-blur-md shadow-lg border-b border-gray-100'
+          : 'bg-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-3 items-center h-16">
-          <div className="hidden xl:flex justify-start">
-            <div className="flex items-center space-x-4">
-              <Link
-                href="#como-funciona"
-                className={`text-xs  font-medium transition-colors whitespace-nowrap ${
-                  isScrolled
-                    ? "text-black hover:text-gray-600"
-                    : "text-white hover:text-gray-300"
-                }`}
-              >
-                {t("menu.howItWorks")}
-              </Link>
-              <Link
-                href="#que-es"
-                className={`text-xs font-medium transition-colors whitespace-nowrap ${
-                  isScrolled
-                    ? "text-black hover:text-gray-600"
-                    : "text-white hover:text-gray-300"
-                }`}
-              >
-                {t("menu.whatIs")}
-              </Link>
-              <Link
-                href="#nuestro-proceso"
-                className={`text-xs font-medium transition-colors whitespace-nowrap ${
-                  isScrolled
-                    ? "text-black hover:text-gray-600"
-                    : "text-white hover:text-gray-300"
-                }`}
-              >
-                {t("menu.process")}
-              </Link>
-              <Link
-                href="#para-quien-es"
-                className={`text-xs font-medium transition-colors whitespace-nowrap ${
-                  isScrolled
-                    ? "text-black hover:text-gray-600"
-                    : "text-white hover:text-gray-300"
-                }`}
-              >
-                {t("menu.whoIsItFor")}
-              </Link>
-              <Link
-                href="#por-que-confiar"
-                className={`text-xs font-medium transition-colors whitespace-nowrap ${
-                  isScrolled
-                    ? "text-black hover:text-gray-600"
-                    : "text-white hover:text-gray-300"
-                }`}
-              >
-                {t("menu.whyTrust")}
-              </Link>
-              <Link
-                href="#casos-de-exito"
-                className={`text-xs font-medium transition-colors whitespace-nowrap ${
-                  isScrolled
-                    ? "text-black hover:text-gray-600"
-                    : "text-white hover:text-gray-300"
-                }`}
-              >
-                {t("menu.successCases")}
-              </Link>
-            </div>
-          </div>
-
-          <div className="flex justify-start xl:justify-center">
+        <div className="flex items-center justify-between h-20">
+          <Link
+            href="#"
+            className="flex-shrink-0 z-10 transition-transform duration-300 hover:scale-105"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
             <Image
               src="/svg/logoFull.svg"
               alt="Althara Logo"
-              width={200}
-              height={50}
-              className={`h-10 w-auto transition-all duration-300 ${
-                isScrolled ? "brightness-0" : "brightness-0 invert"
+              width={180}
+              height={45}
+              className={` transition-all duration-500 ${
+                isScrolled ? 'brightness-0' : 'brightness-0 invert'
               }`}
+              priority
             />
+          </Link>
+
+          <div className="hidden lg:flex items-center space-x-1">
+            {navLinks.map((link) => {
+              const sectionId = link.href.substring(1);
+              const isActive = activeSection === sectionId;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 group ${
+                    isScrolled
+                      ? isActive
+                        ? 'text-althara-primary'
+                        : 'text-gray-700 hover:text-althara-primary'
+                      : isActive
+                      ? 'text-white'
+                      : 'text-white/90 hover:text-white'
+                  }`}
+                >
+                  <span className="relative z-10">{t(link.key)}</span>
+                  {isActive && (
+                    <span
+                      className={`absolute inset-0 transition-all duration-300 ${
+                        isScrolled ? 'bg-althara-light-gray/30' : 'bg-white/10'
+                      }`}
+                    />
+                  )}
+                  <span
+                    className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+                      isScrolled ? 'bg-althara-light-gray/20' : 'bg-white/5'
+                    }`}
+                  />
+                </Link>
+              );
+            })}
           </div>
 
-          <div className="hidden xl:flex justify-end items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-3">
             <LanguageSwitcher isScrolled={isScrolled} />
             <Button
               onClick={openModal}
-              variant="ghost"
-              className={`h-auto p-2 bg-transparent hover:bg-transparent text-xs font-medium transition-colors ${
+              className={`h-10 px-6 font-medium transition-all duration-300 ${
                 isScrolled
-                  ? "text-black hover:text-gray-600"
-                  : "text-white hover:text-gray-300"
+                  ? 'bg-althara-primary text-white hover:bg-althara-primary/90 shadow-md hover:shadow-lg'
+                  : 'bg-white/10 text-white backdrop-blur-sm border border-white/20 hover:bg-white/20'
               }`}
             >
-              {t("contactUs")}
+              {t('contactUs')}
             </Button>
           </div>
 
-          <div className="xl:hidden col-start-3 flex justify-end items-center space-x-2">
+          <div className="lg:hidden flex items-center space-x-2">
             <LanguageSwitcher isScrolled={isScrolled} />
             <Button
               onClick={toggleMenu}
               variant="ghost"
               size="icon"
-              className={`h-10 w-10 bg-transparent hover:bg-gray-100 focus:outline-none transition-colors border border-transparent hover:border-gray-300 ${
+              className={`h-10 w-10 transition-all duration-300 ${
                 isScrolled
-                  ? "text-black hover:text-gray-600"
-                  : "text-white hover:text-gray-300"
+                  ? 'text-gray-700 hover:bg-gray-100'
+                  : 'text-white hover:bg-white/10'
               }`}
               aria-label="Toggle menu"
             >
@@ -173,63 +193,41 @@ export default function Navbar() {
           </div>
         </div>
 
-        {isMenuOpen && (
-          <div className="xl:hidden absolute top-full left-0 right-0 z-[60] bg-white/95 backdrop-blur-sm shadow-lg border-t border-gray-200">
-            <div className="px-4 pt-4 pb-6 space-y-2">
-              <Link
-                href="#como-funciona"
-                className="text-gray-800 hover:text-althara-primary block px-3 py-3 text-sm font-medium transition-colors border-b border-gray-100"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t("menu.howItWorks")}
-              </Link>
-              <Link
-                href="#que-es"
-                className="text-gray-800 hover:text-althara-primary block px-3 py-3 text-sm font-medium transition-colors border-b border-gray-100"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t("menu.whatIs")}
-              </Link>
-              <Link
-                href="#nuestro-proceso"
-                className="text-gray-800 hover:text-althara-primary block px-3 py-3 text-sm font-medium transition-colors border-b border-gray-100"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t("menu.process")}
-              </Link>
-              <Link
-                href="#para-quien-es"
-                className="text-gray-800 hover:text-althara-primary block px-3 py-3 text-sm font-medium transition-colors border-b border-gray-100"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t("menu.whoIsItFor")}
-              </Link>
-              <Link
-                href="#por-que-confiar"
-                className="text-gray-800 hover:text-althara-primary block px-3 py-3 text-sm font-medium transition-colors border-b border-gray-100"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t("menu.whyTrust")}
-              </Link>
-              <Link
-                href="#casos-de-exito"
-                className="text-gray-800 hover:text-althara-primary block px-3 py-3 text-sm font-medium transition-colors border-b border-gray-100"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t("menu.successCases")}
-              </Link>
-              <Button
-                onClick={() => {
-                  openModal();
-                  setIsMenuOpen(false);
-                }}
-                className="w-full mt-4"
-              >
-                {t("contactUs")}
-              </Button>
-            </div>
+        <div
+          className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            isMenuOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="py-4 space-y-1 border-t border-gray-200/50 mt-2">
+            {navLinks.map((link) => {
+              const sectionId = link.href.substring(1);
+              const isActive = activeSection === sectionId;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`block px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-althara-primary/10 text-althara-primary'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-althara-primary'
+                  }`}
+                >
+                  {t(link.key)}
+                </Link>
+              );
+            })}
+            <Button
+              onClick={() => {
+                openModal();
+                setIsMenuOpen(false);
+              }}
+              className="w-full mt-4 mx-4 bg-althara-primary text-white hover:bg-althara-primary/90"
+            >
+              {t('contactUs')}
+            </Button>
           </div>
-        )}
+        </div>
       </div>
 
       <ContactModal isOpen={isModalOpen} onClose={closeModal} />
