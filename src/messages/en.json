@@ -150,7 +150,8 @@
       "roi": "NET ROI",
       "operationType": "OPERATION TYPE",
       "project": "PROJECT",
-      "description": "DESCRIPTION"
+      "description": "DESCRIPTION",
+      "closedCase": "CLOSED CASE"
     },
     "cases": {
       "case1": {
@@ -192,7 +193,8 @@
       "howItWorks": "How It Works",
       "whatIs": "What Is Althara",
       "process": "Our Process",
-      "whoIsItFor": "Who Is It For"
+      "whoIsItFor": "Who Is It For",
+      "successCases": "Success Cases"
     },
     "contact": {
       "title": "Contact",

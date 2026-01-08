@@ -18,7 +18,7 @@ export default function Footer() {
                 alt="Althara Logo"
                 width={200}
                 height={50}
-                className="h-10 w-auto brightness-0 invert"
+                className=" brightness-0 invert"
               />
             </div>
             <p className="text-white text-sm leading-relaxed max-w-md">
@@ -61,6 +61,14 @@ export default function Footer() {
                   className="text-white hover:text-black text-sm transition-colors"
                 >
                   {t("quickLinks.whoIsItFor")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#casos-de-exito"
+                  className="text-white hover:text-black text-sm transition-colors"
+                >
+                  {t("quickLinks.successCases")}
                 </Link>
               </li>
             </ul>
