@@ -150,7 +150,8 @@
       "roi": "ROI NETO",
       "operationType": "TIPO OPERACIÓN",
       "project": "PROYECTO",
-      "description": "DESCRIPCIÓN"
+      "description": "DESCRIPCIÓN",
+      "closedCase": "CASO CERRADO"
     },
     "cases": {
       "case1": {
@@ -192,7 +193,8 @@
       "howItWorks": "Cómo Funciona",
       "whatIs": "Qué Es Althara",
       "process": "Nuestro Proceso",
-      "whoIsItFor": "Para Quién Es"
+      "whoIsItFor": "Para Quién Es",
+      "successCases": "Casos de Éxito"
     },
     "contact": {
       "title": "Contacto",

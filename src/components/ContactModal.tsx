@@ -81,7 +81,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             alt="Althara Logo"
             width={200}
             height={50}
-            className="h-12 w-auto"
+      
           />
         </div>
       )}
@@ -153,7 +153,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[500px]">
           <div className="relative overflow-hidden">
             <Image
-              src="/png/Hero.png"
+              src="/jpg/4.jpg"
               alt="Althara - Plataforma de inversión premium"
               fill
               className="object-cover"
