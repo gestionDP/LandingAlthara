@@ -11,7 +11,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Althara - Tinder para Activos de Lujo Off-Market",
+  title: "Althara - Matching Inteligente para Activos de Lujo Off-Market",
   description:
     "Plataforma exclusiva que conecta vendedores discretos con compradores cualificados mediante matching inteligente para activos premium. Inmuebles, joyas, arte y más.",
   keywords:

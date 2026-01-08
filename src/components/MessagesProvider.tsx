@@ -49,7 +49,7 @@ export default function MessagesProvider({ children }: MessagesProviderProps) {
   }, [locale]);
 
   if (!messages) {
-    return <div>Loading...</div>;
+    return null;
   }
 
   return (

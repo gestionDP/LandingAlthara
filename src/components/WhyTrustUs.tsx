@@ -1,161 +1,187 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Image from "next/image";
-import SectionHeader from "./SectionHeader";
-import { Card, CardContent } from "@/components/ui/card";
-import ContactModal from "./ContactModal";
-import AnimatedSection, { AnimatedSequence } from "./AnimatedSection";
-import { useTranslations } from "next-intl";
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import SectionHeader from './SectionHeader';
+import { Card, CardContent } from '@/components/ui/card';
+import ContactModal from './ContactModal';
+import AnimatedSection, { AnimatedSequence } from './AnimatedSection';
+import { useTranslations } from 'next-intl';
+
+const backgroundImages = [
+  '/jpg/14.jpg',
+
+  '/jpg/19.jpg',
+  '/jpg/20.jpg',
+  '/jpg/2.jpg',
+];
 
 export default function WhyTrustUs() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const t = useTranslations("whyTrustUs");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const t = useTranslations('whyTrustUs');
 
-  const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  return (
-    <section id="por-que-confiar" className="bg-white">
-      <div className="relative h-70 overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src="/png/Cta.png"
-            alt="Modern Interior Background"
-            fill
-            className="object-cover"
-          />
-        </div>
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex(
+        (prevIndex) => (prevIndex + 1) % backgroundImages.length
+      );
+    }, 5000);
 
-        <div className="relative z-10 h-full flex flex-col justify-center items-center">
-          <h2 className="text-4xl font-normal text-white text-center mb-8">
-            {t("heading")}
-          </h2>
-          <button
-            onClick={openModal}
-            className="bg-white border border-black text-black px-8 py-3 rounded-full flex items-center hover:bg-gray-50 transition-colors shadow-lg"
-          >
-            <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <section id="por-que-confiar" className="relative overflow-hidden">
+      <div className="absolute inset-0">
+        {backgroundImages.map((src, index) => {
+          const isActive = index === currentImageIndex;
+
+          return (
+            <div
+              key={src}
+              className={`absolute inset-0 transition-opacity duration-[2000ms] ease-in-out ${
+                isActive ? 'opacity-100 z-10' : 'opacity-0 z-0'
+              }`}
+            >
               <Image
-                src="/svg/arrow.svg"
-                alt="Arrow"
-                width={26}
-                height={26}
-                className="text-white"
+                src={src}
+                alt={`Background ${index + 1}`}
+                fill
+                priority={index === 0 || index === 1}
+                className="object-cover"
+                quality={90}
               />
+              <div className="absolute inset-0 bg-althara-dark-blue/75"></div>
             </div>
-            <span className="font-medium ml-3 cursor-pointer">
-              {t("contactButton")}
-            </span>
-          </button>
-        </div>
+          );
+        })}
       </div>
 
-      <AnimatedSection
-        className="py-20 bg-althara-dark-blue"
-        animation="fadeInUp"
-        delay={0.2}
-      >
+      <div className="relative z-10 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimatedSection className="mb-12" animation="fadeInUp" delay={0.4}>
-            <SectionHeader letter="E" title={t("title")} variant="dark" />
+          <AnimatedSection className="mb-16" animation="fadeInUp" delay={0.2}>
+            <SectionHeader letter="E" title={t('title')} variant="dark" />
           </AnimatedSection>
 
           <AnimatedSequence
             className="grid grid-cols-1 lg:grid-cols-3 gap-8"
-            animation="fadeInScale"
-            baseDelay={0.6}
+            animation="fadeInUp"
+            baseDelay={0.4}
             delayIncrement={0.2}
           >
             <div className="h-full">
-              <Card className="p-8 h-full flex flex-col hover:scale-105 transition-transform duration-300 ease-out cursor-pointer">
-                <CardContent className="p-0 flex flex-col h-full">
-                  <p className="text-lg font-light text-black leading-relaxed mb-8 flex-grow">
-                    {t("cards.card1.description")}
-                  </p>
-                  <div className="flex items-center space-x-6 mt-auto">
-                    <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
-                      <Image
-                        src="/svg/logo.svg"
-                        alt="Althara Logo"
-                        width={32}
-                        height={32}
-                        className="text-black"
-                      />
+              <Card
+                className="h-full rounded-none border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+                style={{ backgroundColor: '#e6e2d7' }}
+              >
+                <CardContent className="p-8 flex flex-col h-full">
+                  <div className="mb-6">
+                    <div className="w-12 h-12 bg-althara-dark-blue/10 flex items-center justify-center mb-4">
+                      <svg
+                        className="w-6 h-6 text-althara-dark-blue"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                        />
+                      </svg>
                     </div>
-                    <div>
-                      <div className="text-md font-semibold text-black">
-                        {t("cards.card1.title")}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {t("cards.card1.subtitle")}
-                      </div>
-                    </div>
+                    <h3 className="text-2xl font-semibold text-althara-black mb-2">
+                      {t('cards.card1.title')}
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-4">
+                      {t('cards.card1.subtitle')}
+                    </p>
                   </div>
+                  <p className="text-base font-light text-gray-700 leading-relaxed flex-grow">
+                    {t('cards.card1.description')}
+                  </p>
                 </CardContent>
               </Card>
             </div>
 
             <div className="h-full">
-              <Card className="p-8 h-full flex flex-col shadow-sm hover:scale-105 transition-transform duration-300 ease-out cursor-pointer">
-                <CardContent className="p-0 flex flex-col h-full">
-                  <p className="text-lg font-light text-black leading-relaxed mb-8 flex-grow">
-                    {t("cards.card2.description")}
-                  </p>
-                  <div className="flex items-center space-x-6 mt-auto">
-                    <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
-                      <Image
-                        src="/svg/logo.svg"
-                        alt="Althara Logo"
-                        width={32}
-                        height={32}
-                        className="text-black"
-                      />
+              <Card
+                className="h-full rounded-none border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+                style={{ backgroundColor: '#e6e2d7' }}
+              >
+                <CardContent className="p-8 flex flex-col h-full">
+                  <div className="mb-6">
+                    <div className="w-12 h-12 bg-althara-dark-blue/10 flex items-center justify-center mb-4">
+                      <svg
+                        className="w-6 h-6 text-althara-dark-blue"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                        />
+                      </svg>
                     </div>
-                    <div>
-                      <div className="text-md font-semibold text-black">
-                        {t("cards.card2.title")}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {t("cards.card2.subtitle")}
-                      </div>
-                    </div>
+                    <h3 className="text-2xl font-semibold text-althara-black mb-2">
+                      {t('cards.card2.title')}
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-4">
+                      {t('cards.card2.subtitle')}
+                    </p>
                   </div>
+                  <p className="text-base font-light text-gray-700 leading-relaxed flex-grow">
+                    {t('cards.card2.description')}
+                  </p>
                 </CardContent>
               </Card>
             </div>
 
             <div className="h-full">
-              <Card className="p-8 h-full flex flex-col shadow-sm hover:scale-105 transition-transform duration-300 ease-out cursor-pointer">
-                <CardContent className="p-0 flex flex-col h-full">
-                  <p className="text-lg font-light text-black leading-relaxed mb-8 flex-grow">
-                    {t("cards.card3.description")}
-                  </p>
-                  <div className="flex items-center space-x-6 mt-auto">
-                    <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
-                      <Image
-                        src="/svg/logo.svg"
-                        alt="Althara Logo"
-                        width={32}
-                        height={32}
-                        className="text-black"
-                      />
+              <Card
+                className="h-full rounded-none border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+                style={{ backgroundColor: '#e6e2d7' }}
+              >
+                <CardContent className="p-8 flex flex-col h-full">
+                  <div className="mb-6">
+                    <div className="w-12 h-12 bg-althara-dark-blue/10 rounded-none flex items-center justify-center mb-4">
+                      <svg
+                        className="w-6 h-6 text-althara-dark-blue"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                        />
+                      </svg>
                     </div>
-                    <div>
-                      <div className="text-md font-semibold text-black">
-                        {t("cards.card3.title")}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {t("cards.card3.subtitle")}
-                      </div>
-                    </div>
+                    <h3 className="text-2xl font-semibold text-althara-black mb-2">
+                      {t('cards.card3.title')}
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-4">
+                      {t('cards.card3.subtitle')}
+                    </p>
                   </div>
+                  <p className="text-base font-light text-gray-700 leading-relaxed flex-grow">
+                    {t('cards.card3.description')}
+                  </p>
                 </CardContent>
               </Card>
             </div>
           </AnimatedSequence>
         </div>
-      </AnimatedSection>
+      </div>
 
       <ContactModal isOpen={isModalOpen} onClose={closeModal} />
     </section>

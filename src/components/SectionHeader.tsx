@@ -36,7 +36,7 @@ export default function SectionHeader({
         {title}
       </h2>
       <div
-        className={`flex-1 h-px ${isDark ? "bg-white" : "bg-gray-300"} ml-4`}
+        className={`flex-1 h-px ${isDark ? "bg-white" : "bg-gray-600"} ml-4`}
       ></div>
     </div>
   );

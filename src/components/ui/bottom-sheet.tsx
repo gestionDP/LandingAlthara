@@ -122,7 +122,7 @@ function BottomSheetContent({
 
           {/* Handle para deslizar */}
           <div className="flex justify-center py-3">
-            <div className="h-1 w-12 rounded-full bg-gray-300" />
+            <div className="h-1 w-12 rounded-full bg-gray-600" />
           </div>
 
           <div className="px-4 pb-6">{children}</div>

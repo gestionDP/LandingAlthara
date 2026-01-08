@@ -10,7 +10,7 @@
       "whatIs": "ALTHARA",
       "process": "PROCESS",
       "whoIsItFor": "CLIENTS",
-      "whyTrust": "TRUST",
+      "whyTrust": "WHY ALTHARA",
       "successCases": "SUCCESS CASES"
     },
     "contactUs": "CONTACT US"
@@ -47,24 +47,24 @@
     "title": "WHAT IS",
     "heading": "What is Althara",
     "intro": {
-      "line1": "Althara is not a portal.",
-      "line2": "It's a private intelligent connection platform where:"
+      "line1": "Althara is not a portal. It's a private intelligent connection platform where:",
+      "line2": ""
     },
     "differentiators": {
       "diff1": {
         "title": "DIFFERENTIATOR 1",
         "heading": "Exclusive\nPlatform",
-        "description": "We validate and verify every profile and project, to ensure a precise matching."
+        "description": "We validate and verify every profile and project to ensure precise matching."
       },
       "diff2": {
         "title": "DIFFERENTIATOR 2",
         "heading": "Advanced\nAlgorithm",
-        "description": "Prioritizes real compatibility based on preferences and needs. With the most innovative proptech data"
+        "description": "Prioritizes real compatibility based on preferences and needs with innovative proptech data."
       },
       "diff3": {
         "title": "DIFFERENTIATOR 3",
         "heading": "Professional\nIntermediation",
-        "description": "We ensure the transparency and security of the operation. With legal support and process tracking."
+        "description": "We ensure transparency and security with legal support and process tracking."
       }
     }
   },
@@ -75,27 +75,27 @@
       "step1": {
         "number": "#01",
         "title": "Verification And Profiling",
-        "description": "Every user, whether owner or buyer, goes through a rigorous verification process. We define their needs and preferences to ensure precise and discrete matching."
+        "description": "Rigorous verification of every user. We define needs and preferences for precise and discrete matching."
       },
       "step2": {
         "number": "#02",
         "title": "Preference Configuration",
-        "description": "Owners and buyers define their specific parameters. Our system analyzes these preferences to automatically identify compatibilities."
+        "description": "Users define their parameters. Our system analyzes and automatically identifies compatibilities."
       },
       "step3": {
         "number": "#03",
         "title": "Intelligent Matching",
-        "description": "Our advanced algorithm analyzes thousands of data points to identify perfect compatibilities, connecting exclusive opportunities with qualified investors."
+        "description": "Our algorithm analyzes thousands of data points to identify perfect compatibilities between opportunities and investors."
       },
       "step4": {
         "number": "#04",
         "title": "Secure Connection And Advisory",
-        "description": "Once there's a match, we facilitate the connection under confidentiality agreements. Our team provides the necessary support to ensure transparency and security of the operation."
+        "description": "We facilitate connections under confidentiality agreements with professional support to ensure transparency and security."
       },
       "step5": {
         "number": "#05",
         "title": "Opportunity Closure",
-        "description": "After connection and advisory, the parties proceed to close the transaction outside the platform, confident of having found the ideal opportunity."
+        "description": "Parties proceed to close the transaction confident of having found the ideal opportunity."
       }
     }
   },
@@ -157,7 +157,7 @@
         "assetType": "Parking Spaces",
         "initialInvestment": "76,000 €",
         "time": "6 months (closed)",
-        "exitPrice": "114,000 € total (19,000 €/unit)",
+        "exitPrice": "114,000 € ",
         "roi": "50%",
         "operationType": "Direct intermediation",
         "projectName": "JOAN RIPOLL I TROBAT",
@@ -167,7 +167,7 @@
         "assetType": "Residential building (14 units)",
         "initialInvestment": "360,000 €",
         "time": "1 month + 6 planned (10 units)",
-        "exitPrice": "1,330,000 € (140,000 €/unit)",
+        "exitPrice": "1,330,000 € ",
         "roi": "269%",
         "operationType": "Investment for resale",
         "projectName": "MATEO DE ALBA, CÁDIZ",
