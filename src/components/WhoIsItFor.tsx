@@ -28,7 +28,7 @@ export default function WhoIsItFor() {
   ];
 
   return (
-    <section id="para-quien-es" className="bg-[#e6e2d7] py-20">
+    <section id="para-quien-es" className="bg-[#e6e2d7] pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-16" animation="fadeInUp" delay={0.2}>
           <SectionHeader letter="D" title={t('title')} />
