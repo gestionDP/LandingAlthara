@@ -75,7 +75,7 @@ export default function SuccessCases() {
             <Card
               key={caseItem.id}
               className="h-full rounded-none border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden backdrop-blur-sm flex flex-col p-0 relative"
-              style={{ backgroundColor: 'rgba(230, 226, 215, 0.85)' }}
+              style={{ backgroundColor: 'rgba(16, 32, 39, 0.95)' }}
             >
               {/* Badge de caso cerrado */}
               <div className="absolute top-4 right-4 z-10">
@@ -100,7 +100,7 @@ export default function SuccessCases() {
                 />
                 <div className="absolute top-4 left-4 z-10">
                   <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5">
-                    <span className="text-sm font-medium text-althara-black">
+                    <span className="text-sm font-medium text-[#e6e2d7]">
                       {String(caseItem.id).padStart(2, '0')}/03
                     </span>
                   </div>
@@ -110,36 +110,36 @@ export default function SuccessCases() {
               <CardContent className="p-8 flex flex-col flex-grow">
                 <div className="mb-6">
                   <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-5xl font-normal text-althara-black">
+                    <span className="text-5xl font-normal text-[#e6e2d7]">
                       {caseItem.roi}
                     </span>
                     <span
                       className="text-xs font-medium uppercase tracking-[0.2em]"
-                      style={{ color: 'black' }}
+                      style={{ color: '#e6e2d7' }}
                     >
                       {t('labels.roi')}
                     </span>
                   </div>
-                  <h3 className="text-2xl font-semibold text-althara-black mb-2">
+                  <h3 className="text-2xl font-semibold text-[#e6e2d7] mb-2">
                     {caseItem.projectName}
                   </h3>
-                  <p
-                    className="text-sm font-light leading-relaxed"
-                    style={{ color: '#555555' }}
-                  >
+                    <p
+                      className="text-sm font-light leading-relaxed"
+                      style={{ color: '#e6e2d7' }}
+                    >
                     {caseItem.description}
                   </p>
                 </div>
 
-                <div className="space-y-4 mt-auto pt-6 border-t border-althara-dark-blue/10">
+                <div className="space-y-4 mt-auto pt-6 border-t border-[#e6e2d7]/20">
                   <div className="flex justify-between items-center">
                     <span
-                      className="text-xs font-medium uppercase tracking-[0.2em] text-black"
+                      className="text-xs font-medium uppercase tracking-[0.2em] text-[#e6e2d7]"
                       
                     >
                       {t('labels.initialInvestment')}
                     </span>
-                    <span className="text-sm font-medium text-althara-black">
+                    <span className="text-sm font-medium text-[#e6e2d7]">
                       {caseItem.initialInvestment}
                     </span>
                   </div>
@@ -147,11 +147,11 @@ export default function SuccessCases() {
                   <div className="flex justify-between items-center">
                     <span
                       className="text-xs font-medium uppercase tracking-[0.2em]"
-                      style={{ color: 'black' }}
+                      style={{ color: '#e6e2d7' }}
                     >
                       {t('labels.exitPrice')}
                     </span>
-                    <span className="text-sm font-medium text-althara-black">
+                    <span className="text-sm font-medium text-[#e6e2d7]">
                       {caseItem.exitPrice}
                     </span>
                   </div>
@@ -159,19 +159,19 @@ export default function SuccessCases() {
                   <div className="flex justify-between items-center">
                     <span
                       className="text-xs font-medium uppercase tracking-[0.2em]"
-                      style={{ color: 'black' }}
+                      style={{ color: '#e6e2d7' }}
                     >
                       {t('labels.time')}
                     </span>
-                    <span className="text-sm font-medium text-althara-black">
+                    <span className="text-sm font-medium text-[#e6e2d7]">
                       {caseItem.time}
                     </span>
                   </div>
 
-                  <div className="pt-4 border-t border-althara-dark-blue/10">
+                  <div className="pt-4 border-t border-[#e6e2d7]/20">
                     <span
                       className="text-xs font-light uppercase tracking-[0.1em]"
-                      style={{ color: '#666666' }}
+                      style={{ color: '#e6e2d7' }}
                     >
                       {caseItem.assetType}
                     </span>

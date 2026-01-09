@@ -98,7 +98,7 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled
-          ? 'bg-[#e6e2d7] backdrop-blur-md shadow-lg border-b border-gray-100'
+          ? 'bg-althara-dark-blue backdrop-blur-md shadow-lg border-b border-althara-dark-blue'
           : 'bg-transparent'
       }`}
     >
@@ -115,7 +115,7 @@ export default function Navbar() {
               width={180}
               height={45}
               className={` transition-all duration-500 ${
-                isScrolled ? 'brightness-0' : 'brightness-0 invert'
+                isScrolled ? 'brightness-0 invert' : 'brightness-0 invert'
               }`}
               priority
             />
@@ -132,24 +132,24 @@ export default function Navbar() {
                   className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 group ${
                     isScrolled
                       ? isActive
-                        ? 'text-althara-primary'
-                        : 'text-gray-700 hover:text-althara-primary'
+                        ? 'text-[#e6e2d7]'
+                        : 'text-[#e6e2d7]/80 hover:text-[#e6e2d7]'
                       : isActive
-                      ? 'text-white'
-                      : 'text-white/90 hover:text-white'
+                      ? 'text-[#e6e2d7]'
+                      : 'text-[#e6e2d7]/90 hover:text-[#e6e2d7]'
                   }`}
                 >
                   <span className="relative z-10">{t(link.key)}</span>
                   {isActive && (
                     <span
                       className={`absolute inset-0 transition-all duration-300 ${
-                        isScrolled ? 'bg-althara-light-gray/30' : 'bg-white/10'
+                        isScrolled ? 'bg-[#e6e2d7]/10' : 'bg-[#e6e2d7]/10'
                       }`}
                     />
                   )}
                   <span
                     className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-                      isScrolled ? 'bg-althara-light-gray/20' : 'bg-white/5'
+                      isScrolled ? 'bg-[#e6e2d7]/10' : 'bg-[#e6e2d7]/5'
                     }`}
                   />
                 </Link>
@@ -163,8 +163,8 @@ export default function Navbar() {
               onClick={openModal}
               className={`h-10 px-6 font-medium transition-all duration-300 ${
                 isScrolled
-                  ? 'bg-althara-primary text-white hover:bg-althara-primary/90 shadow-md hover:shadow-lg'
-                  : 'bg-white/10 text-white backdrop-blur-sm border border-white/20 hover:bg-white/20'
+                  ? 'bg-althara-primary text-[#e6e2d7] hover:bg-althara-primary/90 border border-[#e6e2d7]/30 shadow-md hover:shadow-lg'
+                  : 'bg-[#e6e2d7]/10 text-[#e6e2d7] backdrop-blur-sm border border-[#e6e2d7]/20 hover:bg-[#e6e2d7]/20'
               }`}
             >
               {t('contactUs')}
@@ -179,8 +179,8 @@ export default function Navbar() {
               size="icon"
               className={`h-10 w-10 transition-all duration-300 ${
                 isScrolled
-                  ? 'text-gray-700 hover:bg-gray-100'
-                  : 'text-white hover:bg-white/10'
+                  ? 'text-[#e6e2d7] hover:bg-[#e6e2d7]/10'
+                  : 'text-[#e6e2d7] hover:bg-[#e6e2d7]/10'
               }`}
               aria-label="Toggle menu"
             >
@@ -198,7 +198,7 @@ export default function Navbar() {
             isMenuOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
-          <div className="py-4 space-y-1 border-t border-gray-200/50 mt-2">
+          <div className="py-4 space-y-1 border-t border-[#e6e2d7]/20 mt-2">
             {navLinks.map((link) => {
               const sectionId = link.href.substring(1);
               const isActive = activeSection === sectionId;
@@ -209,8 +209,8 @@ export default function Navbar() {
                   onClick={() => setIsMenuOpen(false)}
                   className={`block px-4 py-3 text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? 'bg-althara-primary/10 text-althara-primary'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-althara-primary'
+                      ? 'bg-[#e6e2d7]/10 text-[#e6e2d7]'
+                      : 'text-[#e6e2d7]/80 hover:bg-[#e6e2d7]/10 hover:text-[#e6e2d7]'
                   }`}
                 >
                   {t(link.key)}
@@ -222,7 +222,7 @@ export default function Navbar() {
                 openModal();
                 setIsMenuOpen(false);
               }}
-              className="w-full mt-4 mx-4 bg-althara-primary text-white hover:bg-althara-primary/90"
+              className="w-full mt-4 mx-4 bg-althara-dark-blue text-[#e6e2d7] hover:bg-althara-dark-blue/90"
             >
               {t('contactUs')}
             </Button>

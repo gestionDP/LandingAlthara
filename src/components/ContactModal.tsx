@@ -127,7 +127,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-12 bg-althara-primary hover:bg-althara-primary/90 text-white"
+            className="w-full h-12 bg-althara-dark-blue hover:bg-althara-dark-blue/90 text-[#e6e2d7]"
           >
             {isSubmitting ? t("form.submitting") : t("form.submit")}
           </Button>
@@ -160,7 +160,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             />
             <div className="absolute inset-0 bg-althara-dark-blue/20"></div>
             <div className="absolute inset-0 flex items-center justify-center p-8 lg:p-12">
-              <div className="text-center text-white px-6 lg:px-8">
+              <div className="text-center text-[#e6e2d7] px-6 lg:px-8">
                 <h2 className="text-3xl lg:text-4xl font-light mb-4 leading-tight">
                   {t("joinTitle")}
                 </h2>
@@ -171,7 +171,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             </div>
           </div>
 
-          <div className="p-8 lg:p-12 flex flex-col justify-center bg-white">
+          <div className="p-8 lg:p-12 flex flex-col justify-center bg-althara-dark-blue">
             <FormContent showLogo={true} />
           </div>
         </div>

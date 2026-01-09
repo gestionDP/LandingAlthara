@@ -9,7 +9,7 @@ export default function HowItWorks() {
   const t = useTranslations('howItWorks');
 
   return (
-    <section id="como-funciona" className="bg-[#e6e2d7]">
+    <section id="como-funciona" className="bg-althara-dark-blue">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-12" animation="fadeInUp" delay={0.2}>
           <SectionHeader letter="A" title={t('title')} />
@@ -22,7 +22,7 @@ export default function HowItWorks() {
             delay={0.4}
           >
             <AnimatedSection animation="fadeInUp" delay={0.5}>
-              <h3 className="text-4xl font-normal text-althara-black leading-tight">
+              <h3 className="text-4xl font-normal text-[#e6e2d7] leading-tight">
                 {t('heading')}
               </h3>
             </AnimatedSection>
@@ -35,19 +35,19 @@ export default function HowItWorks() {
             >
               <p
                 className="text-lg font-light leading-relaxed"
-                style={{ color: '#555555' }}
+                style={{ color: '#e6e2d7' }}
               >
                 {t('description.line1')}
               </p>
               <p
                 className="text-lg font-light leading-relaxed"
-                style={{ color: '#555555' }}
+                style={{ color: '#e6e2d7' }}
               >
                 {t('description.line2')}
               </p>
               <p
                 className="text-lg font-light leading-relaxed"
-                style={{ color: '#555555' }}
+                style={{ color: '#e6e2d7' }}
               >
                 {t('description.line3')}
               </p>
@@ -90,18 +90,18 @@ export default function HowItWorks() {
               delayIncrement={0.2}
             >
               <div className="text-left">
-                <div className="text-4xl font-normal text-black mb-2">
+                <div className="text-4xl font-normal text-[#e6e2d7] mb-2">
                   {t('stats.stat1.number')}
                 </div>
-                <p className="text-sm text-gray-600 leading-tight">
+                <p className="text-sm text-[#e6e2d7]/80 leading-tight">
                   {t('stats.stat1.text')}
                 </p>
               </div>
               <div className="text-left">
-                <div className="text-4xl font-normal text-black mb-2">
+                <div className="text-4xl font-normal text-[#e6e2d7] mb-2">
                   {t('stats.stat2.number')}
                 </div>
-                <p className="text-sm text-gray-600 leading-tight">
+                <p className="text-sm text-[#e6e2d7]/80 leading-tight">
                   {t('stats.stat2.text')}
                 </p>
               </div>

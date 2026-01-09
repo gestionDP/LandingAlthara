@@ -9,7 +9,7 @@ export default function WhatIsAlthara() {
   const t = useTranslations('whatIsAlthara');
 
   return (
-    <section id="que-es" className="bg-[#e6e2d7]">
+    <section id="que-es" className="bg-althara-dark-blue">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-16" animation="fadeInLeft" delay={0.2}>
           <SectionHeader letter="B" title={t('title')} />
@@ -30,7 +30,7 @@ export default function WhatIsAlthara() {
                 >
                   {t('differentiators.diff1.title')}
                 </div>
-                <h3 className="text-4xl font-light text-althara-black leading-tight">
+                <h3 className="text-4xl font-light text-[#e6e2d7] leading-tight">
                   {t('differentiators.diff1.heading')
                     .split('\n')
                     .map((line, index) => (
@@ -45,7 +45,7 @@ export default function WhatIsAlthara() {
               <div className="space-y-6">
                 <p
                   className="text-lg font-light leading-relaxed"
-                  style={{ color: '#555555' }}
+                  style={{ color: '#e6e2d7' }}
                 >
                   {t('differentiators.diff1.description')}
                 </p>
@@ -72,7 +72,7 @@ export default function WhatIsAlthara() {
             </div>
           </div>
 
-          <div className="h-px bg-gray-600"></div>
+          <div className="h-px bg-[#e6e2d7]/20"></div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
@@ -83,7 +83,7 @@ export default function WhatIsAlthara() {
                 >
                   {t('differentiators.diff2.title')}
                 </div>
-                <h3 className="text-4xl font-light text-althara-black leading-tight">
+                <h3 className="text-4xl font-light text-[#e6e2d7] leading-tight">
                   {t('differentiators.diff2.heading')
                     .split('\n')
                     .map((line, index) => (
@@ -98,7 +98,7 @@ export default function WhatIsAlthara() {
               <div className="space-y-6">
                 <p
                   className="text-lg font-light leading-relaxed"
-                  style={{ color: '#555555' }}
+                  style={{ color: '#e6e2d7' }}
                 >
                   {t('differentiators.diff2.description')}
                 </p>
@@ -125,7 +125,7 @@ export default function WhatIsAlthara() {
             </div>
           </div>
 
-          <div className="h-px bg-gray-600"></div>
+          <div className="h-px bg-[#e6e2d7]/20"></div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
@@ -136,7 +136,7 @@ export default function WhatIsAlthara() {
                 >
                   {t('differentiators.diff3.title')}
                 </div>
-                <h3 className="text-4xl font-light text-althara-black leading-tight">
+                <h3 className="text-4xl font-light text-[#e6e2d7] leading-tight">
                   {t('differentiators.diff3.heading')
                     .split('\n')
                     .map((line, index) => (
@@ -151,7 +151,7 @@ export default function WhatIsAlthara() {
               <div className="space-y-6">
                 <p
                   className="text-lg font-light leading-relaxed"
-                  style={{ color: '#555555' }}
+                  style={{ color: '#e6e2d7' }}
                 >
                   {t('differentiators.diff3.description')}
                 </p>
