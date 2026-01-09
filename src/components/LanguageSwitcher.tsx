@@ -32,8 +32,8 @@ export default function LanguageSwitcher({
           size="sm"
           className={`h-auto p-2 bg-transparent hover:bg-transparent text-xs font-medium transition-colors ${
             isScrolled
-              ? "text-black hover:text-gray-600"
-              : "text-white hover:text-gray-300"
+              ? "text-[#e6e2d7] hover:text-[#e6e2d7]/80"
+              : "text-[#e6e2d7] hover:text-[#e6e2d7]/80"
           }`}
         >
           <Globe className="h-4 w-4" />
@@ -46,12 +46,12 @@ export default function LanguageSwitcher({
             onClick={() => handleLanguageChange(code as Locale)}
             className={`cursor-pointer font-medium flex items-center justify-between ${
               locale === code
-                ? "bg-gray-100 text-gray-900"
-                : "text-gray-700 hover:text-gray-900"
+                ? "bg-[#e6e2d7]/10 text-[#e6e2d7]"
+                : "text-[#e6e2d7]/80 hover:text-[#e6e2d7]"
             }`}
           >
             <span>{name}</span>
-            {locale === code && <Check className="h-4 w-4 text-gray-600" />}
+            {locale === code && <Check className="h-4 w-4 text-[#e6e2d7]" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

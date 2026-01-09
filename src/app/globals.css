@@ -20,21 +20,21 @@ body {
 
   /* Sistema de colores para shadcn/ui */
   --color-background: #1c3742;
-  --color-foreground: #ffffff;
+  --color-foreground: #e6e2d7;
   --color-card: #102027;
-  --color-card-foreground: #ffffff;
+  --color-card-foreground: #e6e2d7;
   --color-popover: #102027;
-  --color-popover-foreground: #ffffff;
+  --color-popover-foreground: #e6e2d7;
   --color-primary: #1c3742;
-  --color-primary-foreground: #ffffff;
+  --color-primary-foreground: #e6e2d7;
   --color-secondary: #102027;
-  --color-secondary-foreground: #ffffff;
+  --color-secondary-foreground: #e6e2d7;
   --color-muted: #102027;
   --color-muted-foreground: #d9dad7;
   --color-accent: #102027;
-  --color-accent-foreground: #ffffff;
+  --color-accent-foreground: #e6e2d7;
   --color-destructive: #ef4444;
-  --color-destructive-foreground: #ffffff;
+  --color-destructive-foreground: #e6e2d7;
   --color-border: #d9dad7;
   --color-input: #d9dad7;
   --color-ring: #1c3742;
@@ -49,8 +49,8 @@ body {
   }
 
   body {
-    background-color: #e6e2d7;
-    color: hsl(var(--foreground));
+    background-color: #102027;
+    color: #e6e2d7;
     font-family: var(--font-poppins), sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
   }

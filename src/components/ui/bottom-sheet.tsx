@@ -105,7 +105,7 @@ function BottomSheetContent({
           ref={contentRef}
           data-slot="bottom-sheet-content"
           className={cn(
-            "fixed bottom-0 left-0 right-0 z-50 grid w-full transform-gpu bg-white",
+            "fixed bottom-0 left-0 right-0 z-50 grid w-full transform-gpu bg-althara-dark-blue",
             "max-h-[90vh] overflow-y-auto",
             "rounded-t-[20px] border-t border-gray-200",
             "transition-transform duration-200 ease-out",

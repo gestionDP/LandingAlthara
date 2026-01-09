@@ -28,11 +28,11 @@ export default function WhoIsItFor() {
   ];
 
   return (
-    <section id="para-quien-es" className="bg-[#e6e2d7] pb-20">
+    <section id="para-quien-es" className="bg-althara-dark-blue pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-16" animation="fadeInUp" delay={0.2}>
           <SectionHeader letter="D" title={t('title')} />
-          <h2 className="text-4xl font-normal text-althara-black leading-tight mt-6">
+          <h2 className="text-4xl font-normal text-[#e6e2d7] leading-tight mt-6">
             {t('heading')}
           </h2>
         </AnimatedSection>
@@ -60,7 +60,7 @@ export default function WhoIsItFor() {
                 <div className="absolute inset-0 bg-althara-dark-blue/70 group-hover:bg-althara-dark-blue/60 transition-colors duration-300"></div>
               </div>
 
-              <div className="relative z-10 h-full flex flex-col justify-end p-8 text-white">
+              <div className="relative z-10 h-full flex flex-col justify-end p-8 text-[#e6e2d7]">
                 <h3 className="text-3xl font-medium mb-4">
                   {t(`profiles.${profile.key}.title`)}
                 </h3>
