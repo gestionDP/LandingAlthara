@@ -44,38 +44,34 @@ export default function Hero() {
 
       <div className="relative z-10 h-full flex flex-col">
         <div className="flex-1"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-20 md:pb-32 mt-20">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 md:pb-32 mt-20">
           <AnimatedSection animation="fadeInUp" delay={0.4} autoAnimate={true}>
-            <h1 className="text-6xl sm:text-7xl md:text-4xl lg:text-7xl font-normal text-white mb-6 leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-4xl lg:text-7xl font-normal text-white mb-6 leading-tight break-words">
               {t('title')
                 .split('\n')
                 .map((line, index) => (
-                  <span key={index}>
+                  <span key={index} className="block">
                     {line}
-                    {index === 0 && <br />}
                   </span>
                 ))}
             </h1>
           </AnimatedSection>
 
           <AnimatedSection
-            className="space-y-2 mb-6 flex items-start"
+            className="space-y-2 mb-6"
             animation="fadeInUp"
             delay={0.6}
             autoAnimate={true}
           >
-            <div className="w-px h-20 sm:h-24 bg-white mr-6 mt-1"></div>
-            <div className="flex-1">
-              <p className="text-lg sm:text-xl md:text-2xl text-white font-light leading-relaxed">
-                {t('description.line1')}
-              </p>
-              <p className="text-lg sm:text-xl md:text-2xl text-white font-light leading-relaxed">
-                {t('description.line2')}
-              </p>
-              <p className="text-lg sm:text-xl md:text-2xl text-white font-light leading-relaxed">
-                {t('description.line3')}
-              </p>
-            </div>
+            <p className="text-base sm:text-lg md:text-xl text-white font-light leading-relaxed break-words">
+              {t('description.line1')}
+            </p>
+            <p className="text-base sm:text-lg md:text-xl text-white font-light leading-relaxed break-words">
+              {t('description.line2')}
+            </p>
+            <p className="text-base sm:text-lg md:text-xl text-white font-light leading-relaxed break-words">
+              {t('description.line3')}
+            </p>
           </AnimatedSection>
         </div>
       </div>

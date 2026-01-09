@@ -80,7 +80,7 @@
       "step2": {
         "number": "#02",
         "title": "Configuración De Preferencias",
-        "description": "Los usuarios definen sus parámetros. Nuestro sistema analiza y identifica compatibilidades automáticamente."
+        "description": "Los usuarios definen sus parámetros. Nuestro sistema analiza e identifica compatibilidades automáticamente."
       },
       "step3": {
         "number": "#03",
