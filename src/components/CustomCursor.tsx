@@ -62,10 +62,10 @@ export default function CustomCursor() {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 w-12 h-12 border-2 border-black rounded-full pointer-events-none z-[99998]"
+      className="fixed top-0 left-0 pointer-events-none z-[99998]"
       animate={{
-        x: mousePosition.x - 24,
-        y: mousePosition.y - 24,
+        x: mousePosition.x - 30,
+        y: mousePosition.y - 30,
         scale: isHovering ? 0.8 : 1,
       }}
       transition={{
@@ -73,6 +73,13 @@ export default function CustomCursor() {
         stiffness: 150,
         damping: 20,
       }}
-    />
+    >
+      <img
+        src="/svg/Althara-11.svg"
+        alt="Cursor"
+        className="w-[60px] h-[60px]"
+        style={{ transform: "translateZ(0)" }}
+      />
+    </motion.div>
   );
 }

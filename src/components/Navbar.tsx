@@ -11,12 +11,9 @@ import { useTranslations } from 'next-intl';
 import LanguageSwitcher from './LanguageSwitcher';
 
 const navLinks = [
-  { href: '#como-funciona', key: 'menu.howItWorks' },
-  { href: '#que-es', key: 'menu.whatIs' },
-  { href: '#nuestro-proceso', key: 'menu.process' },
-  { href: '#para-quien-es', key: 'menu.whoIsItFor' },
-  { href: '#por-que-confiar', key: 'menu.whyTrust' },
-  { href: '#casos-de-exito', key: 'menu.successCases' },
+  { href: '#sistema', key: 'menu.system' },
+  { href: '#proceso', key: 'menu.process' },
+  { href: '#acceso', key: 'menu.access' },
 ];
 
 export default function Navbar() {
@@ -167,7 +164,7 @@ export default function Navbar() {
                   : 'bg-[#e6e2d7]/10 text-[#e6e2d7] backdrop-blur-sm border border-[#e6e2d7]/20 hover:bg-[#e6e2d7]/20'
               }`}
             >
-              {t('contactUs')}
+              {t('requestAccess')}
             </Button>
           </div>
 
@@ -224,7 +221,7 @@ export default function Navbar() {
               }}
               className="w-full mt-4 mx-4 bg-althara-dark-blue text-[#e6e2d7] hover:bg-althara-dark-blue/90"
             >
-              {t('contactUs')}
+              {t('requestAccess')}
             </Button>
           </div>
         </div>

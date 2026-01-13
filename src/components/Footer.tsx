@@ -21,8 +21,8 @@ export default function Footer() {
                 className=" brightness-0 invert"
               />
             </div>
-            <p className="text-[#e6e2d7] text-sm leading-relaxed max-w-md">
-              {t("description")}
+            <p className="text-[#e6e2d7] text-lg font-light leading-relaxed max-w-md italic">
+              {t("mantra")}
             </p>
           </div>
 
@@ -33,23 +33,15 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="#como-funciona"
+                  href="#sistema"
                   className="text-[#e6e2d7] hover:text-[#e6e2d7]/80 text-sm transition-colors"
                 >
-                  {t("quickLinks.howItWorks")}
+                  {t("quickLinks.system")}
                 </Link>
               </li>
               <li>
                 <Link
-                  href="#que-es"
-                  className="text-[#e6e2d7] hover:text-[#e6e2d7]/80 text-sm transition-colors"
-                >
-                  {t("quickLinks.whatIs")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#nuestro-proceso"
+                  href="#proceso"
                   className="text-[#e6e2d7] hover:text-[#e6e2d7]/80 text-sm transition-colors"
                 >
                   {t("quickLinks.process")}
@@ -57,18 +49,10 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="#para-quien-es"
+                  href="#acceso"
                   className="text-[#e6e2d7] hover:text-[#e6e2d7]/80 text-sm transition-colors"
                 >
-                  {t("quickLinks.whoIsItFor")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#casos-de-exito"
-                  className="text-[#e6e2d7] hover:text-[#e6e2d7]/80 text-sm transition-colors"
-                >
-                  {t("quickLinks.successCases")}
+                  {t("quickLinks.access")}
                 </Link>
               </li>
             </ul>

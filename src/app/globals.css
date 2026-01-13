@@ -51,7 +51,7 @@ body {
   body {
     background-color: #102027;
     color: #e6e2d7;
-    font-family: var(--font-poppins), sans-serif;
+    font-family: var(--font-montserrat), sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -167,7 +167,7 @@ body {
     animation: scaleIn 0.5s ease-out;
   }
 
-  /* Clases de tipografía Poppins */
+  /* Clases de tipografía Montserrat */
   .font-thin {
     font-weight: 100;
   }

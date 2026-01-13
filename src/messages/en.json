@@ -6,115 +6,109 @@
   },
   "navbar": {
     "menu": {
-      "howItWorks": "WORKS",
-      "whatIs": "ALTHARA",
+      "system": "SYSTEM",
       "process": "PROCESS",
-      "whoIsItFor": "CLIENTS",
-      "whyTrust": "WHY ALTHARA",
-      "successCases": "SUCCESS CASES"
+      "access": "ACCESS"
     },
-    "contactUs": "CONTACT US"
+    "requestAccess": "REQUEST ACCESS"
   },
   "hero": {
-    "tagline": "#UNIQUE OPPORTUNITIES",
-    "title": "Where Are the\nReal Opportunities?",
-    "description": {
-      "line1": "Find the best investment opportunities",
-      "line2": "that are not in the public market.",
-      "line3": "Intelligent matching for off-market assets"
-    }
+    "title": "It's not for everyone\nAnd it shows",
+    "subtitle": "Althara detects what isn't seen and coordinates what isn't published",
+    "ctaPrimary": "Request access",
+    "ctaSecondary": "See how it works",
+    "microcopy": "Access by verification. Response only if there's a fit"
   },
   "howItWorks": {
-    "title": "HOW IT WORKS",
-    "heading": "Discover Our Intelligent Matching Process",
-    "description": {
-      "line1": "Althara is the first intelligent matching platform for off-market investment assets.",
-      "line2": "Our algorithm connects projects with qualified investorsthrough a verified and secure process.",
-      "line3": "With years of experience in the real estate sector, our team combines advanced technology with market knowledge to ensure successful and discrete connections."
-    },
-    "stats": {
-      "stat1": {
-        "number": "80%",
-        "text": "of premium real estate market moves off-market"
+    "title": "HOW IT OPERATES",
+    "heading": "A layer. Between the public and the impossible",
+    "description": "Althara filters, connects and coordinates opportunities in a private circuit, with a standard of operational discretion",
+    "pillars": {
+      "filter": {
+        "title": "Filter",
+        "description": "if it enters, it's by criteria"
       },
-      "stat2": {
-        "number": "72h",
-        "text": "Average response time to access requests"
+      "verification": {
+        "title": "Verification",
+        "description": "if it advances, it's because it's real"
+      },
+      "signal": {
+        "title": "Signal",
+        "description": "if it appears, it's relevant"
+      },
+      "closure": {
+        "title": "Closure",
+        "description": "if it opens, it moves"
       }
     }
   },
   "whatIsAlthara": {
     "title": "WHAT IS",
-    "heading": "What is Althara",
-    "intro": {
-      "line1": "Althara is not a portal. It's a private intelligent connection platform where:",
-      "line2": ""
-    },
-    "differentiators": {
-      "diff1": {
-        "title": "DIFFERENTIATOR 1",
-        "heading": "Exclusive\nPlatform",
-        "description": "We validate and verify every profile and project to ensure precise matching."
-      },
-      "diff2": {
-        "title": "DIFFERENTIATOR 2",
-        "heading": "Advanced\nAlgorithm",
-        "description": "Prioritizes real compatibility based on preferences and needs with innovative proptech data."
-      },
-      "diff3": {
-        "title": "DIFFERENTIATOR 3",
-        "heading": "Professional\nIntermediation",
-        "description": "We ensure transparency and security with legal support and process tracking."
-      }
+    "heading": "Althara doesn't explain itself. It's understood when it fits",
+    "description": "No catalog. Just a door. Only criteria, signals and execution",
+    "stack": {
+      "line1": "Less exposure",
+      "line2": "More control",
+      "line3": "Better result"
     }
+  },
+  "rulesOfTheGame": {
+    "title": "RULES OF THE GAME",
+    "heading": "This isn't a place to browse",
+    "rules": {
+      "rule1": "We don't work with volume",
+      "rule2": "We don't work with curiosity",
+      "rule3": "We don't work with public exposure",
+      "rule4": "We work with intention, timing and capacity"
+    },
+    "microcopy": "If it's not your moment, you'll know quickly"
+  },
+  "reveal": {
+    "title": "REVEAL",
+    "heading": "If you need to put a name to it:",
+    "description": "Intelligent matching for off-market luxury assets, with verification and discrete coordination"
+  },
+  "finalCta": {
+    "title": "FINAL CTA",
+    "heading": "If you've made it this far, you probably understand",
+    "description": "Request access. If there's a fit, we open the door",
+    "cta": "Start verification",
+    "microcopy": "No lists. No spam. No exposure."
   },
   "ourProcess": {
     "title": "PROCESS",
-    "heading": "Our matching process",
+    "heading": "Four steps",
     "steps": {
       "step1": {
-        "number": "#01",
-        "title": "Verification And Profiling",
-        "description": "Rigorous verification of every user. We define needs and preferences for precise and discrete matching."
+        "title": "Confidential brief"
       },
       "step2": {
-        "number": "#02",
-        "title": "Preference Configuration",
-        "description": "Users define their parameters. Our system analyzes and automatically identifies compatibilities."
+        "title": "Verification"
       },
       "step3": {
-        "number": "#03",
-        "title": "Intelligent Matching",
-        "description": "Our algorithm analyzes thousands of data points to identify perfect compatibilities between opportunities and investors."
+        "title": "Matching"
       },
       "step4": {
-        "number": "#04",
-        "title": "Secure Connection And Advisory",
-        "description": "We facilitate connections under confidentiality agreements with professional support to ensure transparency and security."
-      },
-      "step5": {
-        "number": "#05",
-        "title": "Opportunity Closure",
-        "description": "Parties proceed to close the transaction confident of having found the ideal opportunity."
+        "title": "Coordination and closure"
       }
-    }
+    },
+    "microcopy": "If we can't add real value, we'll tell you"
   },
   "whoIsItFor": {
     "title": "WHO IS IT FOR",
-    "heading": "Who Is Althara For",
-    "description": "Our platform is designed for verified profiles who value security, efficiency and access to unique opportunities in the off-market assets market.",
+    "heading": "Profiles that operate outside the showcase",
     "profiles": {
       "investors": {
-        "title": "Investors",
-        "description": "For those seeking to diversify their portfolio with unique assets that offer superior appreciation potential to the average."
+        "title": "Investors / buyers",
+        "description": "you seek opportunities with control"
       },
       "owners": {
         "title": "Owners",
-        "description": "For those who opt for qualified buyers to ensure the transparency and security of the operation."
+        "description": "you want to move an asset without exposure"
       },
-      "advisors": {
-        "title": "Advisors",
-        "description": "For professionals who need advanced tools to connect exclusive opportunities with qualified clients."
+      "partners": {
+        "title": "Partners",
+        "description": "you have access, you need method"
       }
     }
   },
@@ -124,17 +118,17 @@
     "title": "WHY ALTHARA",
     "cards": {
       "card1": {
-        "description": "80% of luxury assets are traded discretely. Althara opens the doors to this exclusive market.",
+        "description": "80% of luxury assets are traded discretely. Althara opens the doors to this exclusive market",
         "title": "Privileged access",
         "subtitle": "Unique opportunities"
       },
       "card2": {
-        "description": "Our algorithm connects your preferences with assets that really interest you, saving you time and effort.",
+        "description": "Our algorithm connects your preferences with assets that really interest you, saving you time and effort",
         "title": "Intelligent connection",
         "subtitle": "Define your preferences"
       },
       "card3": {
-        "description": "Every interaction and transaction is managed with maximum professionalism, discretion and a transparent legal process.",
+        "description": "Every interaction and transaction is managed with maximum professionalism, discretion and a transparent legal process",
         "title": "Security and trust",
         "subtitle": "Verification and support"
       }
@@ -162,7 +156,7 @@
         "roi": "50%",
         "operationType": "Direct intermediation",
         "projectName": "JOAN RIPOLL I TROBAT",
-        "description": "6 parking spaces in Palma de Mallorca. With a strategic location in a high-demand area and scarce parking supply, these spaces are positioned as a secure investment with revaluation potential."
+        "description": "6 parking spaces in Palma de Mallorca. With a strategic location in a high-demand area and scarce parking supply, these spaces are positioned as a secure investment with revaluation potential"
       },
       "case2": {
         "assetType": "Residential building (14 units)",
@@ -172,7 +166,7 @@
         "roi": "269%",
         "operationType": "Investment for resale",
         "projectName": "MATEO DE ALBA, CÁDIZ",
-        "description": "Residential building of 14 homes in Cádiz. Built in 1995, in good condition, represents potential either for resale or exploitation. Strategic area with tourist appeal."
+        "description": "Residential building of 14 homes in Cádiz. Built in 1995, in good condition, represents potential either for resale or exploitation. Strategic area with tourist appeal"
       },
       "case3": {
         "assetType": "Housing (1 floor)",
@@ -182,19 +176,17 @@
         "roi": "140%",
         "operationType": "Investment for resale",
         "projectName": "JOSEP MARTÍNEZ",
-        "description": "Apartment at Josep Martínez 29, Palma de Mallorca. Housing occupied in a building, where 2 of four floors have been bought by an investor and fully renovated. Area with possibility of high growth in the future."
+        "description": "Apartment at Josep Martínez 29, Palma de Mallorca. Housing occupied in a building, where 2 of four floors have been bought by an investor and fully renovated. Area with possibility of high growth in the future"
       }
     }
   },
   "footer": {
-    "description": "Private platform connecting owners and investors in singular operations, with structured co-investment and secure processes.",
+    "mantra": "The great things aren't announced. They're coordinated",
     "quickLinks": {
       "title": "Quick Links",
-      "howItWorks": "How It Works",
-      "whatIs": "What Is Althara",
-      "process": "Our Process",
-      "whoIsItFor": "Who Is It For",
-      "successCases": "Success Cases"
+      "system": "System",
+      "process": "Process",
+      "access": "Access"
     },
     "contact": {
       "title": "Contact",
@@ -207,7 +199,7 @@
   "contactModal": {
     "title": "Contact Althara",
     "joinTitle": "Join Althara",
-    "description": "We connect investors and premium asset owners intelligently.",
+    "description": "We connect investors and premium asset owners intelligently",
     "form": {
       "name": "Name *",
       "email": "Email *",
@@ -218,8 +210,8 @@
       "submitting": "Submitting..."
     },
     "messages": {
-      "success": "Perfect! We'll contact you soon.",
-      "error": "Error sending. Please try again."
+      "success": "Perfect! We'll contact you soon",
+      "error": "Error sending. Please try again"
     }
   },
   "common": {

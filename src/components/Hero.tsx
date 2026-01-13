@@ -1,76 +1,46 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import AnimatedSection from './AnimatedSection';
-import { useTranslations } from 'next-intl';
-
-const heroImages = ['/jpg/7.jpg', '/jpg/5.jpg', '/jpg/4.jpg', '/jpg/hero.jpg'];
 
 export default function Hero() {
-  const t = useTranslations('hero');
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <section className="relative h-screen w-full overflow-hidden">
+    <section className="relative h-[100vh] w-full overflow-hidden">
+      {/* Video de fondo */}
       <div className="absolute inset-0">
-        {heroImages.map((src, index) => (
-          <div
-            key={src}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentIndex ? 'opacity-100 z-0' : 'opacity-0 z-[-1]'
-            }`}
-          >
-            <Image
-              src={src}
-              alt={`Hero Background ${index + 1}`}
-              fill
-              priority={index === 0}
-              className="object-cover"
-              quality={90}
-            />
-            <div className="absolute inset-0 bg-black/40"></div>
-          </div>
-        ))}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/videos/hero.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-black/40"></div>
       </div>
 
-      <div className="relative z-10 h-full flex flex-col">
-        <div className="flex-1"></div>
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 md:pb-32">
-          <AnimatedSection animation="fadeInUp" delay={0.4} autoAnimate={true}>
-            <h1 className="text-4xl sm:text-5xl md:text-4xl lg:text-7xl font-normal text-[#e6e2d7] mb-6 leading-tight break-words">
-              {t('title')
-                .split('\n')
-                .map((line, index) => (
-                  <span key={index} className="block">
-                    {line}
-                  </span>
-                ))}
-            </h1>
+      {/* Contenido: Logo centrado y párrafo abajo */}
+      <div className="relative z-10 h-full flex flex-col items-center justify-between py-8 md:py-12">
+        <div className="flex-1 flex items-center justify-center">
+          {/* Logo grande centrado */}
+          <AnimatedSection animation="fadeInUp" delay={0.3} autoAnimate={true}>
+            <Image
+              src="/png/Logo-02.png"
+              alt="Althara Logo"
+              width={1000}
+              height={100}
+              className="w-full max-w-[1000px] md:max-w-[1000px] h-auto"
+              priority
+            />
           </AnimatedSection>
+        </div>
 
-          <AnimatedSection
-            className="space-y-2 mb-6"
-            animation="fadeInUp"
-            delay={0.6}
-            autoAnimate={true}
-          >
-            <p className="text-base sm:text-lg md:text-xl text-[#e6e2d7] font-light leading-relaxed break-words">
-              {t('description.line1')}
-            </p>
-            <p className="text-base sm:text-lg md:text-xl text-[#e6e2d7] font-light leading-relaxed break-words">
-              {t('description.line2')}
-            </p>
-            <p className="text-base sm:text-lg md:text-xl text-[#e6e2d7] font-light leading-relaxed break-words">
-              {t('description.line3')}
+        {/* Párrafo en la parte inferior */}
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 md:pb-12">
+          <AnimatedSection animation="fadeInUp" delay={0.5} autoAnimate={true}>
+            <p className="text-center text-base sm:text-lg md:text-xl lg:text-2xl text-[#e6e2d7] font-light leading-relaxed">
+              Una puerta. No un catálogo.
             </p>
           </AnimatedSection>
         </div>
