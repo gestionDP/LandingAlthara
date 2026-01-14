@@ -105,8 +105,6 @@ export default function SelectedEnvironments() {
                         >
                           {env.label}
                         </div>
-
-                       
                       </div>
                     </motion.div>
                   </div>
