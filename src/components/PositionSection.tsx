@@ -47,32 +47,60 @@ export default function PositionSection() {
   ];
 
   const [active, setActive] = React.useState(0);
+
+  // Hover-pausing (solo desktop real)
   const [isHovering, setIsHovering] = React.useState(false);
+  const hoverTimeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Autoplay gating
   const [allowAuto, setAllowAuto] = React.useState(false);
+
+  // “Prioridad” tras interacción del usuario
   const [userLockedUntil, setUserLockedUntil] = React.useState(0);
-  const hoverTimeout = React.useRef<NodeJS.Timeout | null>(null);
   const lockMs = 9000;
+
+  // Detecta si el dispositivo soporta hover real y pointer fine (evita hover emulado en mobile)
+  const [isFineHover, setIsFineHover] = React.useState(false);
 
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
+
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const fineHover = window.matchMedia('(hover: hover) and (pointer: fine)');
     const desktopFine = window.matchMedia(
-      '(min-width: 1024px) and (pointer: fine)'
+      '(min-width: 1024px) and (hover: hover) and (pointer: fine)'
     );
-    const update = () => setAllowAuto(desktopFine.matches && !reduce.matches);
+
+    const update = () => {
+      setIsFineHover(fineHover.matches);
+      setAllowAuto(desktopFine.matches && !reduce.matches);
+    };
+
     update();
-    desktopFine.addEventListener('change', update);
+
     reduce.addEventListener('change', update);
+    fineHover.addEventListener('change', update);
+    desktopFine.addEventListener('change', update);
+
     return () => {
-      desktopFine.removeEventListener('change', update);
       reduce.removeEventListener('change', update);
+      fineHover.removeEventListener('change', update);
+      desktopFine.removeEventListener('change', update);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    return () => {
+      if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
     };
   }, []);
 
   React.useEffect(() => {
     if (!isRevealed) return;
-    if (isHovering) return;
     if (!allowAuto) return;
+
+    // Pausa si hover real (desktop) o si el usuario tocó/clicó recientemente
+    if (isHovering) return;
     if (Date.now() < userLockedUntil) return;
 
     const id = window.setInterval(() => {
@@ -81,24 +109,36 @@ export default function PositionSection() {
     }, 4200);
 
     return () => window.clearInterval(id);
-  }, [isRevealed, isHovering, panels.length, allowAuto, userLockedUntil]);
+  }, [isRevealed, allowAuto, isHovering, userLockedUntil, panels.length]);
 
   const current = panels[active];
 
   const handleSelect = (idx: number) => {
     setActive(idx);
-    setIsHovering(true);
+
+    // Prioridad para el usuario (en cualquier dispositivo)
     setUserLockedUntil(Date.now() + lockMs);
-    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
-    hoverTimeout.current = setTimeout(() => setIsHovering(false), 2500);
+
+    // Hover-pausing solo si existe hover real (evita problemas en mobile)
+    if (isFineHover) {
+      setIsHovering(true);
+      if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+      hoverTimeout.current = setTimeout(() => setIsHovering(false), 2500);
+    }
   };
 
   return (
     <section
       ref={ref as React.RefObject<HTMLElement>}
       className="relative py-24 lg:py-32 overflow-hidden bg-[#0a0a0a]"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
+      onMouseEnter={() => {
+        if (!isFineHover) return;
+        setIsHovering(true);
+      }}
+      onMouseLeave={() => {
+        if (!isFineHover) return;
+        setIsHovering(false);
+      }}
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="hidden lg:grid absolute inset-0 grid-cols-3">
@@ -190,10 +230,13 @@ export default function PositionSection() {
                       <button
                         key={p.key}
                         type="button"
-                        onMouseEnter={() => handleSelect(idx)}
+                        // Unifica interacción en todos los dispositivos (evita doble firing touch+click)
+                        onPointerDown={(e) => {
+                          // evita click “fantasma” en algunos navegadores
+                          e.preventDefault();
+                          handleSelect(idx);
+                        }}
                         onFocus={() => handleSelect(idx)}
-                        onClick={() => handleSelect(idx)}
-                        onTouchStart={() => handleSelect(idx)}
                         className="w-full text-left"
                         aria-pressed={isActive}
                       >
@@ -211,8 +254,9 @@ export default function PositionSection() {
                           }}
                           className={[
                             'font-playfair leading-[1.08] transition-all duration-300',
+                            // Evita reflow agresivo en mobile: mismo tamaño base; escalado solo en md+
                             isActive
-                              ? 'text-[#e6e2d7] text-3xl md:text-2xl'
+                              ? 'text-[#e6e2d7] text-2xl md:text-2xl'
                               : 'text-[#e6e2d7]/28 text-2xl md:text-xl',
                           ].join(' ')}
                         >
