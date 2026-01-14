@@ -9,7 +9,7 @@ function normalizeLocale(raw?: string | null) {
 }
 
 export default getRequestConfig(async () => {
-  const headerStore = headers();
+  const headerStore = await headers();
   const cookieHeader = headerStore.get("cookie") ?? "";
   const cookieLocale = cookieHeader
     .split(";")
