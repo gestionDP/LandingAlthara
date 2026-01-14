@@ -1,25 +1,31 @@
-import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
-import "./globals.css";
-import CustomCursor from "@/components/CustomCursor";
-import MessagesProvider from "@/components/MessagesProvider";
+import type { Metadata } from 'next';
+import { Montserrat, Playfair_Display } from 'next/font/google';
+import './globals.css';
+import CustomCursor from '@/components/CustomCursor';
+import MessagesProvider from '@/components/MessagesProvider';
 
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-poppins",
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-montserrat',
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800', '900'],
+  variable: '--font-playfair',
 });
 
 export const metadata: Metadata = {
-  title: "Althara - Matching Inteligente para Activos de Lujo Off-Market",
+  title: 'Althara - Matching Inteligente para Activos de Lujo Off-Market',
   description:
-    "Plataforma exclusiva que conecta vendedores discretos con compradores cualificados mediante matching inteligente para activos premium. Inmuebles, joyas, arte y más.",
+    'Plataforma exclusiva que conecta vendedores discretos con compradores cualificados mediante matching inteligente para activos premium. Inmuebles, joyas, arte y más.',
   keywords:
-    "inversión inmobiliaria, activos premium, coinversión, Mallorca, propiedades de lujo, matching inteligente",
+    'inversión inmobiliaria, activos premium, coinversión, Mallorca, propiedades de lujo, matching inteligente',
   icons: {
-    icon: "/svg/logo.svg",
-    shortcut: "/svg/logo.svg",
-    apple: "/svg/logo.svg",
+    icon: '/svg/logo.svg',
+    shortcut: '/svg/logo.svg',
+    apple: '/svg/logo.svg',
   },
 };
 
@@ -30,7 +36,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${poppins.variable} font-poppins antialiased`}>
+      <body
+        className={`${montserrat.variable} ${playfairDisplay.variable} font-montserrat antialiased`}
+      >
         <MessagesProvider>
           <CustomCursor />
           {children}

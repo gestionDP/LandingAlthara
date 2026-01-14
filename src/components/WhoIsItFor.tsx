@@ -21,18 +21,29 @@ export default function WhoIsItFor() {
       alt: 'Propietarios',
     },
     {
-      key: 'advisors',
+      key: 'partners',
       image: '/jpg/18.jpg',
-      alt: 'Asesores',
+      alt: 'Partners',
     },
   ];
 
   return (
-    <section id="para-quien-es" className="bg-althara-dark-blue pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AnimatedSection className="mb-16" animation="fadeInUp" delay={0.2}>
-          <SectionHeader letter="D" title={t('title')} />
-          <h2 className="text-4xl font-normal text-[#e6e2d7] leading-tight mt-6">
+    <section id="para-quien-es" className="relative min-h-[70vh] flex items-center justify-center overflow-hidden py-16">
+      <div className="absolute inset-0">
+        <Image
+          src="/jpg/20.jpg"
+          alt="Background"
+          fill
+          className="object-cover"
+          quality={95}
+        />
+        <div className="absolute inset-0 bg-black/60"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12">
+        <AnimatedSection className="mb-12" animation="fadeInUp" delay={0.2}>
+          <SectionHeader letter="D" title={t('title')} variant="dark" />
+          <h2 className="text-5xl sm:text-6xl md:text-7xl font-light text-[#e6e2d7] leading-tight mt-6 text-center">
             {t('heading')}
           </h2>
         </AnimatedSection>
@@ -57,14 +68,14 @@ export default function WhoIsItFor() {
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-althara-dark-blue/70 group-hover:bg-althara-dark-blue/60 transition-colors duration-300"></div>
+                <div className="absolute inset-0 bg-black/70 group-hover:bg-black/60 transition-colors duration-300"></div>
               </div>
 
               <div className="relative z-10 h-full flex flex-col justify-end p-8 text-[#e6e2d7]">
-                <h3 className="text-3xl font-medium mb-4">
+                <h3 className="text-2xl sm:text-3xl font-medium mb-2">
                   {t(`profiles.${profile.key}.title`)}
                 </h3>
-                <p className="text-base font-light leading-relaxed line-clamp-2">
+                <p className="text-lg sm:text-xl font-light leading-relaxed">
                   {t(`profiles.${profile.key}.description`)}
                 </p>
               </div>

@@ -1,200 +1,185 @@
 {
   "metadata": {
-    "title": "Althara - Activos de Lujo Off-Market",
-    "description": "Plataforma exclusiva que conecta vendedores discretos con compradores cualificados mediante matching inteligente para activos premium. Inmuebles, joyas, arte y más.",
-    "keywords": "inversión inmobiliaria, activos premium, coinversión, Mallorca, propiedades de lujo, matching inteligente"
+    "title": "Althara - Intelligence Layer for Operators",
+    "description": "We read signals. We design private routes. We protect the edge.",
+    "keywords": "intelligence, signals, briefings, operators, private routes, strategic routes"
   },
   "navbar": {
     "menu": {
-      "howItWorks": "FUNCIONA",
-      "whatIs": "ALTHARA",
-      "process": "PROCESO",
-      "whoIsItFor": "CLIENTES",
-      "whyTrust": "POR QUÉ ALTHARA",
-      "successCases": "CASOS DE ÉXITO"
+      "dossiers": "D O S S I E R S",
+      "signals": "S I G N A L S",
+      "method": "M E T H O D",
+      "access": "A C C E S S"
     },
-    "contactUs": "CONTACTAR"
+    "requestAccess": "Request access",
+    "microcopy": {
+      "private": "Private channel.",
+      "curated": "Access is curated."
+    }
   },
   "hero": {
-    "tagline": "#OPORTUNIDADES ÚNICAS",
-    "title": "¿Dónde Están las\nVerdaderas Oportunidades?",
-    "description": {
-      "line1": "Encuentra las mejores oportunidades de",
-      "line2": "inversión que no están en el mercado público.",
-      "line3": "Matching inteligente para activos off-market"
+    "title": "We operate in the non-visible layer.",
+    "subtitle": "We map what moves first: incentives, constraints, and quiet shifts.",
+    "ctaPrimary": "Request access",
+    "ctaSecondary": "See how we work",
+    "microcopy": "By invitation. Limited intake."
+  },
+  "editorialCollage": {
+    "label": "SELECTED FRAGMENTS",
+    "caption": {
+      "line1": "What you see is not the work. It's the surface.",
+      "line2": "Althara builds routes beneath it."
     }
   },
-  "howItWorks": {
-    "title": "CÓMO FUNCIONA",
-    "heading": "Descubre Nuestro Proceso de Matching Inteligente",
-    "description": {
-      "line1": "Althara es la primera plataforma de matching inteligente para activos de lujo off-market.",
-      "line2": "Nuestro algoritmo conecta proyectos con inversores cualificados mediante un proceso verificado y seguro.",
-      "line3": "Con años de experiencia en el sector inmobiliario, nuestro equipo combina tecnología avanzada con conocimiento del mercado para garantizar conexiones exitosas y discretas."
+ "position": {
+  "label": "POSICIÓN",
+  "line1": "Leemos señales.",
+  "line2": "Diseñamos rutas privadas.",
+  "line3": "Protegemos la ventaja.",
+  "paragraph": "Althara es una capa de inteligencia para operadores. No perseguimos tendencias. Anticipamos presión, timing y asimetría.",
+
+  "tab1_title": "Briefings.",
+  "tab1_body": "Inteligencia comprimida para operadores. No opinión: presión, timing y asimetría.",
+  "tab1_item1": "Mapa de señales (macro → micro).",
+  "tab1_item2": "Stress-test de escenarios y efectos de segundo orden.",
+  "tab1_item3": "Ventanas de timing, triggers y restricciones.",
+
+  "tab2_title": "Rutas estratégicas.",
+  "tab2_body": "Caminos privados de la intención a la ejecución—discreción, velocidad y palanca.",
+  "tab2_item1": "Secuenciación: qué se mueve primero.",
+  "tab2_item2": "Diseño de ruta: actores, acceso, dependencias.",
+  "tab2_item3": "Cadencia de ejecución con mínima exposición.",
+
+  "tab3_title": "Frameworks de decisión.",
+  "tab3_body": "Un marco que aguanta la ambigüedad. Decisiones ancladas a downside y asimetría.",
+  "tab3_item1": "Árboles de decisión, umbrales y go/no-go.",
+  "tab3_item2": "Envolvente de riesgo: lógica downside-first.",
+  "tab3_item3": "Checklist operativo para ejecución."
+},
+
+  "trackRecord": {
+    "label": "TRACK RECORD (SELECTED)",
+    "metric1": {
+      "value": "50+",
+      "label": "Markets mapped"
     },
-    "stats": {
-      "stat1": {
-        "number": "80%",
-        "text": "del mercado inmobiliario premium se mueve off-market"
-      },
-      "stat2": {
-        "number": "72h",
-        "text": "Tiempo medio de respuesta a las solicitudes de acceso"
-      }
-    }
-  },
-  "whatIsAlthara": {
-    "title": "QUÉ ES",
-    "heading": "Qué es Althara",
-    "intro": {
-      "line1": "Althara no es un portal. Es una plataforma privada de conexión inteligente donde:",
-      "line2": ""
+    "metric2": {
+      "value": "200+",
+      "label": "Signals tracked"
     },
-    "differentiators": {
-      "diff1": {
-        "title": "DIFERENCIADOR 1",
-        "heading": "Plataforma\nExclusiva",
-        "description": "Validamos y verificamos cada perfil para asegurar un matching preciso."
-      },
-      "diff2": {
-        "title": "DIFERENCIADOR 2",
-        "heading": "Algoritmo\nAvanzado",
-        "description": "Prioriza compatibilidad real según preferencias y necesidades con datos proptech innovadores."
-      },
-      "diff3": {
-        "title": "DIFERENCIADOR 3",
-        "heading": "Intermediación\nProfesional",
-        "description": "Aseguramos transparencia y seguridad con soporte legal y seguimiento del proceso."
-      }
-    }
-  },
-  "ourProcess": {
-    "title": "PROCESO",
-    "heading": "Nuestro proceso de matching",
-    "steps": {
-      "step1": {
-        "number": "#01",
-        "title": "Verificación Y Perfilado",
-        "description": "Verificación rigurosa de cada usuario. Definimos necesidades y preferencias para un matching preciso y discreto."
-      },
-      "step2": {
-        "number": "#02",
-        "title": "Configuración De Preferencias",
-        "description": "Los usuarios definen sus parámetros. Nuestro sistema analiza e identifica compatibilidades automáticamente."
-      },
-      "step3": {
-        "number": "#03",
-        "title": "Matching Inteligente",
-        "description": "Nuestro algoritmo analiza miles de datos para identificar compatibilidades perfectas entre oportunidades e inversores."
-      },
-      "step4": {
-        "number": "#04",
-        "title": "Conexión Segura Y Asesoramiento",
-        "description": "Facilitamos la conexión bajo acuerdos de confidencialidad con soporte profesional para garantizar transparencia y seguridad."
-      },
-      "step5": {
-        "number": "#05",
-        "title": "Cierre De La Oportunidad",
-        "description": "Las partes proceden al cierre de la transacción con la confianza de haber encontrado la oportunidad ideal."
-      }
-    }
-  },
-  "whoIsItFor": {
-    "title": "PARA QUIEN",
-    "heading": "Para Quién Es Althara",
-    "description": "Nuestra plataforma está diseñada para perfiles verificados que valoran la seguridad, la eficiencia y el acceso a oportunidades únicas en el mercado de activos off-market.",
-    "profiles": {
-      "investors": {
-        "title": "Inversores",
-        "description": "Para quienes buscan diversificar su cartera con activos únicos que ofrecen potencial de revalorización superior al promedio."
-      },
-      "owners": {
-        "title": "Propietarios",
-        "description": "Para quienes optan por compradores cualificados para asegurar la transparencia y seguridad de la operación."
-      },
-      "advisors": {
-        "title": "Asesores",
-        "description": "Para profesionales que necesitan herramientas avanzadas para conectar oportunidades exclusivas con clientes cualificados."
-      }
-    }
-  },
-  "whyTrustUs": {
-    "heading": "Por qué confiar en Althara",
-    "contactButton": "CONTACT US",
-    "title": "POR QUÉ ALTHARA",
-    "cards": {
-      "card1": {
-        "description": "El 80% de los activos de lujo se negocian discretamente. Althara te abre las puertas a este mercado exclusivo.",
-        "title": "Acceso privilegiado",
-        "subtitle": "Oportunidades únicas"
-      },
-      "card2": {
-        "description": "Nuestro algoritmo conecta tus preferencias con activos que realmente te interesan, ahorrándote tiempo y esfuerzo.",
-        "title": "Conexión inteligente",
-        "subtitle": "Define tus preferencias"
-      },
-      "card3": {
-        "description": "Cada interacción y transacción se gestiona con la máxima profesionalidad, discreción y un proceso legal transparente.",
-        "title": "Seguridad y confianza",
-        "subtitle": "Verificación y soporte"
-      }
-    }
-  },
-  "successCases": {
-    "title": "CASOS DE ÉXITO",
-    "labels": {
-      "assetType": "TIPO DE ACTIVO",
-      "initialInvestment": "INVERSIÓN INICIAL",
-      "time": "TIEMPO",
-      "exitPrice": "PRECIO DE SALIDA",
-      "roi": "ROI NETO",
-      "operationType": "TIPO OPERACIÓN",
-      "project": "PROYECTO",
-      "description": "DESCRIPCIÓN",
-      "closedCase": "CASO CERRADO"
+    "metric3": {
+      "value": "150+",
+      "label": "Briefings delivered"
     },
-    "cases": {
-      "case1": {
-        "assetType": "Plazas de Parkings",
-        "initialInvestment": "76.000 €",
-        "time": "6 meses (cerrado)",
-        "exitPrice": "114.000)",
-        "roi": "50%",
-        "operationType": "Intermediación directa",
-        "projectName": "JOAN RIPOLL I TROBAT",
-        "description": "6 plazas de parkings en Palma de Mallorca. Con una ubicación estratégica en una zona de alta demanda y escasa oferta de estacionamiento, estas plazas se perfilan como una inversión segura y con potencial de revalorización."
-      },
-      "case2": {
-        "assetType": "Edificio residencial (14 uds)",
-        "initialInvestment": "360.000 €",
-        "time": "1 mes + 6 previstos (10uds)",
-        "exitPrice": "1.330.000 € ",
-        "roi": "269%",
-        "operationType": "Inversión para reventa",
-        "projectName": "MATEO DE ALBA, CÁDIZ",
-        "description": "Edificio residencial de 14 viviendas en Cádiz. Construido en 1995, en buen estado, representa un potencial o bien en la reventa o en la explotación del mismo. Zona estratégica de atractivo turístico."
-      },
-      "case3": {
-        "assetType": "Vivienda (1 piso)",
-        "initialInvestment": "75.000 €",
-        "time": "13 meses (cerrado)",
-        "exitPrice": "180.000 €",
-        "roi": "140%",
-        "operationType": "Inversión para reventa",
-        "projectName": "JOSEP MARTÍNEZ",
-        "description": "Piso en Josep Martínez 29, Palma de Mallorca. Vivienda ocupada en un edificio, donde 2 de cuatro pisos han sido comprados por un inversor y reformados en su totalidad. Zona con posibilidad de alto crecimiento en el futuro."
-      }
+    "metric4": {
+      "value": "30+",
+      "label": "Operators supported"
+    },
+    "footnote": "We don't publish what we protect."
+  },
+  "manifesto": {
+    "statement": "Privacy is architecture.",
+    "subline": "We work upstream."
+  },
+  "featuredDossiers": {
+    "label": "FEATURED DOSSIERS",
+    "dossier1": {
+      "title": "The Quiet Shift",
+      "year": "2026",
+      "description": "Where incentives move before narratives."
+    },
+    "dossier2": {
+      "title": "Capital Gravity",
+      "year": "2025",
+      "description": "Why flows concentrate, then rewrite markets."
+    },
+    "dossier3": {
+      "title": "Second-Order Demand",
+      "year": "2025",
+      "description": "When the real buyer isn't the user."
+    },
+    "cta": "Request a briefing note",
+    "microcopy": "Dossiers are not public."
+  },
+  "method": {
+    "label": "METHOD",
+    "phase1": {
+      "title": "CAPTURE",
+      "bullet1": "We collect weak signals across systems.",
+      "bullet2": "Noise is filtered. Patterns are kept."
+    },
+    "phase2": {
+      "title": "FILTER",
+      "bullet1": "We separate narrative from mechanics.",
+      "bullet2": "We stress-test assumptions."
+    },
+    "phase3": {
+      "title": "MODEL",
+      "bullet1": "We map causality and second-order effects.",
+      "bullet2": "We look for timing, not opinions."
+    },
+    "phase4": {
+      "title": "ROUTE",
+      "bullet1": "We turn insight into action paths.",
+      "bullet2": "Clear decisions. Minimal exposure."
+    },
+    "phase5": {
+      "title": "REVIEW",
+      "bullet1": "We update the model as reality moves.",
+      "bullet2": "Continuous refinement."
+    },
+    "finalLine": "We don't sell certainty. We build advantage."
+  },
+  "selectedEnvironments": {
+    "label": "SELECTED ENVIRONMENTS",
+    "environment1": "Hospitality groups",
+    "environment2": "Real estate operators",
+    "environment3": "Consumer brands",
+    "environment4": "Private investment",
+    "environment5": "Agency networks",
+    "footnote": "Names are shared privately."
+  },
+  "extracts": {
+    "label": "EXTRACTS",
+    "quote1": {
+      "text": "They didn't give us answers. They gave us a map.",
+      "attribution": "Operator — Southern Europe"
+    },
+    "quote2": {
+      "text": "The value was timing. Not information.",
+      "attribution": "Founder — Consumer"
+    },
+    "quote3": {
+      "text": "Finally, a framework that respects privacy.",
+      "attribution": "Partner — Investment"
     }
+  },
+  "briefingNote": {
+    "label": "BRIEFING NOTE",
+    "title": "Signals That Don't Trend (Yet)",
+    "extract": {
+      "line1": "A short list of quiet shifts that precede demand.",
+      "line2": "Updated monthly. Shared privately."
+    },
+    "cta": "Request access to notes",
+    "stamp": "Updated monthly"
+  },
+  "finalCta": {
+    "title": "Access is curated.",
+    "subcopy": {
+      "line1": "If you operate where timing matters, request entry.",
+      "line2": "Limited intake. Private channel."
+    },
+    "cta": "Request access",
+    "microcopy": "No spam. No public list. No noise."
   },
   "footer": {
-    "description": "Plataforma privada que conecta propietarios e inversores en operaciones singulares, con coinversión estructurada y procesos seguros.",
+    "mantra": "Lo grande no se anuncia. Se coordina",
     "quickLinks": {
       "title": "Enlaces Rápidos",
-      "howItWorks": "Cómo Funciona",
-      "whatIs": "Qué Es Althara",
-      "process": "Nuestro Proceso",
-      "whoIsItFor": "Para Quién Es",
-      "successCases": "Casos de Éxito"
+      "system": "Sistema",
+      "process": "Proceso",
+      "access": "Acceso"
     },
     "contact": {
       "title": "Contacto",
@@ -207,7 +192,7 @@
   "contactModal": {
     "title": "Contacta con Althara",
     "joinTitle": "Únete a Althara",
-    "description": "Conectamos inversores y propietarios de activos premium de forma inteligente.",
+    "description": "Conectamos inversores y propietarios de activos premium de forma inteligente",
     "form": {
       "name": "Nombre *",
       "email": "Email *",
@@ -218,8 +203,8 @@
       "submitting": "Enviando..."
     },
     "messages": {
-      "success": "¡Perfecto! Te contactaremos pronto.",
-      "error": "Error al enviar. Inténtalo de nuevo."
+      "success": "¡Perfecto! Te contactaremos pronto",
+      "error": "Error al enviar. Inténtalo de nuevo"
     }
   },
   "common": {

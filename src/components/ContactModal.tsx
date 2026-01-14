@@ -77,7 +77,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
       {showLogo && (
         <div className="flex justify-center mb-6">
           <Image
-            src="/svg/logoFull.svg"
+            src="/svg/logo.svg"
             alt="Althara Logo"
             width={200}
             height={50}
@@ -127,7 +127,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-12 bg-althara-dark-blue hover:bg-althara-dark-blue/90 text-[#e6e2d7]"
+            className="w-full h-12 bg-[#0a0a0a] hover:bg-[#0a0a0a]/90 text-[#e6e2d7]"
           >
             {isSubmitting ? t("form.submitting") : t("form.submit")}
           </Button>

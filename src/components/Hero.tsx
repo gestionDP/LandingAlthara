@@ -1,80 +1,123 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import AnimatedSection from './AnimatedSection';
 import { useTranslations } from 'next-intl';
-
-const heroImages = ['/jpg/7.jpg', '/jpg/5.jpg', '/jpg/4.jpg', '/jpg/hero.jpg'];
+import ContactModal from './ContactModal';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { useReveal } from '@/hooks/useReveal';
+import { motion } from 'framer-motion';
 
 export default function Hero() {
   const t = useTranslations('hero');
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const titleReveal = useReveal({ type: 'text', delay: 0 });
+  const subcopyReveal = useReveal({ type: 'text', delay: 0.1 });
+  const ctasReveal = useReveal({ type: 'text', delay: 0.15 });
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden">
-      <div className="absolute inset-0">
-        {heroImages.map((src, index) => (
-          <div
-            key={src}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentIndex ? 'opacity-100 z-0' : 'opacity-0 z-[-1]'
-            }`}
+    <>
+      <section className="relative h-screen w-full overflow-hidden">
+        <div className="absolute inset-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
           >
-            <Image
-              src={src}
-              alt={`Hero Background ${index + 1}`}
-              fill
-              priority={index === 0}
-              className="object-cover"
-              quality={90}
-            />
-            <div className="absolute inset-0 bg-black/40"></div>
-          </div>
-        ))}
-      </div>
-
-      <div className="relative z-10 h-full flex flex-col">
-        <div className="flex-1"></div>
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 md:pb-32">
-          <AnimatedSection animation="fadeInUp" delay={0.4} autoAnimate={true}>
-            <h1 className="text-4xl sm:text-5xl md:text-4xl lg:text-7xl font-normal text-[#e6e2d7] mb-6 leading-tight break-words">
-              {t('title')
-                .split('\n')
-                .map((line, index) => (
-                  <span key={index} className="block">
-                    {line}
-                  </span>
-                ))}
-            </h1>
-          </AnimatedSection>
-
-          <AnimatedSection
-            className="space-y-2 mb-6"
-            animation="fadeInUp"
-            delay={0.6}
-            autoAnimate={true}
-          >
-            <p className="text-base sm:text-lg md:text-xl text-[#e6e2d7] font-light leading-relaxed break-words">
-              {t('description.line1')}
-            </p>
-            <p className="text-base sm:text-lg md:text-xl text-[#e6e2d7] font-light leading-relaxed break-words">
-              {t('description.line2')}
-            </p>
-            <p className="text-base sm:text-lg md:text-xl text-[#e6e2d7] font-light leading-relaxed break-words">
-              {t('description.line3')}
-            </p>
-          </AnimatedSection>
+            <source src="/videos/hero.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
         </div>
-      </div>
-    </section>
+
+        <div className="relative z-10 h-full flex items-center">
+          <div className="max-w-[1920px] mx-auto px-6 lg:px-12 w-full">
+            <div className="max-w-4xl">
+              <motion.div
+                ref={titleReveal.ref as React.RefObject<HTMLDivElement>}
+                initial={{ opacity: 0, y: 12 }}
+                animate={
+                  titleReveal.isRevealed
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 12 }
+                }
+                transition={titleReveal.animationProps.transition}
+              >
+                <h1 className="font-playfair text-5xl md:text-7xl lg:text-8xl font-normal text-[#e6e2d7] leading-[1.1] mb-6">
+                  {t('title')}
+                </h1>
+              </motion.div>
+
+              <motion.div
+                ref={subcopyReveal.ref as React.RefObject<HTMLDivElement>}
+                initial={{ opacity: 0, y: 12 }}
+                animate={
+                  subcopyReveal.isRevealed
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 12 }
+                }
+                transition={subcopyReveal.animationProps.transition}
+              >
+                <p className="text-lg md:text-xl lg:text-2xl text-[#e6e2d7]/90 font-light leading-relaxed mb-8 max-w-2xl">
+                  {t('subtitle')}
+                </p>
+              </motion.div>
+
+              <motion.div
+                ref={ctasReveal.ref as React.RefObject<HTMLDivElement>}
+                initial={{ opacity: 0, y: 12 }}
+                animate={
+                  ctasReveal.isRevealed
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 12 }
+                }
+                transition={ctasReveal.animationProps.transition}
+                className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6"
+              >
+                <Button
+                  onClick={openModal}
+                  className="h-12 px-8 font-light tracking-editorial text-sm bg-[#e6e2d7] text-[#0a0a0a] hover:bg-[#e6e2d7]/90 transition-all duration-200"
+                >
+                  {t('ctaPrimary')}
+                </Button>
+
+                <button
+                  onClick={() => {
+                    const methodSection = document.getElementById('method');
+                    if (methodSection) {
+                      methodSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="text-[#e6e2d7]/80 hover:text-[#e6e2d7] font-light text-sm transition-all duration-200 underline underline-offset-4 decoration-[#e6e2d7]/30 hover:decoration-[#e6e2d7]/60"
+                >
+                  {t('ctaSecondary')}
+                </button>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={
+                  ctasReveal.isRevealed ? { opacity: 1 } : { opacity: 0 }
+                }
+                transition={{ delay: 0.2, duration: 0.55 }}
+              >
+                <p className="text-xs text-[#e6e2d7]/50 font-light tracking-wide-editorial">
+                  {t('microcopy')}
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 opacity-30">
+          <div className="w-px h-12 bg-[#e6e2d7]/30"></div>
+        </div>
+      </section>
+
+      <ContactModal isOpen={isModalOpen} onClose={closeModal} />
+    </>
   );
 }

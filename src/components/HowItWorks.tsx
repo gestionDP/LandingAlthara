@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import SectionHeader from './SectionHeader';
 import AnimatedSection, { AnimatedSequence } from './AnimatedSection';
 import { useTranslations } from 'next-intl';
 
@@ -9,105 +8,73 @@ export default function HowItWorks() {
   const t = useTranslations('howItWorks');
 
   return (
-    <section id="como-funciona" className="bg-althara-dark-blue">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AnimatedSection className="mb-12" animation="fadeInUp" delay={0.2}>
-          <SectionHeader letter="A" title={t('title')} />
+    <section
+      id="acceso"
+      className="relative min-h-[70vh] flex items-center justify-center overflow-hidden py-16"
+    >
+      <div className="absolute inset-0">
+        <Image
+          src="/jpg/3.jpg"
+          alt="Background"
+          fill
+          className="object-cover"
+          quality={95}
+        />
+        <div className="absolute inset-0 bg-black/70"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12">
+        <AnimatedSection animation="fadeInUp" delay={0.2}>
+          <h2 className="text-5xl sm:text-6xl md:text-7xl font-light text-[#e6e2d7] leading-tight tracking-tight text-center mb-8">
+            {t('heading')}
+          </h2>
         </AnimatedSection>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start overflow-hidden">
-          <AnimatedSection
-            className="space-y-8"
-            animation="fadeInUp"
-            delay={0.4}
-          >
-            <AnimatedSection animation="fadeInUp" delay={0.5}>
-              <h3 className="text-4xl font-normal text-[#e6e2d7] leading-tight">
-                {t('heading')}
-              </h3>
-            </AnimatedSection>
+        <AnimatedSection animation="fadeInUp" delay={0.4}>
+          <p className="text-xl sm:text-2xl md:text-3xl font-light text-[#e6e2d7]/90 leading-relaxed text-center max-w-3xl mx-auto mb-12">
+            {t('description')}
+          </p>
+        </AnimatedSection>
 
-            <AnimatedSequence
-              className="space-y-6"
-              animation="fadeInUp"
-              baseDelay={0.6}
-              delayIncrement={0.2}
-            >
-              <p
-                className="text-lg font-light leading-relaxed"
-                style={{ color: '#e6e2d7' }}
-              >
-                {t('description.line1')}
-              </p>
-              <p
-                className="text-lg font-light leading-relaxed"
-                style={{ color: '#e6e2d7' }}
-              >
-                {t('description.line2')}
-              </p>
-              <p
-                className="text-lg font-light leading-relaxed"
-                style={{ color: '#e6e2d7' }}
-              >
-                {t('description.line3')}
-              </p>
-            </AnimatedSequence>
-          </AnimatedSection>
-
-          <AnimatedSection
-            className="space-y-8"
-            animation="fadeInUp"
-            delay={0.6}
-          >
-            <AnimatedSequence
-              className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 overflow-hidden"
-              animation="fadeInUp"
-              baseDelay={0.8}
-              delayIncrement={0.2}
-            >
-              <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
-                <Image
-                  src="/jpg/3.jpg"
-                  alt="Modern Building Facade"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
-                <Image
-                  src="/png/About.jpg"
-                  alt="Professional Meeting"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </AnimatedSequence>
-
-            <AnimatedSequence
-              className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 overflow-hidden"
-              animation="fadeInUp"
-              baseDelay={1.2}
-              delayIncrement={0.2}
-            >
-              <div className="text-left">
-                <div className="text-4xl font-normal text-[#e6e2d7] mb-2">
-                  {t('stats.stat1.number')}
-                </div>
-                <p className="text-sm text-[#e6e2d7]/80 leading-tight">
-                  {t('stats.stat1.text')}
-                </p>
-              </div>
-              <div className="text-left">
-                <div className="text-4xl font-normal text-[#e6e2d7] mb-2">
-                  {t('stats.stat2.number')}
-                </div>
-                <p className="text-sm text-[#e6e2d7]/80 leading-tight">
-                  {t('stats.stat2.text')}
-                </p>
-              </div>
-            </AnimatedSequence>
-          </AnimatedSection>
-        </div>
+        <AnimatedSequence
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10"
+          animation="fadeInUp"
+          baseDelay={0.6}
+          delayIncrement={0.15}
+        >
+          <div className="space-y-3 text-center">
+            <h3 className="text-3xl sm:text-4xl font-light text-[#e6e2d7] mb-3">
+              {t('pillars.filter.title')}
+            </h3>
+            <p className="text-lg sm:text-xl font-light text-[#e6e2d7]/80 leading-relaxed">
+              {t('pillars.filter.description')}
+            </p>
+          </div>
+          <div className="space-y-3 text-center">
+            <h3 className="text-3xl sm:text-4xl font-light text-[#e6e2d7] mb-3">
+              {t('pillars.verification.title')}
+            </h3>
+            <p className="text-lg sm:text-xl font-light text-[#e6e2d7]/80 leading-relaxed">
+              {t('pillars.verification.description')}
+            </p>
+          </div>
+          <div className="space-y-3 text-center">
+            <h3 className="text-3xl sm:text-4xl font-light text-[#e6e2d7] mb-3">
+              {t('pillars.signal.title')}
+            </h3>
+            <p className="text-lg sm:text-xl font-light text-[#e6e2d7]/80 leading-relaxed">
+              {t('pillars.signal.description')}
+            </p>
+          </div>
+          <div className="space-y-3 text-center">
+            <h3 className="text-3xl sm:text-4xl font-light text-[#e6e2d7] mb-3">
+              {t('pillars.closure.title')}
+            </h3>
+            <p className="text-lg sm:text-xl font-light text-[#e6e2d7]/80 leading-relaxed">
+              {t('pillars.closure.description')}
+            </p>
+          </div>
+        </AnimatedSequence>
       </div>
     </section>
   );
