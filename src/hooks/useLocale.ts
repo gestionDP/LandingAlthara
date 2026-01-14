@@ -7,14 +7,23 @@ export type Locale = "es" | "en";
 export function useLocale() {
   const [locale, setLocale] = useState<Locale>("es");
 
+  const detectLocale = (): Locale => {
+    const savedLocale = localStorage.getItem("locale") as Locale | null;
+    if (savedLocale === "es" || savedLocale === "en") return savedLocale;
+
+    const cookieLocale = document.cookie
+      .split(";")
+      .map((c) => c.trim())
+      .find((c) => c.startsWith("locale="))
+      ?.split("=")[1] as Locale | undefined;
+    if (cookieLocale === "es" || cookieLocale === "en") return cookieLocale;
+
+    const browserLang = navigator.language.split("-")[0];
+    return browserLang === "en" ? "en" : "es";
+  };
+
   useEffect(() => {
-    const savedLocale = localStorage.getItem("locale") as Locale;
-    if (savedLocale && (savedLocale === "es" || savedLocale === "en")) {
-      setLocale(savedLocale);
-    } else {
-      const browserLang = navigator.language.split("-")[0];
-      setLocale(browserLang === "en" ? "en" : "es");
-    }
+    setLocale(detectLocale());
   }, []);
 
   const changeLocale = (newLocale: Locale) => {
@@ -29,6 +38,12 @@ export function useLocale() {
 
     window.location.reload();
   };
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = locale;
+    }
+  }, [locale]);
 
   return { locale, changeLocale };
 }

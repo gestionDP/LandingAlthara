@@ -94,8 +94,8 @@ export default function SelectedEnvironments() {
                           className={[
                             'font-playfair font-normal leading-[1.05]',
                             isActive
-                              ? 'text-[26px] sm:text-[30px] md:text-[34px] lg:text-[38px] text-white'
-                              : 'text-[20px] sm:text-[22px] md:text-[26px] lg:text-[28px] text-white/75',
+                              ? 'text-[20px] sm:text-[20px] md:text-[24px] lg:text-[24px] text-white'
+                              : 'text-[20px] sm:text-[20px] md:text-[24px] lg:text-[24px] text-white/75',
                           ].join(' ')}
                           style={{
                             textShadow: isActive
@@ -106,22 +106,7 @@ export default function SelectedEnvironments() {
                           {env.label}
                         </div>
 
-                        <AnimatePresence>
-                          {isActive && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 6 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: 6 }}
-                              transition={{
-                                duration: 0.25,
-                                ease: [0.16, 1, 0.3, 1],
-                              }}
-                              className="mt-2 text-[11px] tracking-[0.28em] text-white/55"
-                            >
-                              SELECTED /0{idx + 1}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                       
                       </div>
                     </motion.div>
                   </div>

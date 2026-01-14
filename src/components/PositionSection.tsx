@@ -48,19 +48,50 @@ export default function PositionSection() {
 
   const [active, setActive] = React.useState(0);
   const [isHovering, setIsHovering] = React.useState(false);
+  const [allowAuto, setAllowAuto] = React.useState(false);
+  const [userLockedUntil, setUserLockedUntil] = React.useState(0);
+  const hoverTimeout = React.useRef<NodeJS.Timeout | null>(null);
+  const lockMs = 9000;
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const desktopFine = window.matchMedia(
+      '(min-width: 1024px) and (pointer: fine)'
+    );
+    const update = () => setAllowAuto(desktopFine.matches && !reduce.matches);
+    update();
+    desktopFine.addEventListener('change', update);
+    reduce.addEventListener('change', update);
+    return () => {
+      desktopFine.removeEventListener('change', update);
+      reduce.removeEventListener('change', update);
+    };
+  }, []);
 
   React.useEffect(() => {
     if (!isRevealed) return;
     if (isHovering) return;
+    if (!allowAuto) return;
+    if (Date.now() < userLockedUntil) return;
 
     const id = window.setInterval(() => {
+      if (Date.now() < userLockedUntil) return;
       setActive((prev) => (prev + 1) % panels.length);
     }, 4200);
 
     return () => window.clearInterval(id);
-  }, [isRevealed, isHovering, panels.length]);
+  }, [isRevealed, isHovering, panels.length, allowAuto, userLockedUntil]);
 
   const current = panels[active];
+
+  const handleSelect = (idx: number) => {
+    setActive(idx);
+    setIsHovering(true);
+    setUserLockedUntil(Date.now() + lockMs);
+    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    hoverTimeout.current = setTimeout(() => setIsHovering(false), 2500);
+  };
 
   return (
     <section
@@ -159,9 +190,10 @@ export default function PositionSection() {
                       <button
                         key={p.key}
                         type="button"
-                        onMouseEnter={() => setActive(idx)}
-                        onFocus={() => setActive(idx)}
-                        onClick={() => setActive(idx)}
+                        onMouseEnter={() => handleSelect(idx)}
+                        onFocus={() => handleSelect(idx)}
+                        onClick={() => handleSelect(idx)}
+                        onTouchStart={() => handleSelect(idx)}
                         className="w-full text-left"
                         aria-pressed={isActive}
                       >
@@ -238,7 +270,7 @@ export default function PositionSection() {
                       <div>
                         <div className="flex items-center gap-3">
                           <span className="text-xs tracking-[0.28em] text-[#e6e2d7]/35">
-                            OUTPUT
+                            {t('outputLabel')}
                           </span>
                           <span className="h-px w-10 bg-[#e6e2d7]/12" />
                         </div>
@@ -283,8 +315,7 @@ export default function PositionSection() {
                 </div>
 
                 <div className="mt-3 text-[11px] tracking-wide text-[#e6e2d7]/25">
-                  {isHovering ? 'Paused' : 'Autoplay'} · Hover or tap to
-                  navigate
+                  {isHovering ? t('progress.paused') : t('progress.autoplay')}
                 </div>
               </div>
             </div>

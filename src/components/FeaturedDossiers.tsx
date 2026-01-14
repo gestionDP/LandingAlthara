@@ -15,6 +15,26 @@ export default function FeaturedDossiers() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const hoverTimeout = React.useRef<NodeJS.Timeout | null>(null);
+  const [allowAuto, setAllowAuto] = useState(false);
+  const [userLockedUntil, setUserLockedUntil] = useState(0);
+  const lockMs = 9000;
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const desktopFine = window.matchMedia(
+      '(min-width: 1024px) and (pointer: fine)'
+    );
+    const update = () => setAllowAuto(desktopFine.matches && !reduce.matches);
+    update();
+    desktopFine.addEventListener('change', update);
+    reduce.addEventListener('change', update);
+    return () => {
+      desktopFine.removeEventListener('change', update);
+      reduce.removeEventListener('change', update);
+    };
+  }, []);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -48,6 +68,16 @@ export default function FeaturedDossiers() {
 
   const current = dossiers[activeIndex];
 
+  React.useEffect(() => {
+    if (!isRevealed) return;
+    if (!allowAuto) return;
+    const timer = window.setInterval(() => {
+      if (Date.now() < userLockedUntil) return;
+      setActiveIndex((prev) => (prev + 1) % dossiers.length);
+    }, 4200);
+    return () => window.clearInterval(timer);
+  }, [dossiers.length, isRevealed, userLockedUntil, allowAuto]);
+
   const bgImage = '/jpg/34.png';
 
   const lensPos = [
@@ -56,7 +86,14 @@ export default function FeaturedDossiers() {
     { x: 0.42, y: 0.72 },
   ][activeIndex];
 
-  const setActive = (index: number) => setActiveIndex(index);
+  const lockAutoTemporarily = () => setUserLockedUntil(Date.now() + lockMs);
+
+  const setActive = (index: number) => {
+    setActiveIndex(index);
+    lockAutoTemporarily();
+    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    hoverTimeout.current = setTimeout(() => lockAutoTemporarily(), lockMs / 3);
+  };
 
   return (
     <>
@@ -97,7 +134,7 @@ export default function FeaturedDossiers() {
                 </p>
 
                 <p className="mt-2 text-[11px] tracking-[0.22em] text-[#e6e2d7]/45 md:hidden">
-                  TAP TO SWITCH
+                  {t('tapToSwitch')}
                 </p>
               </div>
 
@@ -146,7 +183,7 @@ export default function FeaturedDossiers() {
                   <div className="absolute left-5 right-5 sm:left-6 sm:right-6 bottom-5 sm:bottom-6">
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-xs tracking-[0.28em] text-[#e6e2d7]/60">
-                        DOSSIER /{current.n}
+                        {t('dossierTag')} /{current.n}
                       </span>
                       <span className="h-px w-10 bg-[#e6e2d7]/20" />
                       <span className="text-xs tracking-[0.18em] text-[#e6e2d7]/45">
@@ -195,6 +232,7 @@ export default function FeaturedDossiers() {
                           onMouseEnter={() => setActive(index)}
                           onFocus={() => setActive(index)}
                           onClick={() => setActive(index)}
+                          onTouchStart={() => setActive(index)}
                           aria-pressed={isActive}
                           initial={{ opacity: 0, y: 8 }}
                           animate={

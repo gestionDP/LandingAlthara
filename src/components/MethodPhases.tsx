@@ -51,17 +51,35 @@ export default function MethodPhases() {
 
   const [active, setActive] = React.useState(0);
   const [isInteracting, setIsInteracting] = React.useState(false);
+  const [allowAuto, setAllowAuto] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const desktopFine = window.matchMedia(
+      '(min-width: 1024px) and (pointer: fine)'
+    );
+    const update = () => setAllowAuto(desktopFine.matches && !reduce.matches);
+    update();
+    desktopFine.addEventListener('change', update);
+    reduce.addEventListener('change', update);
+    return () => {
+      desktopFine.removeEventListener('change', update);
+      reduce.removeEventListener('change', update);
+    };
+  }, []);
 
   React.useEffect(() => {
     if (!isRevealed) return;
     if (isInteracting) return;
+    if (!allowAuto) return;
 
     const id = window.setInterval(() => {
       setActive((p) => (p + 1) % phases.length);
     }, 3800);
 
     return () => window.clearInterval(id);
-  }, [isRevealed, isInteracting, phases.length]);
+  }, [isRevealed, isInteracting, phases.length, allowAuto]);
 
   const current = phases[active];
 
@@ -108,7 +126,9 @@ export default function MethodPhases() {
               <div className="hidden md:flex items-center gap-2 text-xs tracking-[0.28em] text-[#e6e2d7]/35">
                 <span>/{current.number}</span>
                 <span className="h-px w-10 bg-[#e6e2d7]/15" />
-                <span>{isInteracting ? 'MANUAL' : 'AUTOPLAY'}</span>
+                <span>
+                  {isInteracting ? t('mode.manual') : t('mode.autoplay')}
+                </span>
               </div>
             </div>
 
@@ -132,6 +152,7 @@ export default function MethodPhases() {
                           onMouseEnter={() => setActive(idx)}
                           onFocus={() => setActive(idx)}
                           onClick={() => setActive(idx)}
+                          onTouchStart={() => setActive(idx)}
                           aria-pressed={isActive}
                         >
                           <div className="flex items-center justify-between gap-6">
@@ -194,7 +215,7 @@ export default function MethodPhases() {
                           <div>
                             <div className="flex items-center gap-3">
                               <span className="text-xs tracking-[0.28em] text-[#e6e2d7]/45">
-                                METHOD
+                                {t('label')}
                               </span>
                               <span className="h-px w-10 bg-[#e6e2d7]/15" />
                               <span className="text-xs tracking-[0.28em] text-[#e6e2d7]/35">
@@ -209,10 +230,10 @@ export default function MethodPhases() {
 
                           <div className="text-right">
                             <div className="text-xs tracking-[0.28em] text-[#e6e2d7]/35">
-                              STATUS
+                              {t('statusLabel')}
                             </div>
                             <div className="mt-2 text-sm text-[#e6e2d7]/60 font-light">
-                              Active window
+                              {t('activeWindow')}
                             </div>
                           </div>
                         </div>
@@ -234,21 +255,12 @@ export default function MethodPhases() {
 
                         <div className="mt-12 pt-6 border-t border-[#e6e2d7]/10 flex items-center justify-between gap-6">
                           <p className="text-xs tracking-[0.22em] text-[#e6e2d7]/40">
-                            OUTPUT:{' '}
-                            {active === 0
-                              ? 'Briefing'
-                              : active === 1
-                              ? 'Route'
-                              : active === 2
-                              ? 'Model'
-                              : active === 3
-                              ? 'Action path'
-                              : 'Review loop'}
+                            {t('outputLabel')}: {t(`outputs.${active}`)}
                           </p>
                           <p className="text-xs tracking-[0.22em] text-[#e6e2d7]/30">
                             {isInteracting
-                              ? 'Hover / tap to navigate'
-                              : 'Autoplay scanning'}
+                              ? t('controls.navigate')
+                              : t('controls.autoplay')}
                           </p>
                         </div>
                       </motion.div>
