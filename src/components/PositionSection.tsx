@@ -148,18 +148,12 @@ export default function PositionSection() {
                     const isActive = idx === active;
 
                     return (
-                      <button
+                        <button
                         key={p.key}
                         type="button"
-                        // Unifica interacción en todos los dispositivos (evita doble firing touch+click)
-                        onPointerDown={(e) => {
-                          // evita click “fantasma” en algunos navegadores
-                          e.preventDefault();
-                          handleSelect(idx);
-                        }}
-                        onFocus={() => handleSelect(idx)}
+                        onClick={() => setActive(idx)}
                         className="w-full text-left"
-                        aria-pressed={isActive}
+                        aria-pressed={idx === active}
                       >
                         <motion.p
                           initial={{ opacity: 0, y: 10 }}
