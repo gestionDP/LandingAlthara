@@ -19,12 +19,9 @@ export default function ImageOnlySection({
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    if (images.length <= 1) return;
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, interval);
-    return () => clearInterval(timer);
-  }, [images.length, interval]);
+    // Sin autoplay: mantenemos la primera imagen hasta que se agreguen controles manuales
+    setCurrentIndex(0);
+  }, [images.length]);
 
   return (
     <section className="relative h-[60vh] w-full overflow-hidden">

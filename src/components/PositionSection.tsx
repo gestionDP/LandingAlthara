@@ -47,58 +47,19 @@ export default function PositionSection() {
   ];
 
   const [active, setActive] = React.useState(0);
-  const [isHovering, setIsHovering] = React.useState(false);
-  const [allowAuto, setAllowAuto] = React.useState(false);
-  const [userLockedUntil, setUserLockedUntil] = React.useState(0);
-  const hoverTimeout = React.useRef<NodeJS.Timeout | null>(null);
-  const lockMs = 9000;
-
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const desktopFine = window.matchMedia(
-      '(min-width: 1024px) and (pointer: fine)'
-    );
-    const update = () => setAllowAuto(desktopFine.matches && !reduce.matches);
-    update();
-    desktopFine.addEventListener('change', update);
-    reduce.addEventListener('change', update);
-    return () => {
-      desktopFine.removeEventListener('change', update);
-      reduce.removeEventListener('change', update);
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (!isRevealed) return;
-    if (isHovering) return;
-    if (!allowAuto) return;
-    if (Date.now() < userLockedUntil) return;
-
-    const id = window.setInterval(() => {
-      if (Date.now() < userLockedUntil) return;
-      setActive((prev) => (prev + 1) % panels.length);
-    }, 4200);
-
-    return () => window.clearInterval(id);
-  }, [isRevealed, isHovering, panels.length, allowAuto, userLockedUntil]);
 
   const current = panels[active];
 
   const handleSelect = (idx: number) => {
     setActive(idx);
-    setIsHovering(true);
-    setUserLockedUntil(Date.now() + lockMs);
-    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
-    hoverTimeout.current = setTimeout(() => setIsHovering(false), 2500);
   };
 
   return (
     <section
       ref={ref as React.RefObject<HTMLElement>}
       className="relative py-24 lg:py-32 overflow-hidden bg-[#0a0a0a]"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
+      onMouseEnter={() => {}}
+      onMouseLeave={() => {}}
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="hidden lg:grid absolute inset-0 grid-cols-3">
@@ -190,10 +151,13 @@ export default function PositionSection() {
                       <button
                         key={p.key}
                         type="button"
-                        onMouseEnter={() => handleSelect(idx)}
+                        // Unifica interacción en todos los dispositivos (evita doble firing touch+click)
+                        onPointerDown={(e) => {
+                          // evita click “fantasma” en algunos navegadores
+                          e.preventDefault();
+                          handleSelect(idx);
+                        }}
                         onFocus={() => handleSelect(idx)}
-                        onClick={() => handleSelect(idx)}
-                        onTouchStart={() => handleSelect(idx)}
                         className="w-full text-left"
                         aria-pressed={isActive}
                       >
@@ -211,8 +175,9 @@ export default function PositionSection() {
                           }}
                           className={[
                             'font-playfair leading-[1.08] transition-all duration-300',
+                            // Evita reflow agresivo en mobile: mismo tamaño base; escalado solo en md+
                             isActive
-                              ? 'text-[#e6e2d7] text-3xl md:text-2xl'
+                              ? 'text-[#e6e2d7] text-2xl md:text-2xl'
                               : 'text-[#e6e2d7]/28 text-2xl md:text-xl',
                           ].join(' ')}
                         >
@@ -315,7 +280,7 @@ export default function PositionSection() {
                 </div>
 
                 <div className="mt-3 text-[11px] tracking-wide text-[#e6e2d7]/25">
-                  {isHovering ? t('progress.paused') : t('progress.autoplay')}
+                  {t('progress.paused')}
                 </div>
               </div>
             </div>

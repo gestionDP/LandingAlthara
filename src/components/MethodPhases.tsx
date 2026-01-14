@@ -50,36 +50,6 @@ export default function MethodPhases() {
   ];
 
   const [active, setActive] = React.useState(0);
-  const [isInteracting, setIsInteracting] = React.useState(false);
-  const [allowAuto, setAllowAuto] = React.useState(false);
-
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const desktopFine = window.matchMedia(
-      '(min-width: 1024px) and (pointer: fine)'
-    );
-    const update = () => setAllowAuto(desktopFine.matches && !reduce.matches);
-    update();
-    desktopFine.addEventListener('change', update);
-    reduce.addEventListener('change', update);
-    return () => {
-      desktopFine.removeEventListener('change', update);
-      reduce.removeEventListener('change', update);
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (!isRevealed) return;
-    if (isInteracting) return;
-    if (!allowAuto) return;
-
-    const id = window.setInterval(() => {
-      setActive((p) => (p + 1) % phases.length);
-    }, 3800);
-
-    return () => window.clearInterval(id);
-  }, [isRevealed, isInteracting, phases.length, allowAuto]);
 
   const current = phases[active];
 
@@ -88,9 +58,9 @@ export default function MethodPhases() {
       ref={ref as React.RefObject<HTMLElement>}
       id="method"
       className="relative overflow-hidden bg-[#0a0a0a]"
-      onMouseEnter={() => setIsInteracting(true)}
-      onMouseLeave={() => window.setTimeout(() => setIsInteracting(false), 900)}
-      onTouchStart={() => setIsInteracting(true)}
+      onMouseEnter={() => {}}
+      onMouseLeave={() => {}}
+      onTouchStart={() => {}}
     >
       <div className="absolute inset-0 pointer-events-none">
         <video
@@ -126,9 +96,7 @@ export default function MethodPhases() {
               <div className="hidden md:flex items-center gap-2 text-xs tracking-[0.28em] text-[#e6e2d7]/35">
                 <span>/{current.number}</span>
                 <span className="h-px w-10 bg-[#e6e2d7]/15" />
-                <span>
-                  {isInteracting ? t('mode.manual') : t('mode.autoplay')}
-                </span>
+                <span>{t('mode.manual')}</span>
               </div>
             </div>
 
@@ -149,10 +117,11 @@ export default function MethodPhases() {
                               ? 'bg-white/5'
                               : 'bg-transparent hover:bg-white/3',
                           ].join(' ')}
-                          onMouseEnter={() => setActive(idx)}
+                          onPointerDown={(e) => {
+                            e.preventDefault();
+                            setActive(idx);
+                          }}
                           onFocus={() => setActive(idx)}
-                          onClick={() => setActive(idx)}
-                          onTouchStart={() => setActive(idx)}
                           aria-pressed={isActive}
                         >
                           <div className="flex items-center justify-between gap-6">
@@ -258,9 +227,7 @@ export default function MethodPhases() {
                             {t('outputLabel')}: {t(`outputs.${active}`)}
                           </p>
                           <p className="text-xs tracking-[0.22em] text-[#e6e2d7]/30">
-                            {isInteracting
-                              ? t('controls.navigate')
-                              : t('controls.autoplay')}
+                            {t('controls.navigate')}
                           </p>
                         </div>
                       </motion.div>

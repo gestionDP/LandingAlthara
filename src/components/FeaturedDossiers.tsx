@@ -16,25 +16,6 @@ export default function FeaturedDossiers() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const hoverTimeout = React.useRef<NodeJS.Timeout | null>(null);
-  const [allowAuto, setAllowAuto] = useState(false);
-  const [userLockedUntil, setUserLockedUntil] = useState(0);
-  const lockMs = 9000;
-
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const desktopFine = window.matchMedia(
-      '(min-width: 1024px) and (pointer: fine)'
-    );
-    const update = () => setAllowAuto(desktopFine.matches && !reduce.matches);
-    update();
-    desktopFine.addEventListener('change', update);
-    reduce.addEventListener('change', update);
-    return () => {
-      desktopFine.removeEventListener('change', update);
-      reduce.removeEventListener('change', update);
-    };
-  }, []);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -68,16 +49,6 @@ export default function FeaturedDossiers() {
 
   const current = dossiers[activeIndex];
 
-  React.useEffect(() => {
-    if (!isRevealed) return;
-    if (!allowAuto) return;
-    const timer = window.setInterval(() => {
-      if (Date.now() < userLockedUntil) return;
-      setActiveIndex((prev) => (prev + 1) % dossiers.length);
-    }, 4200);
-    return () => window.clearInterval(timer);
-  }, [dossiers.length, isRevealed, userLockedUntil, allowAuto]);
-
   const bgImage = '/jpg/34.png';
 
   const lensPos = [
@@ -86,13 +57,10 @@ export default function FeaturedDossiers() {
     { x: 0.42, y: 0.72 },
   ][activeIndex];
 
-  const lockAutoTemporarily = () => setUserLockedUntil(Date.now() + lockMs);
-
   const setActive = (index: number) => {
     setActiveIndex(index);
-    lockAutoTemporarily();
     if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
-    hoverTimeout.current = setTimeout(() => lockAutoTemporarily(), lockMs / 3);
+    hoverTimeout.current = null;
   };
 
   return (
@@ -229,10 +197,11 @@ export default function FeaturedDossiers() {
                             'w-full text-left p-6 sm:p-7 lg:p-8 group transition-colors',
                             isActive ? 'bg-white/5' : 'bg-transparent',
                           ].join(' ')}
-                          onMouseEnter={() => setActive(index)}
+                          onPointerDown={(e) => {
+                            e.preventDefault();
+                            setActive(index);
+                          }}
                           onFocus={() => setActive(index)}
-                          onClick={() => setActive(index)}
-                          onTouchStart={() => setActive(index)}
                           aria-pressed={isActive}
                           initial={{ opacity: 0, y: 8 }}
                           animate={
