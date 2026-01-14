@@ -75,48 +75,13 @@ export default function EditorialCollage() {
   });
 
   const [activeIndex, setActiveIndex] = React.useState<number>(0);
-  const [isInteracting, setIsInteracting] = React.useState(false);
-  const [allowAuto, setAllowAuto] = React.useState(false);
-  const [userLockedUntil, setUserLockedUntil] = React.useState(0);
-  const lockMs = 9000;
-
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const desktopFine = window.matchMedia(
-      '(min-width: 1024px) and (pointer: fine)'
-    );
-    const update = () => setAllowAuto(desktopFine.matches && !reduce.matches);
-    update();
-    desktopFine.addEventListener('change', update);
-    reduce.addEventListener('change', update);
-    return () => {
-      desktopFine.removeEventListener('change', update);
-      reduce.removeEventListener('change', update);
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (!revealedItems.some(Boolean)) return;
-    if (isInteracting) return;
-    if (!allowAuto) return;
-
-    const id = window.setInterval(() => {
-      if (Date.now() < userLockedUntil) return;
-      setActiveIndex((p) => (p + 1) % tiles.length);
-    }, 2400);
-
-    return () => window.clearInterval(id);
-  }, [isInteracting, revealedItems, tiles.length, allowAuto, userLockedUntil]);
 
   const enter = (idx: number) => {
-    setIsInteracting(true);
-    setUserLockedUntil(Date.now() + lockMs);
     setActiveIndex(idx);
   };
 
   const leave = () => {
-    window.setTimeout(() => setIsInteracting(false), 900);
+    // sin autoplay, solo interacción directa
   };
 
   const getSpan = (index: number) => {
@@ -149,11 +114,11 @@ export default function EditorialCollage() {
                     : { opacity: 0, y: 10 }
                 }
                 transition={getItemProps(index).transition}
-                onMouseEnter={() => enter(index)}
-                onMouseLeave={leave}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  enter(index);
+                }}
                 onFocus={() => enter(index)}
-                onBlur={leave}
-                onTouchStart={() => enter(index)}
               >
                 <div className="relative h-full w-full">
                   <Image

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import SectionHeader from './SectionHeader';
 import { Card, CardContent } from '@/components/ui/card';
@@ -18,46 +18,24 @@ const backgroundImages = [
 
 export default function WhyTrustUs() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const t = useTranslations('whyTrustUs');
 
   const closeModal = () => setIsModalOpen(false);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex(
-        (prevIndex) => (prevIndex + 1) % backgroundImages.length
-      );
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <section id="por-que-confiar" className="relative overflow-hidden">
       <div className="absolute inset-0">
-        {backgroundImages.map((src, index) => {
-          const isActive = index === currentImageIndex;
-
-          return (
-            <div
-              key={src}
-              className={`absolute inset-0 transition-opacity duration-[2000ms] ease-in-out ${
-                isActive ? 'opacity-100 z-10' : 'opacity-0 z-0'
-              }`}
-            >
-              <Image
-                src={src}
-                alt={`Background ${index + 1}`}
-                fill
-                priority={index === 0 || index === 1}
-                className="object-cover"
-                quality={90}
-              />
-              <div className="absolute inset-0 bg-althara-dark-blue/75"></div>
-            </div>
-          );
-        })}
+        <div className="absolute inset-0">
+          <Image
+            src={backgroundImages[0]}
+            alt="Background 1"
+            fill
+            priority
+            className="object-cover"
+            quality={90}
+          />
+          <div className="absolute inset-0 bg-althara-dark-blue/75"></div>
+        </div>
       </div>
 
       <div className="relative z-10 py-16">
