@@ -148,7 +148,7 @@ export default function PositionSection() {
                     const isActive = idx === active;
 
                     return (
-                        <button
+                      <button
                         key={p.key}
                         type="button"
                         onClick={() => setActive(idx)}
@@ -169,10 +169,9 @@ export default function PositionSection() {
                           }}
                           className={[
                             'font-playfair leading-[1.08] transition-all duration-300',
-                            // Evita reflow agresivo en mobile: mismo tamaño base; escalado solo en md+
                             isActive
                               ? 'text-[#e6e2d7] text-2xl md:text-2xl'
-                              : 'text-[#e6e2d7]/28 text-2xl md:text-xl',
+                              : 'text-[#e6e2d7]/55 text-2xl md:text-2xl',
                           ].join(' ')}
                         >
                           {p.claim}

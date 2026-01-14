@@ -23,9 +23,10 @@ export default function Hero() {
         <div className="absolute inset-0">
           <video
             autoPlay
-            loop
             muted
+            loop
             playsInline
+            preload="metadata"
             className="absolute inset-0 w-full h-full object-cover"
           >
             <source src="/videos/hero.mp4" type="video/mp4" />

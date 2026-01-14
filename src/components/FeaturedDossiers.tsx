@@ -224,7 +224,7 @@ export default function FeaturedDossiers() {
                                     'font-playfair font-normal leading-snug transition-all',
                                     isActive
                                       ? 'text-[#e6e2d7] text-xl sm:text-xl md:text-xl'
-                                      : 'text-[#e6e2d7]/75 text-lg sm:text-xl md:text-2xl',
+                                      : 'text-[#e6e2d7]/75 text-xl sm:text-xl md:text-xl',
                                   ].join(' ')}
                                 >
                                   {dossier.title}

@@ -29,10 +29,11 @@ export default function FinalCta() {
       >
         <div className="absolute inset-0">
           <video
-            autoPlay
-            loop
+            controls
             muted
+            loop
             playsInline
+            preload="metadata"
             className="absolute inset-0 w-full h-full object-cover"
           >
             <source src="/videos/5.mp4" type="video/mp4" />

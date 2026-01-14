@@ -56,7 +56,7 @@ export default function SelectedEnvironments() {
                       'object-cover transition-all duration-700',
                       'grayscale saturate-50',
                       isActive
-                        ? 'grayscale-0 saturate-110 scale-[1.03]'
+                        ? 'grayscale-0 saturate-110'
                         : 'hover:grayscale-0 hover:saturate-110',
                     ].join(' ')}
                   />
@@ -75,9 +75,9 @@ export default function SelectedEnvironments() {
                   <div className="absolute inset-0 flex items-end p-4 sm:p-5 md:p-6">
                     <motion.div
                       animate={{
-                        opacity: isActive ? 1 : 0.6,
-                        scale: isActive ? 1.08 : 1,
-                        y: isActive ? -6 : 0,
+                        opacity: isActive ? 1 : 0.75,
+                        scale: 1,
+                        y: 0,
                       }}
                       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                       className="w-full"

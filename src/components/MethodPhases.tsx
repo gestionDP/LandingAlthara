@@ -66,10 +66,11 @@ export default function MethodPhases() {
         <video
           className="absolute inset-0 h-full w-full object-cover opacity-[0.35]"
           src="/videos/4.mp4"
-          autoPlay
+          controls
           muted
           loop
           playsInline
+          preload="metadata"
         >
           <source src="/videos/4.mp4" type="video/mp4" />
         </video>
@@ -142,7 +143,7 @@ export default function MethodPhases() {
                                   'mt-2 font-playfair transition-all leading-[1.05]',
                                   isActive
                                     ? 'text-[#e6e2d7] text-2xl md:text-2xl'
-                                    : 'text-[#e6e2d7]/65 text-xl md:text-xl',
+                                    : 'text-[#e6e2d7]/65 text-2xl md:text-2xl',
                                 ].join(' ')}
                               >
                                 {p.title}
