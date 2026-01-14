@@ -1,63 +1,89 @@
 'use client';
 
-import Image from 'next/image';
-import AnimatedSection from './AnimatedSection';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/button';
 import ContactModal from './ContactModal';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { useReveal } from '@/hooks/useReveal';
+import { motion } from 'framer-motion';
 
 export default function FinalCta() {
   const t = useTranslations('finalCta');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { ref, isRevealed } = useReveal({
+    type: 'media',
+    threshold: 0.2,
+    duration: 0.8,
+    distance: 12,
+  });
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <section id="cta-final" className="relative min-h-[70vh] flex items-center justify-center overflow-hidden py-16">
-      <div className="absolute inset-0">
-        <Image
-          src="/jpg/14.jpg"
-          alt="Background"
-          fill
-          className="object-cover"
-          quality={95}
-        />
-        <div className="absolute inset-0 bg-black/70"></div>
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center py-12">
-        <AnimatedSection animation="fadeInUp" delay={0.2}>
-          <h2 className="text-5xl sm:text-6xl md:text-7xl font-light text-[#e6e2d7] leading-tight tracking-tight mb-8">
-            {t('heading')}
-          </h2>
-        </AnimatedSection>
-
-        <AnimatedSection animation="fadeInUp" delay={0.4}>
-          <p className="text-xl sm:text-2xl md:text-3xl font-light text-[#e6e2d7]/90 leading-relaxed mb-10 max-w-3xl mx-auto">
-            {t('description')}
-          </p>
-        </AnimatedSection>
-
-        <AnimatedSection animation="fadeInUp" delay={0.6}>
-          <Button
-            onClick={openModal}
-            className="h-16 px-12 text-lg font-medium bg-althara-primary text-[#e6e2d7] hover:bg-althara-primary/90 border border-[#e6e2d7]/30 shadow-lg hover:shadow-xl transition-all duration-300 mb-6"
+    <>
+      <section
+        ref={ref as React.RefObject<HTMLElement>}
+        id="access"
+        className="relative h-[80vh] lg:h-screen w-full overflow-hidden"
+      >
+        <div className="absolute inset-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
           >
-            {t('cta')}
-          </Button>
-        </AnimatedSection>
+            <source src="/videos/5.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-black/70"></div>
+        </div>
 
-        <AnimatedSection animation="fadeInUp" delay={0.8}>
-          <p className="text-base sm:text-lg text-[#e6e2d7]/70 font-light">
-            {t('microcopy')}
-          </p>
-        </AnimatedSection>
+        <div className="relative z-10 h-full flex items-center justify-center">
+          <div className="max-w-[1920px] mx-auto px-6 lg:px-12 w-full">
+            <motion.div
+              className="max-w-3xl mx-auto text-center"
+              initial={{ opacity: 0, y: 12 }}
+              animate={
+                isRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }
+              }
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-playfair text-[#e6e2d7] font-normal mb-6 leading-[1.1]">
+                {t('title')}
+              </h2>
 
-        <ContactModal isOpen={isModalOpen} onClose={closeModal} />
-      </div>
-    </section>
+              <div className="space-y-3 mb-10">
+                <p className="text-lg md:text-xl text-[#e6e2d7]/90 font-light leading-relaxed">
+                  {t('subcopy.line1')}
+                </p>
+                <p className="text-lg md:text-xl text-[#e6e2d7]/90 font-light leading-relaxed">
+                  {t('subcopy.line2')}
+                </p>
+              </div>
+
+              <motion.div
+                whileHover={{ scale: 1.01 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Button
+                  onClick={openModal}
+                  className="h-14 px-10 font-light tracking-editorial text-sm bg-[#e6e2d7] text-[#0a0a0a] hover:bg-transparent hover:text-[#e6e2d7] hover:border-[#e6e2d7] border border-transparent transition-all duration-200 mb-8"
+                >
+                  {t('cta')}
+                </Button>
+              </motion.div>
+
+              <p className="text-xs text-[#e6e2d7]/40 font-light tracking-wide-editorial">
+                {t('microcopy')}
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <ContactModal isOpen={isModalOpen} onClose={closeModal} />
+    </>
   );
 }
-

@@ -20,6 +20,8 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-montserrat)", "sans-serif"],
         montserrat: ["var(--font-montserrat)", "sans-serif"],
+        serif: ["var(--font-playfair)", "serif"],
+        playfair: ["var(--font-playfair)", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",

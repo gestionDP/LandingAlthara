@@ -8,8 +8,8 @@ export default function Footer() {
   const t = useTranslations("footer");
 
   return (
-    <footer className="bg-althara-dark-blue text-[#e6e2d7] py-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="bg-[#0a0a0a] text-[#e6e2d7] py-10">
+      <div className="max-w-[1920px] mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-2">
             <div className="mb-6">

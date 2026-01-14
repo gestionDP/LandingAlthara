@@ -27,9 +27,7 @@ export default function VideoSection({
 
   useEffect(() => {
     if (videoRef.current && autoplay) {
-      videoRef.current.play().catch(() => {
-        // Autoplay puede fallar, lo ignoramos silenciosamente
-      });
+      videoRef.current.play().catch(() => {});
     }
   }, [autoplay]);
 
@@ -56,4 +54,6 @@ export default function VideoSection({
     </section>
   );
 }
+
+
 

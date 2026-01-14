@@ -77,7 +77,6 @@ export default function SuccessCases() {
               className="h-full rounded-none border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden backdrop-blur-sm flex flex-col p-0 relative"
               style={{ backgroundColor: 'rgba(16, 32, 39, 0.95)' }}
             >
-              {/* Badge de caso cerrado */}
               <div className="absolute top-4 right-4 z-10">
                 <div className="bg-althara-dark-blue/90 backdrop-blur-sm px-3 py-1.5">
                   <span className="text-xs font-medium uppercase tracking-[0.15em] text-white">
@@ -85,27 +84,6 @@ export default function SuccessCases() {
                   </span>
                 </div>
               </div>
-
-              {/* <div
-                className="relative h-64 w-full overflow-hidden flex-shrink-0"
-                style={{ width: '100%', margin: 0 }}
-              >
-                <Image
-                  src={caseItem.mapImage}
-                  alt={`Mapa del proyecto ${caseItem.projectName}`}
-                  fill
-                  className="object-cover"
-                  sizes="100vw"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-                <div className="absolute top-4 left-4 z-10">
-                  <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5">
-                    <span className="text-sm font-medium text-[#e6e2d7]">
-                      {String(caseItem.id).padStart(2, '0')}/03
-                    </span>
-                  </div>
-                </div>
-              </div> */}
 
               <CardContent className="p-8 flex flex-col flex-grow">
                 <div className="mb-6">

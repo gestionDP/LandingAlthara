@@ -1,85 +1,148 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+
+function getClosestInteractive(el: Element | null) {
+  if (!el) return null;
+  return el.closest('[data-cursor="view"], [data-cursor="open"], a, button');
+}
 
 export default function CustomCursor() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const cursorRef = useRef<HTMLDivElement | null>(null);
 
-  const updateMousePosition = useCallback((e: MouseEvent) => {
-    setMousePosition({ x: e.clientX, y: e.clientY });
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const rafRef = useRef<number | null>(null);
+
+  const [isHovering, setIsHovering] = useState(false);
+  const [cursorText, setCursorText] = useState('');
+
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    const onResize = () => setEnabled(window.innerWidth >= 1024);
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  const handleMouseEnter = useCallback(() => setIsHovering(true), []);
-  const handleMouseLeave = useCallback(() => setIsHovering(false), []);
-
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768 || "ontouchstart" in window);
+    if (!enabled) return;
+
+    const onMove = (e: PointerEvent) => {
+      mouseRef.current.x = e.clientX;
+      mouseRef.current.y = e.clientY;
     };
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+    const tick = () => {
+      const el = cursorRef.current;
+      if (el) {
+        el.style.transform = `translate3d(${mouseRef.current.x}px, ${mouseRef.current.y}px, 0) translate(-50%, -50%)`;
+      }
+      rafRef.current = window.requestAnimationFrame(tick);
+    };
 
-    if (!isMobile) {
-      window.addEventListener("mousemove", updateMousePosition);
-      document.addEventListener("mouseenter", handleMouseEnter);
-      document.addEventListener("mouseleave", handleMouseLeave);
-
-      const interactiveElements = document.querySelectorAll(
-        "a, button, [role='button']"
-      );
-      interactiveElements.forEach((el) => {
-        el.addEventListener("mouseenter", handleMouseEnter);
-        el.addEventListener("mouseleave", handleMouseLeave);
-      });
-    }
+    window.addEventListener('pointermove', onMove, { passive: true });
+    rafRef.current = window.requestAnimationFrame(tick);
 
     return () => {
-      window.removeEventListener("resize", checkMobile);
+      window.removeEventListener('pointermove', onMove);
+      if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
+    };
+  }, [enabled]);
 
-      if (!isMobile) {
-        window.removeEventListener("mousemove", updateMousePosition);
-        document.removeEventListener("mouseenter", handleMouseEnter);
-        document.removeEventListener("mouseleave", handleMouseLeave);
+  useEffect(() => {
+    if (!enabled) return;
 
-        const interactiveElements = document.querySelectorAll(
-          "a, button, [role='button']"
-        );
-        interactiveElements.forEach((el) => {
-          el.removeEventListener("mouseenter", handleMouseEnter);
-          el.removeEventListener("mouseleave", handleMouseLeave);
-        });
+    const handleOver = (e: Event) => {
+      const raw = e.target;
+      const el =
+        raw instanceof Element
+          ? raw
+          : raw instanceof Node
+          ? raw.parentElement
+          : null;
+
+      const interactive = getClosestInteractive(el);
+
+      if (interactive) {
+        setIsHovering(true);
+
+        if (
+          interactive.matches('[data-cursor="view"], [data-cursor="view"] *')
+        ) {
+          setCursorText('VIEW');
+        } else if (
+          interactive.matches('[data-cursor="open"], [data-cursor="open"] *')
+        ) {
+          setCursorText('OPEN');
+        } else {
+          setCursorText('');
+        }
+      } else {
+        setIsHovering(false);
+        setCursorText('');
       }
     };
-  }, [updateMousePosition, handleMouseEnter, handleMouseLeave, isMobile]);
 
-  if (isMobile) {
-    return null;
-  }
+    const handleOut = (e: Event) => {
+      const outEvt = e as PointerEvent;
+      const next = outEvt.relatedTarget;
+
+      const nextEl =
+        next instanceof Element
+          ? next
+          : next instanceof Node
+          ? next.parentElement
+          : null;
+
+      const stillInsideInteractive = getClosestInteractive(nextEl);
+
+      if (!stillInsideInteractive) {
+        setIsHovering(false);
+        setCursorText('');
+      }
+    };
+
+    document.addEventListener('pointerover', handleOver, true);
+    document.addEventListener('pointerout', handleOut, true);
+
+    return () => {
+      document.removeEventListener('pointerover', handleOver, true);
+      document.removeEventListener('pointerout', handleOut, true);
+    };
+  }, [enabled]);
+
+  if (!enabled) return null;
 
   return (
-    <motion.div
-      className="fixed top-0 left-0 pointer-events-none z-[99998]"
-      animate={{
-        x: mousePosition.x - 30,
-        y: mousePosition.y - 30,
-        scale: isHovering ? 0.8 : 1,
-      }}
-      transition={{
-        type: "spring",
-        stiffness: 150,
-        damping: 20,
+    <div
+      ref={cursorRef}
+      className={[
+        'fixed pointer-events-none z-[9999]',
+        isHovering ? 'opacity-100' : 'opacity-0',
+      ].join(' ')}
+      style={{
+        left: 0,
+        top: 0,
+        willChange: 'transform, opacity',
       }}
     >
-      <img
-        src="/svg/Althara-11.svg"
-        alt="Cursor"
-        className="w-[60px] h-[60px]"
-        style={{ transform: "translateZ(0)" }}
-      />
-    </motion.div>
+      {cursorText ? (
+        <div className="px-3 py-1.5 bg-[#e6e2d7] text-[#0a0a0a] text-xs tracking-wide-editorial font-light rounded-sm">
+          {cursorText}
+        </div>
+      ) : (
+        <div className="relative w-15 h-15 opacity-90">
+          <Image
+            src="/svg/Althara-11.svg"
+            alt=""
+            fill
+            className="object-contain"
+            draggable={false}
+            priority={false}
+          />
+        </div>
+      )}
+    </div>
   );
 }
