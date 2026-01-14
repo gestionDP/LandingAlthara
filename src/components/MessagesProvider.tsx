@@ -13,11 +13,26 @@ export default function MessagesProvider({ children }: MessagesProviderProps) {
   );
   const [locale, setLocale] = useState<"es" | "en">("es");
 
-  useEffect(() => {
-    const savedLocale = localStorage.getItem("locale") as "es" | "en";
-    if (savedLocale && (savedLocale === "es" || savedLocale === "en")) {
-      setLocale(savedLocale);
+  const detectLocale = () => {
+    const stored = localStorage.getItem("locale") as "es" | "en" | null;
+    if (stored === "es" || stored === "en") return stored;
+
+    const cookieMatch = document.cookie
+      .split(";")
+      .map((c) => c.trim())
+      .find((c) => c.startsWith("locale="));
+    if (cookieMatch) {
+      const cookieVal = cookieMatch.split("=")[1] as "es" | "en";
+      if (cookieVal === "es" || cookieVal === "en") return cookieVal;
     }
+
+    const browserLang = navigator.language.split("-")[0];
+    return browserLang === "en" ? "en" : "es";
+  };
+
+  useEffect(() => {
+    const initialLocale = detectLocale();
+    setLocale(initialLocale);
 
     const loadMessages = async (lang: "es" | "en") => {
       try {
@@ -30,7 +45,7 @@ export default function MessagesProvider({ children }: MessagesProviderProps) {
       }
     };
 
-    loadMessages(savedLocale || "es");
+    loadMessages(initialLocale);
   }, []);
 
   useEffect(() => {
@@ -46,6 +61,12 @@ export default function MessagesProvider({ children }: MessagesProviderProps) {
 
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
+  }, [locale]);
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = locale;
+    }
   }, [locale]);
 
   if (!messages) {

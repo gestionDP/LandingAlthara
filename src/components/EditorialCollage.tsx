@@ -17,14 +17,54 @@ export default function EditorialCollage() {
   const t = useTranslations('editorialCollage');
 
   const tiles: Tile[] = [
-    { src: '/jpg/2.jpg', alt: 'Fragment 1', phrase: 'We read signals.', tag: 'SIGNAL' },
-    { src: '/jpg/3.jpg', alt: 'Fragment 2', phrase: 'We design private routes.', tag: 'ROUTE' },
-    { src: '/jpg/4.jpg', alt: 'Fragment 3', phrase: 'We protect the edge.', tag: 'EDGE' },
-    { src: '/jpg/5.jpg', alt: 'Fragment 4', phrase: 'Privacy is architecture.', tag: 'SYSTEM' },
-    { src: '/jpg/6.jpg', alt: 'Fragment 5', phrase: 'We work upstream.', tag: 'METHOD' },
-    { src: '/jpg/7.jpg', alt: 'Fragment 6', phrase: 'Timing beats narrative.', tag: 'TIMING' },
-    { src: '/jpg/8.jpg', alt: 'Fragment 7', phrase: 'Noise is filtered. Patterns stay.', tag: 'FILTER' },
-    { src: '/jpg/9.jpg', alt: 'Fragment 8', phrase: 'Advantage is built quietly.', tag: 'ADVANTAGE' },
+    {
+      src: '/jpg/2.jpg',
+      alt: t('tiles.0.alt'),
+      phrase: t('tiles.0.phrase'),
+      tag: t('tiles.0.tag'),
+    },
+    {
+      src: '/jpg/3.jpg',
+      alt: t('tiles.1.alt'),
+      phrase: t('tiles.1.phrase'),
+      tag: t('tiles.1.tag'),
+    },
+    {
+      src: '/jpg/4.jpg',
+      alt: t('tiles.2.alt'),
+      phrase: t('tiles.2.phrase'),
+      tag: t('tiles.2.tag'),
+    },
+    {
+      src: '/jpg/5.jpg',
+      alt: t('tiles.3.alt'),
+      phrase: t('tiles.3.phrase'),
+      tag: t('tiles.3.tag'),
+    },
+    {
+      src: '/jpg/6.jpg',
+      alt: t('tiles.4.alt'),
+      phrase: t('tiles.4.phrase'),
+      tag: t('tiles.4.tag'),
+    },
+    {
+      src: '/jpg/7.jpg',
+      alt: t('tiles.5.alt'),
+      phrase: t('tiles.5.phrase'),
+      tag: t('tiles.5.tag'),
+    },
+    {
+      src: '/jpg/8.jpg',
+      alt: t('tiles.6.alt'),
+      phrase: t('tiles.6.phrase'),
+      tag: t('tiles.6.tag'),
+    },
+    {
+      src: '/jpg/9.jpg',
+      alt: t('tiles.7.alt'),
+      phrase: t('tiles.7.phrase'),
+      tag: t('tiles.7.tag'),
+    },
   ];
 
   const { ref, revealedItems, getItemProps } = useStagger({
@@ -36,20 +76,42 @@ export default function EditorialCollage() {
 
   const [activeIndex, setActiveIndex] = React.useState<number>(0);
   const [isInteracting, setIsInteracting] = React.useState(false);
+  const [allowAuto, setAllowAuto] = React.useState(false);
+  const [userLockedUntil, setUserLockedUntil] = React.useState(0);
+  const lockMs = 9000;
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const desktopFine = window.matchMedia(
+      '(min-width: 1024px) and (pointer: fine)'
+    );
+    const update = () => setAllowAuto(desktopFine.matches && !reduce.matches);
+    update();
+    desktopFine.addEventListener('change', update);
+    reduce.addEventListener('change', update);
+    return () => {
+      desktopFine.removeEventListener('change', update);
+      reduce.removeEventListener('change', update);
+    };
+  }, []);
 
   React.useEffect(() => {
     if (!revealedItems.some(Boolean)) return;
     if (isInteracting) return;
+    if (!allowAuto) return;
 
     const id = window.setInterval(() => {
+      if (Date.now() < userLockedUntil) return;
       setActiveIndex((p) => (p + 1) % tiles.length);
     }, 2400);
 
     return () => window.clearInterval(id);
-  }, [isInteracting, revealedItems, tiles.length]);
+  }, [isInteracting, revealedItems, tiles.length, allowAuto, userLockedUntil]);
 
   const enter = (idx: number) => {
     setIsInteracting(true);
+    setUserLockedUntil(Date.now() + lockMs);
     setActiveIndex(idx);
   };
 
@@ -81,7 +143,11 @@ export default function EditorialCollage() {
                 key={index}
                 className={`relative overflow-hidden group ${getSpan(index)}`}
                 initial={{ opacity: 0, y: 10 }}
-                animate={revealedItems[index] ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                animate={
+                  revealedItems[index]
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 10 }
+                }
                 transition={getItemProps(index).transition}
                 onMouseEnter={() => enter(index)}
                 onMouseLeave={leave}
@@ -107,7 +173,9 @@ export default function EditorialCollage() {
                   <div
                     className={[
                       'absolute inset-0 transition-all duration-700',
-                      isActive ? 'bg-[#0a0a0a]/10' : 'bg-[#0a0a0a]/35 group-hover:bg-[#0a0a0a]/12',
+                      isActive
+                        ? 'bg-[#0a0a0a]/10'
+                        : 'bg-[#0a0a0a]/35 group-hover:bg-[#0a0a0a]/12',
                     ].join(' ')}
                   />
 

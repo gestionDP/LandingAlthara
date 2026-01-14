@@ -18,7 +18,7 @@
     }
   },
   "hero": {
-    "title": "We operate in the non-visible layer.",
+    "title": "We operate in the non-visible layer",
     "subtitle": "We map what moves first: incentives, constraints, and quiet shifts.",
     "ctaPrimary": "Request access",
     "ctaSecondary": "See how we work",
@@ -29,33 +29,72 @@
     "caption": {
       "line1": "What you see is not the work. It's the surface.",
       "line2": "Althara builds routes beneath it."
+    },
+    "tiles": [
+      { "alt": "Fragment 1", "phrase": "We read signals.", "tag": "SIGNAL" },
+      {
+        "alt": "Fragment 2",
+        "phrase": "We design private routes.",
+        "tag": "ROUTE"
+      },
+      { "alt": "Fragment 3", "phrase": "We protect the edge.", "tag": "EDGE" },
+      {
+        "alt": "Fragment 4",
+        "phrase": "Privacy is architecture.",
+        "tag": "SYSTEM"
+      },
+      { "alt": "Fragment 5", "phrase": "We work upstream.", "tag": "METHOD" },
+      {
+        "alt": "Fragment 6",
+        "phrase": "Timing beats narrative.",
+        "tag": "TIMING"
+      },
+      {
+        "alt": "Fragment 7",
+        "phrase": "Noise is filtered. Patterns stay.",
+        "tag": "FILTER"
+      },
+      {
+        "alt": "Fragment 8",
+        "phrase": "Advantage is built quietly.",
+        "tag": "ADVANTAGE"
+      }
+    ]
+  },
+  "cursor": {
+    "view": "VIEW",
+    "open": "OPEN"
+  },
+  "position": {
+    "label": "POSITION",
+    "line1": "We read signals.",
+    "line2": "We design private routes.",
+    "line3": "We protect the edge.",
+    "paragraph": "Althara is an intelligence layer for operators. We don't chase trends. We anticipate pressure, timing, and asymmetry.",
+
+    "tab1_title": "Briefings.",
+    "tab1_body": "Compressed intelligence for operators. Not commentary—pressure, timing, and asymmetry.",
+    "tab1_item1": "Signal map (macro → micro).",
+    "tab1_item2": "Scenario stress-tests & second-order effects.",
+    "tab1_item3": "Timing windows, triggers, and constraints.",
+
+    "tab2_title": "Strategic routes.",
+    "tab2_body": "Private paths from intent to execution—built for discretion, speed, and leverage.",
+    "tab2_item1": "Sequencing: what moves first.",
+    "tab2_item2": "Route design: actors, access, dependencies.",
+    "tab2_item3": "Execution cadence with minimal exposure.",
+
+    "tab3_title": "Decision frameworks.",
+    "tab3_body": "A framework that survives ambiguity. Decisions anchored to downside and asymmetry.",
+    "tab3_item1": "Decision trees, thresholds, and go/no-go.",
+    "tab3_item2": "Risk envelope: downside-first logic.",
+    "tab3_item3": "Operators’ checklist for execution.",
+    "outputLabel": "OUTPUT",
+    "progress": {
+      "paused": "Paused",
+      "autoplay": "Autoplay · Hover or tap to navigate"
     }
   },
- "position": {
-  "label": "POSITION",
-  "line1": "We read signals.",
-  "line2": "We design private routes.",
-  "line3": "We protect the edge.",
-  "paragraph": "Althara is an intelligence layer for operators. We don't chase trends. We anticipate pressure, timing, and asymmetry.",
-
-  "tab1_title": "Briefings.",
-  "tab1_body": "Compressed intelligence for operators. Not commentary—pressure, timing, and asymmetry.",
-  "tab1_item1": "Signal map (macro → micro).",
-  "tab1_item2": "Scenario stress-tests & second-order effects.",
-  "tab1_item3": "Timing windows, triggers, and constraints.",
-
-  "tab2_title": "Strategic routes.",
-  "tab2_body": "Private paths from intent to execution—built for discretion, speed, and leverage.",
-  "tab2_item1": "Sequencing: what moves first.",
-  "tab2_item2": "Route design: actors, access, dependencies.",
-  "tab2_item3": "Execution cadence with minimal exposure.",
-
-  "tab3_title": "Decision frameworks.",
-  "tab3_body": "A framework that survives ambiguity. Decisions anchored to downside and asymmetry.",
-  "tab3_item1": "Decision trees, thresholds, and go/no-go.",
-  "tab3_item2": "Risk envelope: downside-first logic.",
-  "tab3_item3": "Operators’ checklist for execution."
-},
 
   "trackRecord": {
     "label": "TRACK RECORD (SELECTED)",
@@ -83,6 +122,8 @@
   },
   "featuredDossiers": {
     "label": "FEATURED DOSSIERS",
+    "tapToSwitch": "TAP TO SWITCH",
+    "dossierTag": "DOSSIER",
     "dossier1": {
       "title": "The Quiet Shift",
       "year": "2026",
@@ -128,7 +169,19 @@
       "bullet1": "We update the model as reality moves.",
       "bullet2": "Continuous refinement."
     },
-    "finalLine": "We don't sell certainty. We build advantage."
+    "finalLine": "We don't sell certainty. We build advantage.",
+    "statusLabel": "STATUS",
+    "activeWindow": "Active window",
+    "outputLabel": "OUTPUT",
+    "outputs": ["Briefing", "Route", "Model", "Action path", "Review loop"],
+    "mode": {
+      "manual": "MANUAL",
+      "autoplay": "AUTOPLAY"
+    },
+    "controls": {
+      "navigate": "Hover / tap to navigate",
+      "autoplay": "Autoplay scanning"
+    }
   },
   "selectedEnvironments": {
     "label": "SELECTED ENVIRONMENTS",

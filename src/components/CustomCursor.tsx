@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 function getClosestInteractive(el: Element | null) {
   if (!el) return null;
@@ -10,6 +11,7 @@ function getClosestInteractive(el: Element | null) {
 
 export default function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement | null>(null);
+  const t = useTranslations('cursor');
 
   const mouseRef = useRef({ x: 0, y: 0 });
   const rafRef = useRef<number | null>(null);
@@ -70,11 +72,11 @@ export default function CustomCursor() {
         if (
           interactive.matches('[data-cursor="view"], [data-cursor="view"] *')
         ) {
-          setCursorText('VIEW');
+          setCursorText(t('view'));
         } else if (
           interactive.matches('[data-cursor="open"], [data-cursor="open"] *')
         ) {
-          setCursorText('OPEN');
+          setCursorText(t('open'));
         } else {
           setCursorText('');
         }

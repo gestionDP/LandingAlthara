@@ -3,6 +3,7 @@ import { Montserrat, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import CustomCursor from '@/components/CustomCursor';
 import MessagesProvider from '@/components/MessagesProvider';
+import { headers } from 'next/headers';
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -29,13 +30,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headerStore = await headers();
+  const cookieHeader = headerStore.get('cookie') ?? '';
+  const cookieLocale = cookieHeader
+    .split(';')
+    .map((c: string) => c.trim())
+    .find((c: string) => c.startsWith('locale='))
+    ?.split('=')[1];
+  const locale = cookieLocale === 'en' ? 'en' : 'es';
+
   return (
-    <html lang="es">
+    <html lang={locale}>
       <body
         className={`${montserrat.variable} ${playfairDisplay.variable} font-montserrat antialiased`}
       >
