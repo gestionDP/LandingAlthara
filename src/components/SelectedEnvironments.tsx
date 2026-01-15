@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 type EnvTile = {
   label: string;
@@ -22,16 +22,53 @@ export default function SelectedEnvironments() {
   ];
 
   const [activeIndex, setActiveIndex] = React.useState(0);
+
+  // ---- Autoplay control ----
+  const [isPaused, setIsPaused] = React.useState(false);
+  const resumeTimeoutRef = React.useRef<number | null>(null);
+
+  const prefersReducedMotion = React.useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+  }, []);
+
+  const pauseTemporarily = React.useCallback((ms: number) => {
+    setIsPaused(true);
+    if (resumeTimeoutRef.current) window.clearTimeout(resumeTimeoutRef.current);
+    resumeTimeoutRef.current = window.setTimeout(() => setIsPaused(false), ms);
+  }, []);
+
+  React.useEffect(() => {
+    if (prefersReducedMotion) return;
+    if (isPaused) return;
+
+    const id = window.setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % environments.length);
+    }, 2400); 
+
+    return () => window.clearInterval(id);
+  }, [isPaused, environments.length, prefersReducedMotion]);
+
+  React.useEffect(() => {
+    return () => {
+      if (resumeTimeoutRef.current) window.clearTimeout(resumeTimeoutRef.current);
+    };
+  }, []);
+
   const isOdd = environments.length % 2 === 1;
 
   const gridColsClass = [
-    isOdd ? 'grid-cols-1' : 'grid-cols-2', // base (mobile)
+    isOdd ? 'grid-cols-1' : 'grid-cols-2',
     'md:grid-cols-2',
     'lg:grid-cols-5',
   ].join(' ');
 
   return (
-    <section className="relative py-0 bg-[#0a0a0a] overflow-hidden">
+    <section
+      className="relative py-0 bg-[#0a0a0a] overflow-hidden"
+      onPointerEnter={() => setIsPaused(true)}
+      onPointerLeave={() => setIsPaused(false)}
+    >
       <div className="max-w-[1920px] mx-auto w-full">
         <div className={`grid ${gridColsClass} gap-0`}>
           {environments.map((env, idx) => {
@@ -41,9 +78,23 @@ export default function SelectedEnvironments() {
               <button
                 key={idx}
                 type="button"
-                onMouseEnter={() => setActiveIndex(idx)}
-                onFocus={() => setActiveIndex(idx)}
-                onClick={() => setActiveIndex(idx)}
+                onMouseEnter={() => {
+                  setActiveIndex(idx);
+                  setIsPaused(true);
+                }}
+                onFocus={() => {
+                  setActiveIndex(idx);
+                  pauseTemporarily(3500);
+                }}
+                onClick={() => {
+                  setActiveIndex(idx);
+                  pauseTemporarily(3500);
+                }}
+             
+                onPointerDown={() => {
+                  setActiveIndex(idx);
+                  pauseTemporarily(3500);
+                }}
                 className="relative text-left overflow-hidden"
                 aria-pressed={isActive}
               >
@@ -74,11 +125,7 @@ export default function SelectedEnvironments() {
 
                   <div className="absolute inset-0 flex items-end p-4 sm:p-5 md:p-6">
                     <motion.div
-                      animate={{
-                        opacity: isActive ? 1 : 0.75,
-                        scale: 1,
-                        y: 0,
-                      }}
+                      animate={{ opacity: isActive ? 1 : 0.75, scale: 1, y: 0 }}
                       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                       className="w-full"
                     >
