@@ -57,7 +57,7 @@ export default function MethodPhases() {
     <section
       ref={ref as React.RefObject<HTMLElement>}
       id="method"
-      className="relative overflow-hidden bg-[#0a0a0a]"
+      className="relative  bg-[#0a0a0a] h-screen"
       onMouseEnter={() => {}}
       onMouseLeave={() => {}}
       onTouchStart={() => {}}
@@ -66,7 +66,7 @@ export default function MethodPhases() {
         <video
           className="absolute inset-0 h-full w-full object-cover opacity-[0.35]"
           src="/videos/4.mp4"
-          controls
+          autoPlay
           muted
           loop
           playsInline
@@ -167,7 +167,7 @@ export default function MethodPhases() {
               </div>
 
               <div className="lg:col-span-8">
-                <div className="relative border border-[#e6e2d7]/12 bg-[#0f0f0f]/30 backdrop-blur-xl overflow-hidden">
+                <div className="relative border border-[#e6e2d7]/12 bg-[#0f0f0f]/30 backdrop-blur-xl ">
                   <div className="pointer-events-none absolute inset-0">
                     <div className="absolute -top-24 left-1/2 h-[260px] w-[720px] -translate-x-1/2 rounded-full bg-[#e6e2d7]/[0.05] blur-3xl" />
                   </div>

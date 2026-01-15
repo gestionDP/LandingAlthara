@@ -8,7 +8,7 @@ export default function Reveal() {
   const t = useTranslations('reveal');
 
   return (
-    <section id="reveal" className="relative min-h-[70vh] flex items-center justify-center overflow-hidden py-16">
+    <section id="reveal" className="relative min-h-[70vh] flex items-center justify-center  py-16">
       <div className="absolute inset-0">
         <Image
           src="/jpg/12.jpg"

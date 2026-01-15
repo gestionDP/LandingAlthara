@@ -1,80 +1,89 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 type Options = {
-  selector?: string;
-  durationMs?: number;
   enabled?: boolean;
+  containerId: string;
+
+  // Gate (anti-inercia)
+  lockMs?: number;        // 700–1100: cuanto bloquea tras un gesto
+  triggerDelta?: number;  // 8–20: umbral mínimo para considerar gesto real
+
+  // (opcional) permitir scroll interno sin bloquear
+  respectNestedScroll?: boolean;
 };
 
+function isScrollable(el: HTMLElement) {
+  const style = window.getComputedStyle(el);
+  const oy = style.overflowY;
+  return (oy === "auto" || oy === "scroll") && el.scrollHeight > el.clientHeight;
+}
+
+function findScrollableParent(start: HTMLElement | null, stopAt: HTMLElement) {
+  let el: HTMLElement | null = start;
+  while (el && el !== stopAt) {
+    if (isScrollable(el)) return el;
+    el = el.parentElement;
+  }
+  return null;
+}
+
 export function useSnapWheel({
-  selector = '.snap-slide',
-  durationMs = 750,
   enabled = true,
-}: Options = {}) {
-  const isAnimatingRef = useRef(false);
+  containerId,
+  lockMs = 850,
+  triggerDelta = 12,
+  respectNestedScroll = true,
+}: Options) {
+  const lockedRef = useRef(false);
+  const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!enabled) return;
 
-    const prefersReduced =
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (prefersReduced) return;
-
-    const getSlides = () =>
-      Array.from(document.querySelectorAll<HTMLElement>(selector));
-
-    const getCurrentIndex = (slides: HTMLElement[]) => {
-      const y = window.scrollY;
-      let bestIdx = 0;
-      let bestDist = Number.POSITIVE_INFINITY;
-
-      for (let i = 0; i < slides.length; i++) {
-        const top = slides[i].getBoundingClientRect().top + window.scrollY;
-        const dist = Math.abs(top - y);
-        if (dist < bestDist) {
-          bestDist = dist;
-          bestIdx = i;
-        }
-      }
-      return bestIdx;
-    };
+    const container = document.getElementById(containerId) as HTMLElement | null;
+    if (!container) return;
 
     const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+      // Si hay scroll interno en un contenedor hijo, no secuestrar (por ejemplo, cards con overflow)
+      if (respectNestedScroll) {
+        const target = e.target as HTMLElement | null;
+        const scrollable = findScrollableParent(target, container);
+        if (scrollable) {
+          const atTop = scrollable.scrollTop <= 0;
+          const atBottom =
+            scrollable.scrollTop + scrollable.clientHeight >= scrollable.scrollHeight - 1;
 
-      const slides = getSlides();
-      if (slides.length === 0) return;
+          // Si todavía puede scrollear dentro, dejamos el wheel en paz
+          if ((e.deltaY < 0 && !atTop) || (e.deltaY > 0 && !atBottom)) return;
+        }
+      }
 
-      const target = e.target as HTMLElement | null;
-      const scrollParent = target?.closest?.('[data-allow-scroll="true"]');
-      if (scrollParent) return;
-
-      if (isAnimatingRef.current) {
+      // Mientras está bloqueado, anulamos el resto de wheel para que no salte 2 secciones
+      if (lockedRef.current) {
         e.preventDefault();
         return;
       }
 
-      const dir = e.deltaY > 0 ? 1 : -1;
-      const idx = getCurrentIndex(slides);
-      const next = Math.min(Math.max(idx + dir, 0), slides.length - 1);
+      // Micro deltas (trackpad) no deberían activar el gate
+      if (Math.abs(e.deltaY) < triggerDelta) return;
 
-      if (next === idx) return;
+      // Dejamos pasar ESTE wheel (scroll nativo visible),
+      // y bloqueamos los siguientes durante lockMs
+      lockedRef.current = true;
 
-      e.preventDefault();
-      isAnimatingRef.current = true;
-
-      slides[next].scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-      window.setTimeout(() => {
-        isAnimatingRef.current = false;
-      }, durationMs);
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+      timerRef.current = window.setTimeout(() => {
+        lockedRef.current = false;
+      }, lockMs);
     };
 
-    window.addEventListener('wheel', onWheel, { passive: false });
-    return () => window.removeEventListener('wheel', onWheel as any);
-  }, [selector, durationMs, enabled]);
+    container.addEventListener("wheel", onWheel, { passive: false });
+
+    return () => {
+      container.removeEventListener("wheel", onWheel as any);
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+    };
+  }, [enabled, containerId, lockMs, triggerDelta, respectNestedScroll]);
 }

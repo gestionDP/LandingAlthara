@@ -32,7 +32,7 @@ export default function VideoSection({
   }, [autoplay]);
 
   return (
-    <section className={`relative w-full overflow-hidden ${className}`}>
+    <section className={`relative w-full  ${className}`}>
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"

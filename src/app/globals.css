@@ -52,12 +52,11 @@ body {
   }
 
   html {
-    scroll-behavior: smooth;
     overflow-x: hidden;
   }
 
   body {
-    overflow-x: hidden;
+    overflow: hidden;
   }
 
   * {
@@ -73,23 +72,23 @@ body {
     height: auto;
   }
 
-  :root {
-    --snap-offset: 80px;
-  }
-
-  html:has(.snap-root) {
+  .snapRoot {
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  
     scroll-snap-type: y mandatory;
-    scroll-padding-top: var(--snap-offset);
-    overscroll-behavior-y: none;
+    scroll-snap-stop: always; /* reduce el “saltarse” */
+    overscroll-behavior: contain;
+    scroll-behavior: auto; /* importante */
   }
-
-  html:has(.snap-root) .snap-slide {
+  
+  .snapSection {
+    height: 100vh;
     scroll-snap-align: start;
-    scroll-snap-stop: always;
-    width: 100%;
-    min-height: 100vh;
-    min-height: 100svh;
   }
+  
+  
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -97,7 +96,6 @@ body {
     scroll-snap-type: none;
   }
 }
-
 
 @layer components {
   .althara-gradient {

@@ -24,7 +24,7 @@ export default function ImageOnlySection({
   }, [images.length]);
 
   return (
-    <section className="relative h-[60vh] w-full overflow-hidden">
+    <section className="relative h-[60vh] w-full ">
       {images.map((src, index) => (
         <div
           key={src}

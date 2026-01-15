@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Althara - Intelligence Layer for Operators",
-    "description": "We read signals. We design private routes. We protect the edge.",
+    "description": "We read signals · We design private routes · We protect the edge",
     "keywords": "intelligence, signals, briefings, operators, private routes, strategic routes"
   },
   "navbar": {
@@ -13,50 +13,50 @@
     },
     "requestAccess": "Request access",
     "microcopy": {
-      "private": "Private channel.",
-      "curated": "Access is curated."
+      "private": "Private channel",
+      "curated": "Access is curated"
     }
   },
   "hero": {
     "title": "We operate in the non-visible layer",
-    "subtitle": "We map what moves first: incentives, constraints, and quiet shifts.",
+    "subtitle": "We map what moves first: incentives, constraints, and quiet shifts",
     "ctaPrimary": "Request access",
     "ctaSecondary": "See how we work",
-    "microcopy": "By invitation. Limited intake."
+    "microcopy": "By invitation · Limited intake"
   },
   "editorialCollage": {
     "label": "SELECTED FRAGMENTS",
     "caption": {
-      "line1": "What you see is not the work. It's the surface.",
-      "line2": "Althara builds routes beneath it."
+      "line1": "What you see is not the work · It's the surface",
+      "line2": "Althara builds routes beneath it"
     },
     "tiles": [
-      { "alt": "Fragment 1", "phrase": "We read signals.", "tag": "SIGNAL" },
+      { "alt": "Fragment 1", "phrase": "We read signals", "tag": "SIGNAL" },
       {
         "alt": "Fragment 2",
-        "phrase": "We design private routes.",
+        "phrase": "We design private routes",
         "tag": "ROUTE"
       },
-      { "alt": "Fragment 3", "phrase": "We protect the edge.", "tag": "EDGE" },
+      { "alt": "Fragment 3", "phrase": "We protect the edge", "tag": "EDGE" },
       {
         "alt": "Fragment 4",
-        "phrase": "Privacy is architecture.",
+        "phrase": "Privacy is architecture",
         "tag": "SYSTEM"
       },
-      { "alt": "Fragment 5", "phrase": "We work upstream.", "tag": "METHOD" },
+      { "alt": "Fragment 5", "phrase": "We work upstream", "tag": "METHOD" },
       {
         "alt": "Fragment 6",
-        "phrase": "Timing beats narrative.",
+        "phrase": "Timing beats narrative",
         "tag": "TIMING"
       },
       {
         "alt": "Fragment 7",
-        "phrase": "Noise is filtered. Patterns stay.",
+        "phrase": "Noise is filtered · Patterns stay",
         "tag": "FILTER"
       },
       {
         "alt": "Fragment 8",
-        "phrase": "Advantage is built quietly.",
+        "phrase": "Advantage is built quietly",
         "tag": "ADVANTAGE"
       }
     ]
@@ -67,58 +67,42 @@
   },
   "position": {
     "label": "POSITION",
-    "line1": "We read signals.",
-    "line2": "We design private routes.",
-    "line3": "We protect the edge.",
+    "line1": "We read signals",
+    "line2": "We design private routes",
+    "line3": "We protect the edge",
     "paragraph": "Althara is an intelligence layer for operators. We don't chase trends. We anticipate pressure, timing, and asymmetry.",
-
-    "tab1_title": "Briefings.",
-    "tab1_body": "Compressed intelligence for operators. Not commentary—pressure, timing, and asymmetry.",
-    "tab1_item1": "Signal map (macro → micro).",
-    "tab1_item2": "Scenario stress-tests & second-order effects.",
-    "tab1_item3": "Timing windows, triggers, and constraints.",
-
-    "tab2_title": "Strategic routes.",
-    "tab2_body": "Private paths from intent to execution—built for discretion, speed, and leverage.",
-    "tab2_item1": "Sequencing: what moves first.",
-    "tab2_item2": "Route design: actors, access, dependencies.",
-    "tab2_item3": "Execution cadence with minimal exposure.",
-
-    "tab3_title": "Decision frameworks.",
-    "tab3_body": "A framework that survives ambiguity. Decisions anchored to downside and asymmetry.",
-    "tab3_item1": "Decision trees, thresholds, and go/no-go.",
-    "tab3_item2": "Risk envelope: downside-first logic.",
-    "tab3_item3": "Operators’ checklist for execution.",
+    "tab1_title": "Briefings",
+    "tab1_body": "Compressed intelligence for operators · Not commentary—pressure, timing, and asymmetry",
+    "tab1_item1": "Signal map (macro → micro)",
+    "tab1_item2": "Scenario stress-tests & second-order effects",
+    "tab1_item3": "Timing windows, triggers, and constraints",
+    "tab2_title": "Strategic routes",
+    "tab2_body": "Private paths from intent to execution—built for discretion, speed, and leverage",
+    "tab2_item1": "Sequencing: what moves first",
+    "tab2_item2": "Route design: actors, access, dependencies",
+    "tab2_item3": "Execution cadence with minimal exposure",
+    "tab3_title": "Decision frameworks",
+    "tab3_body": "A framework that survives ambiguity · Decisions anchored to downside and asymmetry",
+    "tab3_item1": "Decision trees, thresholds, and go/no-go",
+    "tab3_item2": "Risk envelope: downside-first logic",
+    "tab3_item3": "Operators’ checklist for execution",
     "outputLabel": "OUTPUT",
     "progress": {
       "paused": "Paused",
       "autoplay": "Autoplay · Hover or tap to navigate"
     }
   },
-
   "trackRecord": {
     "label": "TRACK RECORD (SELECTED)",
-    "metric1": {
-      "value": "50+",
-      "label": "Markets mapped"
-    },
-    "metric2": {
-      "value": "200+",
-      "label": "Signals tracked"
-    },
-    "metric3": {
-      "value": "150+",
-      "label": "Briefings delivered"
-    },
-    "metric4": {
-      "value": "30+",
-      "label": "Operators supported"
-    },
-    "footnote": "We don't publish what we protect."
+    "metric1": { "value": "50+", "label": "Markets mapped" },
+    "metric2": { "value": "200+", "label": "Signals tracked" },
+    "metric3": { "value": "150+", "label": "Briefings delivered" },
+    "metric4": { "value": "30+", "label": "Operators supported" },
+    "footnote": "We don't publish what we protect"
   },
   "manifesto": {
-    "statement": "Privacy is architecture.",
-    "subline": "We work upstream."
+    "statement": "Privacy is architecture",
+    "subline": "We work upstream"
   },
   "featuredDossiers": {
     "label": "FEATURED DOSSIERS",
@@ -127,49 +111,49 @@
     "dossier1": {
       "title": "The Quiet Shift",
       "year": "2026",
-      "description": "Where incentives move before narratives."
+      "description": "Where incentives move before narratives"
     },
     "dossier2": {
       "title": "Capital Gravity",
       "year": "2025",
-      "description": "Why flows concentrate, then rewrite markets."
+      "description": "Why flows concentrate, then rewrite markets"
     },
     "dossier3": {
       "title": "Second-Order Demand",
       "year": "2025",
-      "description": "When the real buyer isn't the user."
+      "description": "When the real buyer isn't the user"
     },
     "cta": "Request a briefing note",
-    "microcopy": "Dossiers are not public."
+    "microcopy": "Dossiers are not public"
   },
   "method": {
     "label": "METHOD",
     "phase1": {
       "title": "CAPTURE",
-      "bullet1": "We collect weak signals across systems.",
-      "bullet2": "Noise is filtered. Patterns are kept."
+      "bullet1": "We collect weak signals across systems",
+      "bullet2": "Noise is filtered · Patterns are kept"
     },
     "phase2": {
       "title": "FILTER",
-      "bullet1": "We separate narrative from mechanics.",
-      "bullet2": "We stress-test assumptions."
+      "bullet1": "We separate narrative from mechanics",
+      "bullet2": "We stress-test assumptions"
     },
     "phase3": {
       "title": "MODEL",
-      "bullet1": "We map causality and second-order effects.",
-      "bullet2": "We look for timing, not opinions."
+      "bullet1": "We map causality and second-order effects",
+      "bullet2": "We look for timing, not opinions"
     },
     "phase4": {
       "title": "ROUTE",
-      "bullet1": "We turn insight into action paths.",
-      "bullet2": "Clear decisions. Minimal exposure."
+      "bullet1": "We turn insight into action paths",
+      "bullet2": "Clear decisions · Minimal exposure"
     },
     "phase5": {
       "title": "REVIEW",
-      "bullet1": "We update the model as reality moves.",
-      "bullet2": "Continuous refinement."
+      "bullet1": "We update the model as reality moves",
+      "bullet2": "Continuous refinement"
     },
-    "finalLine": "We don't sell certainty. We build advantage.",
+    "finalLine": "We don't sell certainty · We build advantage",
     "statusLabel": "STATUS",
     "activeWindow": "Active window",
     "outputLabel": "OUTPUT",
@@ -190,7 +174,7 @@
     "environment3": "Consumer brands",
     "environment4": "Private investment",
     "environment5": "Agency networks",
-    "footnote": "Names are shared privately."
+    "footnote": "Names are shared privately"
   },
   "extracts": {
     "label": "EXTRACTS",
@@ -211,23 +195,23 @@
     "label": "BRIEFING NOTE",
     "title": "Signals That Don't Trend (Yet)",
     "extract": {
-      "line1": "A short list of quiet shifts that precede demand.",
-      "line2": "Updated monthly. Shared privately."
+      "line1": "A short list of quiet shifts that precede demand",
+      "line2": "Updated monthly · Shared privately"
     },
     "cta": "Request access to notes",
     "stamp": "Updated monthly"
   },
   "finalCta": {
-    "title": "Access is curated.",
+    "title": "Access is curated",
     "subcopy": {
-      "line1": "If you operate where timing matters, request entry.",
-      "line2": "Limited intake. Private channel."
+      "line1": "If you operate where timing matters, request entry",
+      "line2": "Limited intake · Private channel"
     },
     "cta": "Request access",
-    "microcopy": "No spam. No public list. No noise."
+    "microcopy": "No spam · No public list · No noise"
   },
   "footer": {
-    "mantra": "The great things aren't announced. They're coordinated",
+    "mantra": "The great things aren't announced · They're coordinated",
     "quickLinks": {
       "title": "Quick Links",
       "system": "System",

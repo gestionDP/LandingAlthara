@@ -32,7 +32,7 @@ export function Carousel({
 
   return (
     <div className={`relative ${className}`}>
-      <div className="relative overflow-hidden">
+      <div className="relative ">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
