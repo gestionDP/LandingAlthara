@@ -29,7 +29,7 @@ export default function FinalCta() {
       >
         <div className="absolute inset-0">
           <video
-            controls
+            autoPlay
             muted
             loop
             playsInline
