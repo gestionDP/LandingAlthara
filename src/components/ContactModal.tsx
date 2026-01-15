@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { BottomSheet, BottomSheetContent } from "@/components/ui/bottom-sheet";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { contactService, ContactFormData } from "@/lib/api";
-import { useTranslations } from "next-intl";
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { BottomSheet, BottomSheetContent } from '@/components/ui/bottom-sheet';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { contactService, ContactFormData } from '@/lib/api';
+import { useTranslations } from 'next-intl';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -15,15 +15,15 @@ interface ContactModalProps {
 }
 
 export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
-  const t = useTranslations("contactModal");
+  const t = useTranslations('contactModal');
   const [formData, setFormData] = useState<ContactFormData>({
-    email: "",
-    phone: "",
+    email: '',
+    phone: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<
-    "idle" | "success" | "error"
-  >("idle");
+    'idle' | 'success' | 'error'
+  >('idle');
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -32,30 +32,30 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     };
 
     checkMobile();
-    window.addEventListener("resize", checkMobile);
+    window.addEventListener('resize', checkMobile);
 
-    return () => window.removeEventListener("resize", checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSubmitStatus("idle");
+    setSubmitStatus('idle');
 
     const result = await contactService.submitContactForm(formData);
 
     if (result.success) {
-      setSubmitStatus("success");
+      setSubmitStatus('success');
       setFormData({
-        email: "",
-        phone: "",
+        email: '',
+        phone: '',
       });
       setTimeout(() => {
         onClose();
-        setSubmitStatus("idle");
+        setSubmitStatus('idle');
       }, 2000);
     } else {
-      setSubmitStatus("error");
+      setSubmitStatus('error');
     }
 
     setIsSubmitting(false);
@@ -81,7 +81,6 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             alt="Althara Logo"
             width={200}
             height={50}
-      
           />
         </div>
       )}
@@ -94,7 +93,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             value={formData.email}
             onChange={handleChange}
             required
-            placeholder={t("form.email")}
+            placeholder={t('form.email')}
             className="h-12"
           />
           <Input
@@ -102,23 +101,23 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            placeholder={t("form.phone")}
+            placeholder={t('form.phone')}
             className="h-12"
           />
         </div>
 
-        {submitStatus === "success" && (
+        {submitStatus === 'success' && (
           <div className="p-3 bg-green-50 border border-green-200">
             <p className="text-green-700 text-sm font-medium text-center">
-              {t("messages.success")}
+              {t('messages.success')}
             </p>
           </div>
         )}
 
-        {submitStatus === "error" && (
+        {submitStatus === 'error' && (
           <div className="p-3 bg-red-50 border border-red-200">
             <p className="text-red-700 text-sm font-medium text-center">
-              {t("messages.error")}
+              {t('messages.error')}
             </p>
           </div>
         )}
@@ -129,7 +128,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             disabled={isSubmitting}
             className="w-full h-12 bg-[#0a0a0a] hover:bg-[#0a0a0a]/90 text-[#e6e2d7]"
           >
-            {isSubmitting ? t("form.submitting") : t("form.submit")}
+            {isSubmitting ? t('form.submitting') : t('form.submit')}
           </Button>
         </div>
       </form>
@@ -149,9 +148,9 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto p-0">
-        <DialogTitle className="sr-only">{t("title")}</DialogTitle>
+        <DialogTitle className="sr-only">{t('title')}</DialogTitle>
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[500px]">
-          <div className="relative overflow-hidden">
+          <div className="relative ">
             <Image
               src="/jpg/4.jpg"
               alt="Althara - Plataforma de inversión premium"
@@ -162,10 +161,10 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             <div className="absolute inset-0 flex items-center justify-center p-8 lg:p-12">
               <div className="text-center text-[#e6e2d7] px-6 lg:px-8">
                 <h2 className="text-3xl lg:text-4xl font-light mb-4 leading-tight">
-                  {t("joinTitle")}
+                  {t('joinTitle')}
                 </h2>
                 <p className="text-base lg:text-lg leading-relaxed opacity-90">
-                  {t("description")}
+                  {t('description')}
                 </p>
               </div>
             </div>

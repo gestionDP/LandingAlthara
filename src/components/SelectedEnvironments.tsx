@@ -29,7 +29,9 @@ export default function SelectedEnvironments() {
 
   const prefersReducedMotion = React.useMemo(() => {
     if (typeof window === 'undefined') return false;
-    return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    return (
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    );
   }, []);
 
   const pauseTemporarily = React.useCallback((ms: number) => {
@@ -44,14 +46,15 @@ export default function SelectedEnvironments() {
 
     const id = window.setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % environments.length);
-    }, 2400); 
+    }, 2400);
 
     return () => window.clearInterval(id);
   }, [isPaused, environments.length, prefersReducedMotion]);
 
   React.useEffect(() => {
     return () => {
-      if (resumeTimeoutRef.current) window.clearTimeout(resumeTimeoutRef.current);
+      if (resumeTimeoutRef.current)
+        window.clearTimeout(resumeTimeoutRef.current);
     };
   }, []);
 
@@ -65,12 +68,12 @@ export default function SelectedEnvironments() {
 
   return (
     <section
-      className="relative py-0 bg-[#0a0a0a] overflow-hidden"
+      className="relative bg-[#0a0a0a] h-screen w-full overflow-hidden"
       onPointerEnter={() => setIsPaused(true)}
       onPointerLeave={() => setIsPaused(false)}
     >
-      <div className="max-w-[1920px] mx-auto w-full">
-        <div className={`grid ${gridColsClass} gap-0`}>
+      <div className="max-w-[1920px] mx-auto w-full h-full">
+        <div className={`grid ${gridColsClass} gap-0 h-full`}>
           {environments.map((env, idx) => {
             const isActive = idx === activeIndex;
 
@@ -90,15 +93,14 @@ export default function SelectedEnvironments() {
                   setActiveIndex(idx);
                   pauseTemporarily(3500);
                 }}
-             
                 onPointerDown={() => {
                   setActiveIndex(idx);
                   pauseTemporarily(3500);
                 }}
-                className="relative text-left overflow-hidden"
+                className="relative text-left "
                 aria-pressed={isActive}
               >
-                <div className="relative h-[300px] sm:h-[340px] md:h-[320px] lg:h-[360px]">
+                <div className="relative h-full min-h-[220px]">
                   <Image
                     src={env.img}
                     alt={env.label}
@@ -125,7 +127,6 @@ export default function SelectedEnvironments() {
 
                   <div className="absolute inset-0 flex items-end p-4 sm:p-5 md:p-6">
                     <motion.div
-                      animate={{ opacity: isActive ? 1 : 0.75, scale: 1, y: 0 }}
                       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                       className="w-full"
                     >

@@ -25,7 +25,7 @@ export default function FinalCta() {
       <section
         ref={ref as React.RefObject<HTMLElement>}
         id="access"
-        className="relative h-[80vh] lg:h-screen w-full overflow-hidden"
+        className="relative  lg:h-screen w-full h-screen"
       >
         <div className="absolute inset-0">
           <video

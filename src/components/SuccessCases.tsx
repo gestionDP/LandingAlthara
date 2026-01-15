@@ -48,7 +48,7 @@ export default function SuccessCases() {
   ];
 
   return (
-    <section className="relative py-20 overflow-hidden w-full min-w-full">
+    <section className="relative py-20  w-full min-w-full">
       <div className="absolute inset-0 w-full">
         <Image
           src="/jpg/21.jpg"
@@ -74,7 +74,7 @@ export default function SuccessCases() {
           {cases.map((caseItem) => (
             <Card
               key={caseItem.id}
-              className="h-full rounded-none border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden backdrop-blur-sm flex flex-col p-0 relative"
+              className="h-full rounded-none border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2  backdrop-blur-sm flex flex-col p-0 relative"
               style={{ backgroundColor: 'rgba(16, 32, 39, 0.95)' }}
             >
               <div className="absolute top-4 right-4 z-10">

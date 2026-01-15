@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useTranslations } from 'next-intl';
-import { useReveal } from '@/hooks/useReveal';
+import React from "react";
+import { useTranslations } from "next-intl";
+import { useReveal } from "@/hooks/useReveal";
 
 export default function ManifestoStatement() {
-  const t = useTranslations('manifesto');
+  const t = useTranslations("manifesto");
   const { ref, isRevealed } = useReveal({ threshold: 0.2 });
 
   return (
     <section
       ref={ref as React.RefObject<HTMLElement>}
-      className="relative py-32 lg:py-48 overflow-hidden bg-[#0a0a0a]"
+      className="relative bg-[#0a0a0a] h-screen w-full overflow-hidden flex items-center justify-center"
     >
       <div className="absolute inset-0">
         <video
@@ -44,22 +44,20 @@ export default function ManifestoStatement() {
         <div className="absolute left-0 right-0 bottom-0 h-px bg-[#e6e2d7]/10" />
       </div>
 
-      <div className="max-w-[1920px] mx-auto px-6 lg:px-12 relative z-10">
+      <div className="max-w-[1920px] mx-auto px-6 lg:px-12 relative z-10 w-full">
         <div
           className={[
-            'max-w-5xl mx-auto text-center transition-all duration-1000',
-            isRevealed
-              ? 'opacity-100 translate-y-0'
-              : 'opacity-0 translate-y-8',
-          ].join(' ')}
+            "max-w-5xl mx-auto text-center transition-all duration-1000",
+            isRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+          ].join(" ")}
         >
           <h2 className="font-playfair text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-normal text-[#e6e2d7] leading-[1.1] mb-8">
-            {t('statement')}
+            {t("statement")}
           </h2>
 
-          {t('subline') && (
+          {t("subline") && (
             <p className="text-sm md:text-base text-[#e6e2d7]/60 font-light tracking-wide-editorial">
-              {t('subline')}
+              {t("subline")}
             </p>
           )}
         </div>

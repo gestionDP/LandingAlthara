@@ -8,7 +8,7 @@ export default function RulesOfTheGame() {
   const t = useTranslations('rulesOfTheGame');
 
   return (
-    <section id="reglas" className="relative min-h-[70vh] flex items-center justify-center overflow-hidden py-16">
+    <section id="reglas" className="relative min-h-[70vh] flex items-center justify-center  py-16">
       <div className="absolute inset-0">
         <video
           autoPlay

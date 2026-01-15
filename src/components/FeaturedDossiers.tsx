@@ -68,7 +68,7 @@ export default function FeaturedDossiers() {
       <section
         ref={ref as React.RefObject<HTMLElement>}
         id="dossiers"
-        className="relative py-20 md:py-24 lg:py-32 overflow-hidden"
+        className="relative py-20 md:py-24 lg:py-32 "
       >
         <div className="pointer-events-none absolute inset-0">
           <Image
@@ -115,7 +115,7 @@ export default function FeaturedDossiers() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-12 lg:gap-16">
               <div className="order-1 lg:order-2 lg:col-span-7 lg:sticky lg:top-20 lg:self-start lg:h-[620px]">
-                <div className="relative w-full h-[360px] sm:h-[420px] lg:h-full border border-[#e6e2d7]/15 bg-[#0f0f0f]/30 backdrop-blur-xl overflow-hidden">
+                <div className="relative w-full h-[360px] sm:h-[420px] lg:h-full border border-[#e6e2d7]/15 bg-[#0f0f0f]/30 backdrop-blur-xl ">
                   <motion.div
                     className="absolute"
                     animate={{
@@ -125,7 +125,7 @@ export default function FeaturedDossiers() {
                     transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                     style={{ width: 280, height: 190 }}
                   >
-                    <div className="relative w-full h-full overflow-hidden border border-[#e6e2d7]/12 bg-[#e6e2d7]/[0.04] backdrop-blur-md">
+                    <div className="relative w-full h-full  border border-[#e6e2d7]/12 bg-[#e6e2d7]/[0.04] backdrop-blur-md">
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#e6e2d7]/[0.10] to-transparent" />
                     </div>
                   </motion.div>
@@ -283,18 +283,7 @@ export default function FeaturedDossiers() {
               </div>
             </div>
 
-            <div className="mt-12 md:mt-14 lg:mt-16 max-w-2xl">
-              <Button
-                onClick={openModal}
-                className="h-12 px-8 font-light tracking-editorial text-sm bg-[#0f0f0f]/25 text-[#e6e2d7] border border-[#e6e2d7]/25 hover:bg-[#0f0f0f]/35 hover:border-[#e6e2d7]/40 transition-all duration-200 backdrop-blur-xl"
-              >
-                {t('cta')}
-              </Button>
-
-              <p className="mt-6 text-xs text-[#e6e2d7]/55 font-light tracking-wide-editorial">
-                {t('microcopy')}
-              </p>
-            </div>
+      
           </motion.div>
         </div>
       </section>

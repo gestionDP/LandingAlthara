@@ -40,7 +40,7 @@ export default function BriefingNote() {
             </div>
 
             <motion.div
-              className="relative overflow-hidden group cursor-pointer"
+              className="relative  group cursor-pointer"
               onClick={openModal}
               whileHover={{ scale: 1.01 }}
               transition={{ duration: 0.2 }}

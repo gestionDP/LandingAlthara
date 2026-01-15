@@ -57,7 +57,7 @@ export default function PositionSection() {
   return (
     <section
       ref={ref as React.RefObject<HTMLElement>}
-      className="relative py-24 lg:py-32 overflow-hidden bg-[#0a0a0a]"
+      className="relative py-24 lg:py-32  bg-[#0a0a0a] h-screen"
       onMouseEnter={() => {}}
       onMouseLeave={() => {}}
     >

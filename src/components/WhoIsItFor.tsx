@@ -28,7 +28,7 @@ export default function WhoIsItFor() {
   ];
 
   return (
-    <section id="para-quien-es" className="relative min-h-[70vh] flex items-center justify-center overflow-hidden py-16">
+    <section id="para-quien-es" className="relative min-h-[70vh] flex items-center justify-center  py-16">
       <div className="absolute inset-0">
         <Image
           src="/jpg/20.jpg"
@@ -57,7 +57,7 @@ export default function WhoIsItFor() {
           {profiles.map((profile) => (
             <motion.div
               key={profile.key}
-              className="relative h-96 overflow-hidden group cursor-pointer"
+              className="relative h-96  group cursor-pointer"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
             >

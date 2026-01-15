@@ -17,20 +17,54 @@ import ScrollToTop from '@/components/ScrollToTop';
 import { useSnapWheel } from '@/hooks/useSnapWheel';
 
 export default function Home() {
-  useSnapWheel({ enabled: true });
+  useSnapWheel({
+    enabled: true,
+    containerId: 'snapRoot',
+    lockMs: 900,
+    triggerDelta: 12,
+  });
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#102027]">
+    <div
+      id="snapRoot"
+      className="snapRoot relative bg-[#102027] overflow-x-hidden"
+    >
       <Navbar />
-      <Hero />
-      <PositionSection />
-      <ManifestoStatement />
-      <FeaturedDossiers />
-      <EditorialCollage />
-      <MethodPhases />
-      <SelectedEnvironments />
-      <FinalCta />
-      <Footer />
+
+      <section className="snapSection">
+        <Hero />
+      </section>
+
+      <section className="snapSection">
+        <PositionSection />
+      </section>
+
+      <section className="snapSection">
+        <ManifestoStatement />
+      </section>
+
+      <section className="snapSection">
+        <FeaturedDossiers />
+      </section>
+
+      <section className="snapSection">
+        <EditorialCollage />
+      </section>
+
+      <section className="snapSection">
+        <MethodPhases />
+      </section>
+
+      <section className="snapSection">
+        <SelectedEnvironments />
+      </section>
+
+      <section className="snapSection">
+        <FinalCta />
+      </section>
+
+      {/* <Footer /> */}
+
       <ScrollToTop />
     </div>
   );

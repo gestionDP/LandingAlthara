@@ -19,7 +19,7 @@ export default function Hero() {
 
   return (
     <>
-      <section className="relative h-screen w-full overflow-hidden">
+      <section className="relative h-screen w-full ">
         <div className="absolute inset-0">
           <video
             autoPlay
@@ -98,17 +98,7 @@ export default function Hero() {
                 </button>
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={
-                  ctasReveal.isRevealed ? { opacity: 1 } : { opacity: 0 }
-                }
-                transition={{ delay: 0.2, duration: 0.55 }}
-              >
-                <p className="text-xs text-[#e6e2d7]/50 font-light tracking-wide-editorial">
-                  {t('microcopy')}
-                </p>
-              </motion.div>
+            
             </div>
           </div>
         </div>

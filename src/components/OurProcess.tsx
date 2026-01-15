@@ -9,7 +9,7 @@ export default function OurProcess() {
   const t = useTranslations('ourProcess');
 
   return (
-    <section id="proceso" className="relative py-16 overflow-hidden">
+    <section id="proceso" className="relative py-16 ">
       <div className="absolute inset-0">
         <Image
           src="/jpg/15.jpg"

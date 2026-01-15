@@ -23,7 +23,7 @@ export default function WhyTrustUs() {
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <section id="por-que-confiar" className="relative overflow-hidden">
+    <section id="por-que-confiar" className="relative ">
       <div className="absolute inset-0">
         <div className="absolute inset-0">
           <Image
