@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import {
   LayoutGroup,
   motion,
+  useInView,
   useReducedMotion,
   type Transition,
 } from 'framer-motion';
@@ -16,6 +17,22 @@ type EnvTile = {
 };
 
 const EASE_OUT: Transition['ease'] = [0.16, 1, 0.3, 1];
+
+const SPEED = 1.6;
+const AUTOPLAY_MS = 4200;
+
+const T = {
+  enter: 0.9 * SPEED,
+  stagger: 0.06 * SPEED,
+  tile: 0.45 * SPEED,
+  image: 0.7 * SPEED,
+  overlay: 0.55 * SPEED,
+  label: 0.35 * SPEED,
+  subtitle: 0.35 * SPEED,
+  outline: 0.5 * SPEED,
+  bar: 0.5 * SPEED,
+  dot: 0.25 * SPEED,
+};
 
 export default function SelectedEnvironments() {
   const t = useTranslations('selectedEnvironments');
@@ -72,7 +89,8 @@ export default function SelectedEnvironments() {
     };
 
     document.addEventListener('visibilitychange', onVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', onVisibilityChange);
+    return () =>
+      document.removeEventListener('visibilitychange', onVisibilityChange);
   }, []);
 
   React.useEffect(() => {
@@ -86,10 +104,16 @@ export default function SelectedEnvironments() {
     clearAutoplayTimeout();
     autoplayTimeoutRef.current = window.setTimeout(() => {
       setActiveIndex((prev) => (prev + 1) % environments.length);
-    }, 2400);
+    }, AUTOPLAY_MS);
 
     return () => clearAutoplayTimeout();
-  }, [reduceMotion, isPaused, environments.length, clearAutoplayTimeout, activeIndex]);
+  }, [
+    reduceMotion,
+    isPaused,
+    environments.length,
+    clearAutoplayTimeout,
+    activeIndex,
+  ]);
 
   React.useEffect(() => {
     return () => {
@@ -112,27 +136,79 @@ export default function SelectedEnvironments() {
     'lg:grid-cols-5',
   ].join(' ');
 
-  const tileVariants = {
-    rest: { scale: 1 },
-    active: { scale: 1.01 },
-  };
+  const sectionRef = React.useRef<HTMLElement | null>(null);
+  const inView = useInView(sectionRef, {
+    once: true,
+    amount: 0.25,
+  });
+
+  const containerVariants = reduceMotion
+    ? {
+        hidden: { opacity: 0 },
+        show: { opacity: 1 },
+      }
+    : {
+        hidden: { opacity: 0 },
+        show: {
+          opacity: 1,
+          transition: {
+            staggerChildren: T.stagger,
+            delayChildren: 0.06 * SPEED,
+          },
+        },
+      };
+
+  const tileVariants = reduceMotion
+    ? {
+        hidden: { opacity: 0 },
+        rest: { opacity: 1, scale: 1 },
+        active: { opacity: 1, scale: 1.01 },
+      }
+    : {
+        hidden: {
+          opacity: 0,
+          y: 22,
+          filter: 'blur(12px)',
+          clipPath: 'inset(100% 0% 0% 0% )', 
+        },
+        rest: {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          clipPath: 'inset(0% 0% 0% 0% )',
+          scale: 1,
+          transition: { duration: T.enter, ease: EASE_OUT },
+        },
+        active: {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          clipPath: 'inset(0% 0% 0% 0% )',
+          scale: 1.01,
+          transition: { duration: T.tile, ease: EASE_OUT },
+        },
+      };
 
   const overlayVariants = {
+    hidden: { opacity: 0.75 },
     rest: { opacity: 0.55 },
     active: { opacity: 0.2 },
   };
 
   const imageVariants = {
+    hidden: { scale: 1.02, filter: 'grayscale(100%) saturate(50%) blur(6px)' },
     rest: { scale: 1, filter: 'grayscale(100%) saturate(50%)' },
     active: { scale: 1.03, filter: 'grayscale(0%) saturate(115%)' },
   };
 
   const labelVariants = {
+    hidden: { y: 14, opacity: 0 },
     rest: { y: 8, opacity: 0.78 },
     active: { y: 0, opacity: 1 },
   };
 
   const subtitleBarVariants = {
+    hidden: { opacity: 0 },
     rest: { opacity: 0.9 },
     active: { opacity: 1 },
   };
@@ -169,25 +245,32 @@ export default function SelectedEnvironments() {
 
   return (
     <section
-      className="relative bg-[#0a0a0a]  w-full overflow-hidden"
+      ref={sectionRef as unknown as React.RefObject<HTMLElement>}
+      className="relative bg-[#0a0a0a] w-full overflow-hidden"
       onPointerEnter={() => setIsPaused(true)}
       onPointerLeave={() => setIsPaused(false)}
     >
       <div className="max-w-[1920px] mx-auto w-full h-full">
         <LayoutGroup>
-          <div className={`grid ${gridColsClass} gap-0 min-h-[70vh]`}>
+          <motion.div
+            className={`grid ${gridColsClass} gap-0 min-h-[70vh]`}
+            variants={containerVariants}
+            initial="hidden"
+            animate={inView ? 'show' : 'hidden'}
+          >
             {environments.map((env, idx) => {
               const isActive = idx === activeIndex;
+
+              const state = !inView ? 'hidden' : isActive ? 'active' : 'rest';
 
               return (
                 <motion.button
                   key={`${env.img}-${idx}`}
                   type="button"
-                  initial={false}
-                  animate={isActive ? 'active' : 'rest'}
-                  whileHover={reduceMotion ? undefined : 'active'}
                   variants={tileVariants}
-                  transition={{ duration: 0.45, ease: EASE_OUT }}
+                  initial="hidden"
+                  animate={state}
+                  whileHover={reduceMotion ? undefined : 'active'}
                   onFocus={() => {
                     setActiveIndex(idx);
                     pauseTemporarily(3500);
@@ -207,12 +290,13 @@ export default function SelectedEnvironments() {
                   ].join(' ')}
                   aria-pressed={isActive}
                   aria-label={env.label}
+                  style={{ willChange: reduceMotion ? undefined : 'transform, opacity, filter, clip-path' }}
                 >
                   <div className="relative h-full min-h-[220px]">
                     <motion.div
                       className="absolute inset-0"
                       variants={imageVariants}
-                      transition={{ duration: 0.7, ease: EASE_OUT }}
+                      transition={{ duration: T.image, ease: EASE_OUT }}
                       style={{ willChange: reduceMotion ? undefined : 'transform, filter' }}
                     >
                       <Image
@@ -227,9 +311,9 @@ export default function SelectedEnvironments() {
                     </motion.div>
 
                     <motion.div
-                      className="absolute inset-0 "
+                      className="absolute inset-0"
                       variants={overlayVariants}
-                      transition={{ duration: 0.55, ease: EASE_OUT }}
+                      transition={{ duration: T.overlay, ease: EASE_OUT }}
                       style={{ willChange: reduceMotion ? undefined : 'opacity' }}
                     />
 
@@ -238,8 +322,8 @@ export default function SelectedEnvironments() {
                     {isActive && !reduceMotion && (
                       <motion.div
                         layoutId="activeOutline"
-                        className="pointer-events-none absolute inset-0 "
-                        transition={{ duration: 0.5, ease: EASE_OUT }}
+                        className="pointer-events-none absolute inset-0"
+                        transition={{ duration: T.outline, ease: EASE_OUT }}
                       />
                     )}
 
@@ -247,19 +331,21 @@ export default function SelectedEnvironments() {
                       <motion.div
                         className="w-full"
                         variants={labelVariants}
-                        transition={{ duration: 0.35, ease: EASE_OUT }}
+                        transition={{ duration: T.label, ease: EASE_OUT, delay: reduceMotion ? 0 : 0.05 }}
                         style={{ willChange: reduceMotion ? undefined : 'transform, opacity' }}
                       >
                         <motion.div
                           variants={subtitleBarVariants}
-                          transition={{ duration: 0.35, ease: EASE_OUT }}
+                          transition={{ duration: T.subtitle, ease: EASE_OUT, delay: reduceMotion ? 0 : 0.05 }}
                           className={[
                             'w-full backdrop-blur-xl',
                             'px-4 py-3 sm:px-5 sm:py-4',
                             'bg-white/10',
                           ].join(' ')}
                           style={{
-                            backgroundColor: isActive ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.07)',
+                            backgroundColor: isActive
+                              ? 'rgba(255,255,255,0.12)'
+                              : 'rgba(255,255,255,0.07)',
                           }}
                         >
                           <div
@@ -284,7 +370,7 @@ export default function SelectedEnvironments() {
                       <motion.div
                         className="h-2 w-2 rounded-full bg-white"
                         animate={{ opacity: isActive ? 0.7 : 0.2 }}
-                        transition={{ duration: 0.25, ease: EASE_OUT }}
+                        transition={{ duration: T.dot, ease: EASE_OUT }}
                       />
                     </div>
 
@@ -292,14 +378,14 @@ export default function SelectedEnvironments() {
                       <motion.div
                         layoutId="activeBar"
                         className="pointer-events-none absolute bottom-0 left-0 right-0 h-[2px] bg-white/50"
-                        transition={{ duration: 0.5, ease: EASE_OUT }}
+                        transition={{ duration: T.bar, ease: EASE_OUT }}
                       />
                     )}
                   </div>
                 </motion.button>
               );
             })}
-          </div>
+          </motion.div>
         </LayoutGroup>
       </div>
     </section>

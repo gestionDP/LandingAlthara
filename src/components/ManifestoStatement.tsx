@@ -6,9 +6,66 @@ import { motion, useReducedMotion } from 'framer-motion';
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
+const SPEED = 1.9;
+
+const makeVariants = (reduce: boolean) => {
+  if (reduce) {
+    return {
+      wrap: { hidden: { opacity: 0 }, show: { opacity: 1 } },
+      title: { hidden: { opacity: 0 }, show: { opacity: 1 } },
+      sub: { hidden: { opacity: 0 }, show: { opacity: 1 } },
+    };
+  }
+
+  return {
+    wrap: {
+      hidden: { opacity: 0 },
+      show: {
+        opacity: 1,
+        transition: {
+          staggerChildren: 0.085 * SPEED,
+          delayChildren: 0.02 * SPEED,
+        },
+      },
+    },
+    title: {
+      hidden: {
+        opacity: 0,
+        y: 34,
+        filter: 'blur(16px)',
+        clipPath: 'inset(100% 0% 0% 0% round 18px)',
+      },
+      show: {
+        opacity: 1,
+        y: [34, -2, 0],
+        filter: 'blur(0px)',
+        clipPath: 'inset(0% 0% 0% 0% round 18px)',
+        transition: { duration: 1.05 * SPEED, ease: EASE },
+      },
+    },
+    sub: {
+      hidden: {
+        opacity: 0,
+        y: 18,
+        filter: 'blur(12px)',
+        clipPath: 'inset(100% 0% 0% 0% round 12px)',
+      },
+      show: {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        clipPath: 'inset(0% 0% 0% 0% round 12px)',
+        transition: { duration: 0.75 * SPEED, ease: EASE },
+      },
+    },
+  };
+};
+
+
 export default function ManifestoStatement() {
   const t = useTranslations('manifesto');
   const reduce = useReducedMotion();
+  const v = makeVariants(!!reduce);
 
   return (
     <section className="relative bg-[#0a0a0a] min-h-screen w-full overflow-hidden flex items-center justify-center">
@@ -45,41 +102,23 @@ export default function ManifestoStatement() {
       <div className="max-w-[1920px] mx-auto px-6 lg:px-12 relative z-10 w-full">
         <div className="max-w-5xl mx-auto text-center">
           <motion.div
-            initial={
-              reduce
-                ? { opacity: 0 }
-                : {
-                    opacity: 0,
-                    y: 18,
-                    filter: 'blur(10px)',
-                    clipPath: 'inset(12% 0% 12% 0% round 18px)',
-                  }
-            }
-            whileInView={
-              reduce
-                ? { opacity: 1 }
-                : {
-                    opacity: 1,
-                    y: 0,
-                    filter: 'blur(0px)',
-                    clipPath: 'inset(0% 0% 0% 0% round 18px)',
-                  }
-            }
+            variants={v.wrap}
+            initial="hidden"
+            whileInView="show"
             viewport={{ once: true, amount: 0.45 }}
-            transition={{ duration: 0.95, ease: EASE }}
             style={{ willChange: 'transform, opacity, filter, clip-path' }}
             className="transform-gpu"
           >
-            <h2 className="font-montserrat text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium text-[#e6e2d7] leading-[1.05] mb-8">
+            <motion.h2
+              variants={v.title}
+              className="font-montserrat text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium text-[#e6e2d7] leading-[1.05] mb-8"
+            >
               {t('statement')}
-            </h2>
+            </motion.h2>
 
             {t('subline') && (
               <motion.p
-                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
-                whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.55 }}
-                transition={{ duration: 0.65, ease: EASE, delay: 0.08 }}
+                variants={v.sub}
                 className="text-sm md:text-base text-[#e6e2d7]/60 font-light tracking-wide-editorial"
               >
                 {t('subline')}
@@ -88,11 +127,12 @@ export default function ManifestoStatement() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6, filter: 'blur(6px)' }}
+            whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
             viewport={{ once: true, amount: 0.6 }}
-            transition={{ duration: 0.6, ease: EASE, delay: 0.18 }}
+            transition={{ duration: 0.6, ease: EASE, delay: 0.22 }}
             className="mt-10 flex justify-center"
+            style={{ willChange: 'transform, opacity, filter' }}
           >
             <div className="h-px w-24 bg-[#e6e2d7]/18" />
           </motion.div>
