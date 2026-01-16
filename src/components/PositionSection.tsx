@@ -3,11 +3,12 @@
 import React from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { useReveal } from '@/hooks/useReveal';
 import { motion, AnimatePresence } from 'framer-motion';
 
+type PanelKey = 'signals' | 'routes' | 'edge';
+
 type Panel = {
-  key: 'signals' | 'routes' | 'edge';
+  key: PanelKey;
   claim: string;
   title: string;
   body: string;
@@ -15,9 +16,10 @@ type Panel = {
   bg: string;
 };
 
+const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
 export default function PositionSection() {
   const t = useTranslations('position');
-  const { ref, isRevealed } = useReveal({ type: 'text', threshold: 0.2 });
 
   const panels: Panel[] = [
     {
@@ -47,20 +49,10 @@ export default function PositionSection() {
   ];
 
   const [active, setActive] = React.useState(0);
-
   const current = panels[active];
 
-  const handleSelect = (idx: number) => {
-    setActive(idx);
-  };
-
   return (
-    <section
-      ref={ref as React.RefObject<HTMLElement>}
-      className="relative py-24 lg:py-32  bg-[#0a0a0a] h-screen"
-      onMouseEnter={() => {}}
-      onMouseLeave={() => {}}
-    >
+    <section className="relative bg-[#0a0a0a] min-h-screen overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
         <div className="hidden lg:grid absolute inset-0 grid-cols-3">
           {panels.map((p, idx) => {
@@ -70,27 +62,31 @@ export default function PositionSection() {
               <motion.div
                 key={p.key}
                 className="relative h-full w-full"
-                animate={{
-                  opacity: isActive ? 1 : 0.55,
-                  filter: isActive ? 'grayscale(0%)' : 'grayscale(100%)',
-                }}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                animate={{ opacity: isActive ? 1 : 0.9 }}
+                transition={{ duration: 0.55, ease: EASE }}
               >
                 <Image
                   src={p.bg}
                   alt=""
                   fill
                   priority={false}
-                  className="object-cover"
+                  className={[
+                    'object-cover',
+                    'transition-[filter,transform] duration-500 ease-out',
+                    isActive
+                      ? 'filter-none scale-[1.02]'
+                      : 'grayscale contrast-105 brightness-95',
+                  ].join(' ')}
                 />
 
                 <motion.div
                   className="absolute inset-0"
-                  animate={{ opacity: isActive ? 0 : 1 }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <div className="absolute inset-0 bg-[#0a0a0a]/12" />
-                </motion.div>
+                  animate={{
+                    opacity: isActive ? 0 : 1,
+                    backdropFilter: isActive ? 'blur(0px)' : 'blur(1.5px)',
+                  }}
+                  transition={{ duration: 0.55, ease: EASE }}
+                />
 
                 {idx < 2 && (
                   <div className="absolute right-0 top-0 h-full w-px bg-[#e6e2d7]/10" />
@@ -107,7 +103,7 @@ export default function PositionSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.7, ease: EASE }}
               className="absolute inset-0"
             >
               <Image
@@ -115,35 +111,47 @@ export default function PositionSection() {
                 alt=""
                 fill
                 priority={false}
-                className="object-cover grayscale"
+                className="object-cover"
               />
             </motion.div>
           </AnimatePresence>
-          <div className="absolute inset-0 bg-[#0a0a0a]/72" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/75 via-transparent to-transparent" />
+
+          <div className="absolute inset-0 bg-[#0a0a0a]/45" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/55 via-[#0a0a0a]/20 to-[#0a0a0a]/35" />
         </div>
 
         <div className="absolute left-0 right-0 top-0 h-px bg-[#e6e2d7]/10" />
         <div className="absolute left-0 right-0 bottom-0 h-px bg-[#e6e2d7]/10" />
       </div>
 
-      <div className="max-w-[1920px] mx-auto px-6 lg:px-12 relative z-10">
+      <div className="relative z-10 max-w-[1920px] mx-auto px-6 lg:px-12">
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={isRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-14"
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.8, ease: EASE }}
+          className="pt-20 md:pt-24 lg:pt-28"
         >
           <p className="text-xs tracking-extreme-editorial text-[#e6e2d7]/55 font-light">
             {t('label')}
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-10">
-          <div className="lg:col-span-5">
-            <div className="border border-[#e6e2d7]/10 bg-[#0f0f0f]/28 backdrop-blur-md">
-              <div className="p-7 md:p-9">
-                <div className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-10 pb-20 md:pb-24 lg:pb-28 pt-10 md:pt-12 lg:pt-14">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.75, ease: EASE }}
+            className="lg:col-span-5"
+          >
+            <motion.div
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.35, ease: EASE }}
+              className="border border-[#e6e2d7]/10 bg-[#0f0f0f]/30 backdrop-blur-md"
+            >
+              <div className="p-6 md:p-8">
+                <div className="space-y-5">
                   {panels.map((p, idx) => {
                     const isActive = idx === active;
 
@@ -152,43 +160,25 @@ export default function PositionSection() {
                         key={p.key}
                         type="button"
                         onClick={() => setActive(idx)}
-                        className="w-full text-left"
-                        aria-pressed={idx === active}
+                        className="w-full text-left group"
+                        aria-pressed={isActive}
                       >
-                        <motion.p
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={
-                            isRevealed
-                              ? { opacity: 1, y: 0 }
-                              : { opacity: 0, y: 10 }
-                          }
-                          transition={{
-                            duration: 0.55,
-                            delay: idx * 0.06,
-                            ease: [0.16, 1, 0.3, 1],
-                          }}
-                          className={[
-                            'font-playfair leading-[1.08] transition-all duration-300',
-                            isActive
-                              ? 'text-[#e6e2d7] text-2xl md:text-2xl'
-                              : 'text-[#e6e2d7]/55 text-2xl md:text-2xl',
-                          ].join(' ')}
-                        >
-                          {p.claim}
-                        </motion.p>
-
-                        <div className="mt-3 flex items-center gap-3">
-                          <span
+                        <div className="flex items-start justify-between gap-6">
+                          <p
                             className={[
-                              'h-px flex-1 transition-opacity duration-300',
+                              'font-montserrat leading-[1.08] transition-colors duration-300',
+                              'text-2xl md:text-2xl font-medium',
                               isActive
-                                ? 'bg-[#e6e2d7]/22 opacity-100'
-                                : 'bg-[#e6e2d7]/10 opacity-60',
+                                ? 'text-[#e6e2d7]'
+                                : 'text-[#e6e2d7]/55 group-hover:text-[#e6e2d7]/75',
                             ].join(' ')}
-                          />
+                          >
+                            {p.claim}
+                          </p>
+
                           <span
                             className={[
-                              'text-xs tracking-[0.28em] transition-opacity duration-300',
+                              'text-[11px] md:text-xs tracking-[0.28em] transition-opacity duration-300 pt-2',
                               isActive
                                 ? 'text-[#e6e2d7]/45 opacity-100'
                                 : 'text-[#e6e2d7]/18 opacity-70',
@@ -197,32 +187,75 @@ export default function PositionSection() {
                             /0{idx + 1}
                           </span>
                         </div>
+
+                        {/* Hairline + moving indicator */}
+                        <div className="mt-3 relative">
+                          <div className="h-px w-full bg-[#e6e2d7]/10" />
+                          {isActive && (
+                            <motion.div
+                              layoutId="active-indicator"
+                              className="absolute left-0 top-0 h-px w-full bg-[#e6e2d7]/25"
+                              transition={{ duration: 0.45, ease: EASE }}
+                            />
+                          )}
+                        </div>
                       </button>
                     );
                   })}
                 </div>
 
-                <p className="mt-10 text-base md:text-lg text-[#e6e2d7]/55 font-light leading-relaxed max-w-xl">
+                <p className="mt-8 text-base md:text-lg text-[#e6e2d7]/55 font-light leading-relaxed max-w-xl">
                   {t('paragraph')}
                 </p>
+
+                <div className="mt-8 lg:hidden flex items-center gap-2">
+                  {panels.map((_, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setActive(idx)}
+                      aria-label={`Go to panel ${idx + 1}`}
+                      className="flex-1"
+                    >
+                      <motion.div
+                        animate={{
+                          opacity: idx === active ? 1 : 0.45,
+                          scaleX: idx === active ? 1 : 0.7,
+                        }}
+                        transition={{ duration: 0.45, ease: EASE }}
+                        className="h-px origin-left bg-[#e6e2d7]/22 w-full"
+                      />
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           <div className="hidden lg:block lg:col-span-1">
             <div className="h-full w-px bg-[#e6e2d7]/10 mx-auto" />
           </div>
 
-          <div className="lg:col-span-6">
-            <div className="border border-[#e6e2d7]/10 bg-[#0f0f0f]/24 backdrop-blur-md">
-              <div className="p-7 md:p-9 min-h-[340px]">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.75, ease: EASE, delay: 0.06 }}
+            className="lg:col-span-6"
+          >
+            <motion.div
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.35, ease: EASE }}
+              className="border border-[#e6e2d7]/10 bg-[#0f0f0f]/26 backdrop-blur-md"
+            >
+              <div className="p-6 md:p-8 min-h-[320px] md:min-h-[340px]">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={current.key}
-                    initial={{ opacity: 0, y: 14 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.5, ease: EASE }}
                   >
                     <div className="flex items-start justify-between gap-6">
                       <div>
@@ -242,14 +275,14 @@ export default function PositionSection() {
                         </p>
                       </div>
 
-                      <div className="mt-1 h-2 w-2 rounded-full bg-[#e6e2d7]/18" />
+                      <div className="mt-2 h-2 w-2 rounded-full bg-[#e6e2d7]/18" />
                     </div>
 
-                    <div className="mt-8 space-y-3">
+                    <div className="mt-7 md:mt-8 space-y-3">
                       {current.items.map((item, i) => (
                         <div key={i} className="flex items-start gap-3">
                           <span className="text-[#e6e2d7]/28 mt-1">—</span>
-                          <p className="text-sm md:text-base text-[#e6e2d7]/70 font-light leading-relaxed">
+                          <p className="text-sm md:text-base text-[#e6e2d7]/72 font-light leading-relaxed">
                             {item}
                           </p>
                         </div>
@@ -258,16 +291,16 @@ export default function PositionSection() {
                   </motion.div>
                 </AnimatePresence>
 
-                <div className="mt-9 flex items-center gap-2">
+                <div className="mt-8 md:mt-9 flex items-center gap-2">
                   {panels.map((_, idx) => (
-                    <div
+                    <motion.div
                       key={idx}
-                      className={[
-                        'h-px flex-1 transition-opacity',
-                        idx === active
-                          ? 'bg-[#e6e2d7]/22 opacity-100'
-                          : 'bg-[#e6e2d7]/10 opacity-60',
-                      ].join(' ')}
+                      animate={{
+                        opacity: idx === active ? 1 : 0.55,
+                        scaleX: idx === active ? 1 : 0.7,
+                      }}
+                      transition={{ duration: 0.45, ease: EASE }}
+                      className="h-px origin-left bg-[#e6e2d7]/20 flex-1"
                     />
                   ))}
                 </div>
@@ -276,8 +309,8 @@ export default function PositionSection() {
                   {t('progress.paused')}
                 </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </section>
