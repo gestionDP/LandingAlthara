@@ -129,27 +129,27 @@
   "method": {
     "label": "METHOD",
     "phase1": {
-      "title": "CAPTURE",
+      "title": "Capture",
       "bullet1": "We collect weak signals across systems",
       "bullet2": "Noise is filtered · Patterns are kept"
     },
     "phase2": {
-      "title": "FILTER",
+      "title": "Filter",
       "bullet1": "We separate narrative from mechanics",
       "bullet2": "We stress-test assumptions"
     },
     "phase3": {
-      "title": "MODEL",
+      "title": "Model",
       "bullet1": "We map causality and second-order effects",
       "bullet2": "We look for timing, not opinions"
     },
     "phase4": {
-      "title": "ROUTE",
+      "title": "Route",
       "bullet1": "We turn insight into action paths",
       "bullet2": "Clear decisions · Minimal exposure"
     },
     "phase5": {
-      "title": "REVIEW",
+      "title": "Review",
       "bullet1": "We update the model as reality moves",
       "bullet2": "Continuous refinement"
     },
@@ -159,7 +159,7 @@
     "outputLabel": "OUTPUT",
     "outputs": ["Briefing", "Route", "Model", "Action path", "Review loop"],
     "mode": {
-      "manual": "MANUAL",
+      "manual": "Manual",
       "autoplay": "AUTOPLAY"
     },
     "controls": {

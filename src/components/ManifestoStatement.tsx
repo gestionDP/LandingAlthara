@@ -1,18 +1,17 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useTranslations } from "next-intl";
-import { useReveal } from "@/hooks/useReveal";
+import React from 'react';
+import { useTranslations } from 'next-intl';
+import { motion, useReducedMotion } from 'framer-motion';
+
+const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 export default function ManifestoStatement() {
-  const t = useTranslations("manifesto");
-  const { ref, isRevealed } = useReveal({ threshold: 0.2 });
+  const t = useTranslations('manifesto');
+  const reduce = useReducedMotion();
 
   return (
-    <section
-      ref={ref as React.RefObject<HTMLElement>}
-      className="relative bg-[#0a0a0a] h-screen w-full overflow-hidden flex items-center justify-center"
-    >
+    <section className="relative bg-[#0a0a0a] min-h-screen w-full overflow-hidden flex items-center justify-center">
       <div className="absolute inset-0">
         <video
           className="h-full w-full object-cover"
@@ -21,13 +20,12 @@ export default function ManifestoStatement() {
           loop
           playsInline
           preload="metadata"
-          poster="/videos/1.mp4"
         >
           <source src="/videos/3.mp4" type="video/mp4" />
         </video>
 
-        <div className="absolute inset-0 bg-[#0a0a0a]/[0.25]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/40 via-transparent to-[#0a0a0a]/55" />
+        <div className="absolute inset-0 bg-[#0a0a0a]/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/55 via-transparent to-[#0a0a0a]/70" />
       </div>
 
       <div className="pointer-events-none absolute inset-0 opacity-[0.05]">
@@ -45,21 +43,59 @@ export default function ManifestoStatement() {
       </div>
 
       <div className="max-w-[1920px] mx-auto px-6 lg:px-12 relative z-10 w-full">
-        <div
-          className={[
-            "max-w-5xl mx-auto text-center transition-all duration-1000",
-            isRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
-          ].join(" ")}
-        >
-          <h2 className="font-playfair text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-normal text-[#e6e2d7] leading-[1.1] mb-8">
-            {t("statement")}
-          </h2>
+        <div className="max-w-5xl mx-auto text-center">
+          <motion.div
+            initial={
+              reduce
+                ? { opacity: 0 }
+                : {
+                    opacity: 0,
+                    y: 18,
+                    filter: 'blur(10px)',
+                    clipPath: 'inset(12% 0% 12% 0% round 18px)',
+                  }
+            }
+            whileInView={
+              reduce
+                ? { opacity: 1 }
+                : {
+                    opacity: 1,
+                    y: 0,
+                    filter: 'blur(0px)',
+                    clipPath: 'inset(0% 0% 0% 0% round 18px)',
+                  }
+            }
+            viewport={{ once: true, amount: 0.45 }}
+            transition={{ duration: 0.95, ease: EASE }}
+            style={{ willChange: 'transform, opacity, filter, clip-path' }}
+            className="transform-gpu"
+          >
+            <h2 className="font-montserrat text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium text-[#e6e2d7] leading-[1.05] mb-8">
+              {t('statement')}
+            </h2>
 
-          {t("subline") && (
-            <p className="text-sm md:text-base text-[#e6e2d7]/60 font-light tracking-wide-editorial">
-              {t("subline")}
-            </p>
-          )}
+            {t('subline') && (
+              <motion.p
+                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
+                whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.55 }}
+                transition={{ duration: 0.65, ease: EASE, delay: 0.08 }}
+                className="text-sm md:text-base text-[#e6e2d7]/60 font-light tracking-wide-editorial"
+              >
+                {t('subline')}
+              </motion.p>
+            )}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.6, ease: EASE, delay: 0.18 }}
+            className="mt-10 flex justify-center"
+          >
+            <div className="h-px w-24 bg-[#e6e2d7]/18" />
+          </motion.div>
         </div>
       </div>
     </section>
