@@ -24,10 +24,14 @@ export const metadata: Metadata = {
   keywords:
     'inversión inmobiliaria, activos premium, coinversión, Mallorca, propiedades de lujo, matching inteligente',
   icons: {
-    icon: '/svg/logo.svg',
-    shortcut: '/svg/logo.svg',
-    apple: '/svg/logo.svg',
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icon1.png', type: 'image/png', sizes: '96x96' },
+      { url: '/favicon.ico', type: 'image/x-icon' }
+    ],
+    apple: '/apple-icon.png',
   },
+  manifest: '/manifest.json',
 };
 
 export default async function RootLayout({
