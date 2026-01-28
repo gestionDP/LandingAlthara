@@ -32,13 +32,41 @@
     },
     "tiles": [
       { "alt": "Fragmento 1", "phrase": "Leemos señales", "tag": "SEÑAL" },
-      { "alt": "Fragmento 2", "phrase": "Diseñamos rutas privadas", "tag": "RUTA" },
-      { "alt": "Fragmento 3", "phrase": "Protegemos la ventaja", "tag": "VENTAJA" },
-      { "alt": "Fragmento 4", "phrase": "La privacidad es arquitectura", "tag": "SISTEMA" },
-      { "alt": "Fragmento 5", "phrase": "Trabajamos upstream", "tag": "MÉTODO" },
-      { "alt": "Fragmento 6", "phrase": "El timing vence a la narrativa", "tag": "TIMING" },
-      { "alt": "Fragmento 7", "phrase": "Se filtra el ruido · Se conservan patrones", "tag": "FILTRO" },
-      { "alt": "Fragmento 8", "phrase": "La ventaja se construye en silencio", "tag": "VENTAJA" }
+      {
+        "alt": "Fragmento 2",
+        "phrase": "Diseñamos rutas privadas",
+        "tag": "RUTA"
+      },
+      {
+        "alt": "Fragmento 3",
+        "phrase": "Protegemos la ventaja",
+        "tag": "VENTAJA"
+      },
+      {
+        "alt": "Fragmento 4",
+        "phrase": "La privacidad es arquitectura",
+        "tag": "SISTEMA"
+      },
+      {
+        "alt": "Fragmento 5",
+        "phrase": "Trabajamos upstream",
+        "tag": "MÉTODO"
+      },
+      {
+        "alt": "Fragmento 6",
+        "phrase": "El timing vence a la narrativa",
+        "tag": "TIMING"
+      },
+      {
+        "alt": "Fragmento 7",
+        "phrase": "Se filtra el ruido · Se conservan patrones",
+        "tag": "FILTRO"
+      },
+      {
+        "alt": "Fragmento 8",
+        "phrase": "La ventaja se construye en silencio",
+        "tag": "VENTAJA"
+      }
     ]
   },
   "cursor": {
@@ -137,7 +165,13 @@
     "statusLabel": "ESTADO",
     "activeWindow": "Ventana activa",
     "outputLabel": "OUTPUT",
-    "outputs": ["Briefing", "Ruta", "Modelo", "Ruta de acción", "Bucle de revisión"],
+    "outputs": [
+      "Briefing",
+      "Ruta",
+      "Modelo",
+      "Ruta de acción",
+      "Bucle de revisión"
+    ],
     "mode": {
       "manual": "MANUAL",
       "autoplay": "AUTOPLAY"
@@ -204,7 +238,8 @@
       "phone": "+34 695 09 33 33",
       "location": "Mallorca, España"
     },
-    "copyright": "© 2025 Althara. Todos los derechos reservados."
+    "copyright": "© 2025 Althara. Todos los derechos reservados.",
+    "backedBy": "Respaldado por GDP"
   },
   "contactModal": {
     "title": "Contacta con Althara",

@@ -90,6 +90,8 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-[#e6e2d7] text-sm mb-4 md:mb-0">
               {t('copyright')}
+              <br />
+              {t('backedBy')}
             </div>
           </div>
         </div>
