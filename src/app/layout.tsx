@@ -18,11 +18,11 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'Althara - Matching Inteligente para Activos de Lujo Off-Market',
+  title: 'Althara - Matching Inteligente para Activos Off-Market',
   description:
     'Plataforma exclusiva que conecta vendedores discretos con compradores cualificados mediante matching inteligente para activos premium. Inmuebles, joyas, arte y más.',
   keywords:
-    'inversión inmobiliaria, activos premium, coinversión, Mallorca, propiedades de lujo, matching inteligente',
+    'inversión inmobiliaria, activos premium, coinversión, Mallorca, propiedades, matching inteligente',
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
