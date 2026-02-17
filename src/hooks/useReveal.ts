@@ -15,7 +15,7 @@ interface UseRevealOptions {
 
 export function useReveal(options: UseRevealOptions = {}) {
   const {
-    threshold = 0.1,
+    threshold = 0.25,
     rootMargin = "0px",
     once = true,
     type = "text",

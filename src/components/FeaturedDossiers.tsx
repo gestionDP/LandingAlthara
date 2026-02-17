@@ -81,7 +81,7 @@ export default function FeaturedDossiers() {
               key={dossiers[0].n}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
+              viewport={{ once: true, amount: 0.25 }}
               transition={{ duration: durations.section, ease: easeOut }}
               className="flex flex-col"
             >
@@ -127,7 +127,7 @@ export default function FeaturedDossiers() {
                   key={dossier.n}
                   initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }}
+                  viewport={{ once: true, amount: 0.25 }}
                   transition={{ duration: durations.section, ease: easeOut, delay: (idx + 1) * 0.06 }}
                   className="flex flex-col flex-1 min-h-0"
                 >
