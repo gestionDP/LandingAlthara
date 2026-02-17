@@ -20,13 +20,16 @@ type MotionDivProps = {
   as?: keyof typeof motion;
 };
 
+/** ~25% del elemento debe estar visible para disparar (reveal al hacer scroll, no al cargar) */
+const VIEWPORT_AMOUNT = 0.25;
+
 export function FadeIn({ children, className = '' }: MotionDivProps) {
   const reduce = useReducedMotion();
   return (
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: '-40px' }}
+      viewport={{ once: true, amount: VIEWPORT_AMOUNT }}
       variants={reduce ? fadeInReduced : fadeIn}
       className={className}
     >
@@ -41,7 +44,7 @@ export function SlideUp({ children, className = '' }: MotionDivProps) {
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: '-40px' }}
+      viewport={{ once: true, amount: VIEWPORT_AMOUNT }}
       variants={reduce ? slideUpReduced : slideUp}
       className={className}
     >
@@ -59,7 +62,7 @@ export function Stagger({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: '-40px' }}
+      viewport={{ once: true, amount: VIEWPORT_AMOUNT }}
       variants={staggerContainer}
       className={className}
     >
@@ -79,7 +82,7 @@ export function StaggerContainer({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: '-40px' }}
+      viewport={{ once: true, amount: VIEWPORT_AMOUNT }}
       variants={staggerContainer}
       className={className}
     >

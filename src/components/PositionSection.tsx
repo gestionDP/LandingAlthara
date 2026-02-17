@@ -1,11 +1,14 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { FadeIn, SlideUp, StaggerContainer, StaggerItem } from '@/motion/components';
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+const PILLAR_IMAGES = ['/jpg/22.png', '/jpg/16.jpg', '/jpg/11.jpg'] as const;
 
 type Pillar = {
   key: string;
@@ -60,24 +63,36 @@ export default function PositionSection() {
             {pillars.map((pillar, idx) => (
               <StaggerItem key={pillar.key} variant="slideUp">
                 <motion.div
-                  className="h-full border border-[#e6e2d7]/10 bg-[#0f0f0f]/40 backdrop-blur-sm p-6 md:p-7"
+                  className="relative h-full min-h-[280px] md:min-h-[320px] overflow-hidden border border-[#e6e2d7]/10"
                   whileHover={{ y: -2 }}
                   transition={{ duration: 0.2, ease: EASE }}
                 >
-                  <h3 className="text-xl md:text-2xl font-medium font-montserrat text-[#e6e2d7] mb-4">
-                    {pillar.title}
-                  </h3>
-                  <ul className="space-y-2">
-                    {pillar.items.map((item, i) => (
-                      <li
-                        key={i}
-                        className="flex gap-2 text-sm md:text-base text-[#e6e2d7]/75 font-light leading-relaxed"
-                      >
-                        <span className="text-[#e6e2d7]/40 shrink-0">—</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="absolute inset-0">
+                    <Image
+                      src={PILLAR_IMAGES[idx]}
+                      alt=""
+                      fill
+                      className="object-cover"
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    />
+                    <div className="absolute inset-0 bg-[#0a0a0a]/75" />
+                  </div>
+                  <div className="relative z-10 h-full flex flex-col justify-end p-6 md:p-7">
+                    <h3 className="text-xl md:text-2xl font-medium font-montserrat text-[#e6e2d7] mb-4">
+                      {pillar.title}
+                    </h3>
+                    <ul className="space-y-2">
+                      {pillar.items.map((item, i) => (
+                        <li
+                          key={i}
+                          className="flex gap-2 text-sm md:text-base text-[#e6e2d7]/85 font-light leading-relaxed"
+                        >
+                          <span className="text-[#e6e2d7]/50 shrink-0">—</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </motion.div>
               </StaggerItem>
             ))}
