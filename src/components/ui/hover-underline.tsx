@@ -26,9 +26,9 @@ export function HoverUnderline({
     <>
       <span className="relative z-10">{children}</span>
       <motion.span
-        className="absolute bottom-0 left-0 h-px bg-current"
-        initial={{ width: 0 }}
-        whileHover={{ width: "100%" }}
+        className="absolute bottom-0 left-0 h-px w-full origin-left bg-current"
+        initial={{ scaleX: 0 }}
+        whileHover={{ scaleX: 1 }}
         transition={hoverTransitions.underline}
       />
     </>

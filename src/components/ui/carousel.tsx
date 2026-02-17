@@ -1,38 +1,58 @@
 "use client";
 
-import { useState, ReactNode } from "react";
+import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { animationVariants, durations } from "@/lib/animations";
+import { animationVariants } from "@/lib/animations";
+import { useCarouselCore } from "@/hooks/useCarouselCore";
 
-interface CarouselProps {
+export type CarouselProps = {
   items: ReactNode[];
   className?: string;
   showArrows?: boolean;
-  autoPlay?: boolean;
+  showDots?: boolean;
+  autoplay?: boolean;
   autoPlayInterval?: number;
-}
+  pauseOnHover?: boolean;
+  loop?: boolean;
+};
 
 export function Carousel({
   items,
   className = "",
   showArrows = true,
-  autoPlay = false,
+  showDots = true,
+  autoplay = false,
   autoPlayInterval = 5000,
+  pauseOnHover = true,
+  loop = true,
 }: CarouselProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const next = () => {
-    setCurrentIndex((prev) => (prev + 1) % items.length);
-  };
-
-  const prev = () => {
-    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
-  };
+  const {
+    activeIndex: currentIndex,
+    setActiveIndex: setCurrentIndex,
+    goNext: next,
+    goPrev: prev,
+    isPaused,
+    setIsPaused,
+  } = useCarouselCore({
+    itemCount: items.length,
+    autoplay,
+    interval: autoPlayInterval,
+    pauseOnHover,
+    loop,
+  });
 
   return (
-    <div className={`relative ${className}`}>
-      <div className="relative ">
+    <div
+      className={`relative ${className}`}
+      onPointerEnter={pauseOnHover ? () => setIsPaused(true) : undefined}
+      onPointerLeave={pauseOnHover ? () => setIsPaused(false) : undefined}
+    >
+      <div
+        className="relative"
+        aria-live={autoplay ? 'polite' : undefined}
+        aria-atomic="true"
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -66,7 +86,7 @@ export function Carousel({
         </>
       )}
 
-      {items.length > 1 && (
+      {showDots && items.length > 1 && (
         <div className="flex justify-center gap-2 mt-6">
           {items.map((_, index) => (
             <button

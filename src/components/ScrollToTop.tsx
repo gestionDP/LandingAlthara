@@ -1,18 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { throttle } from '@/lib/throttle';
+
+const SCROLL_THROTTLE_MS = 120;
+const VISIBILITY_THRESHOLD = 300;
 
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const toggleVisibility = () => {
-      if (window.scrollY > 300) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-    };
+    const toggleVisibility = throttle(() => {
+      setIsVisible(window.scrollY > VISIBILITY_THRESHOLD);
+    }, SCROLL_THROTTLE_MS);
 
     window.addEventListener('scroll', toggleVisibility);
 

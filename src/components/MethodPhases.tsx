@@ -335,9 +335,9 @@ export default function MethodPhases() {
                             <div className="hidden lg:block relative mt-4 h-px bg-[#e6e2d7]/10 overflow-hidden">
                               <motion.div
                                 key={p.number}
-                                className="absolute left-0 top-0 h-px bg-[#e6e2d7]/35"
-                                initial={{ width: '0%' }}
-                                animate={{ width: isPaused ? '0%' : '100%' }}
+                                className="absolute left-0 top-0 h-full w-full origin-left bg-[#e6e2d7]/35"
+                                initial={{ scaleX: 0 }}
+                                animate={{ scaleX: isPaused ? 0 : 1 }}
                                 transition={{ duration: 4.1, ease: 'linear' }}
                               />
                             </div>

@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "title": "Althara - Capa de inteligencia para operadores",
-    "description": "Leemos señales · Diseñamos rutas privadas · Protegemos la ventaja",
-    "keywords": "inteligencia, señales, briefings, operadores, rutas privadas, rutas estratégicas"
+    "title": "Althara — Inteligencia privada para operadores",
+    "description": "Señales · Dossiers · Rutas de acción · Privacidad operativa",
+    "keywords": "inteligencia privada, operadores, señales, dossiers, rutas de acción, decisiones, privacidad"
   },
   "navbar": {
     "menu": {
@@ -14,12 +14,12 @@
     "requestAccess": "Solicitar acceso",
     "microcopy": {
       "private": "Canal privado",
-      "curated": "El acceso es curado"
+      "curated": "Acceso curado"
     }
   },
   "hero": {
     "title": "Operamos en la capa no visible",
-    "subtitle": "Mapeamos lo que se mueve primero: incentivos, restricciones y cambios silenciosos",
+    "subtitle": "Inteligencia privada para operadores",
     "ctaPrimary": "Solicitar acceso",
     "ctaSecondary": "Ver cómo trabajamos",
     "microcopy": "Solo invitación · Cupos limitados"
@@ -28,45 +28,17 @@
     "label": "FRAGMENTOS SELECCIONADOS",
     "caption": {
       "line1": "Lo que ves no es el trabajo · Es la superficie",
-      "line2": "Althara construye rutas debajo"
+      "line2": "El valor está debajo: contexto, timing y ejecución"
     },
     "tiles": [
       { "alt": "Fragmento 1", "phrase": "Leemos señales", "tag": "SEÑAL" },
-      {
-        "alt": "Fragmento 2",
-        "phrase": "Diseñamos rutas privadas",
-        "tag": "RUTA"
-      },
-      {
-        "alt": "Fragmento 3",
-        "phrase": "Protegemos la ventaja",
-        "tag": "VENTAJA"
-      },
-      {
-        "alt": "Fragmento 4",
-        "phrase": "La privacidad es arquitectura",
-        "tag": "SISTEMA"
-      },
-      {
-        "alt": "Fragmento 5",
-        "phrase": "Trabajamos upstream",
-        "tag": "MÉTODO"
-      },
-      {
-        "alt": "Fragmento 6",
-        "phrase": "El timing vence a la narrativa",
-        "tag": "TIMING"
-      },
-      {
-        "alt": "Fragmento 7",
-        "phrase": "Se filtra el ruido · Se conservan patrones",
-        "tag": "FILTRO"
-      },
-      {
-        "alt": "Fragmento 8",
-        "phrase": "La ventaja se construye en silencio",
-        "tag": "VENTAJA"
-      }
+      { "alt": "Fragmento 2", "phrase": "Diseñamos rutas privadas", "tag": "RUTA" },
+      { "alt": "Fragmento 3", "phrase": "Protegemos la ventaja", "tag": "VENTAJA" },
+      { "alt": "Fragmento 4", "phrase": "La privacidad es operativa", "tag": "PRIVACIDAD" },
+      { "alt": "Fragmento 5", "phrase": "De insight a acción", "tag": "EJECUCIÓN" },
+      { "alt": "Fragmento 6", "phrase": "Timing > narrativa", "tag": "TIMING" },
+      { "alt": "Fragmento 7", "phrase": "Filtramos ruido · Conservamos patrones", "tag": "FILTRO" },
+      { "alt": "Fragmento 8", "phrase": "Lo importante no se anuncia", "tag": "DISCRECIÓN" }
     ]
   },
   "cursor": {
@@ -75,51 +47,57 @@
   },
   "position": {
     "label": "POSICIÓN",
-    "line1": "Leemos señales",
-    "line2": "Diseñamos rutas privadas",
-    "line3": "Protegemos la ventaja",
-    "paragraph": "Althara es una capa de inteligencia para operadores. No perseguimos tendencias. Anticipamos presión, timing y asimetría.",
-    "tab1_title": "Briefings",
-    "tab1_body": "Inteligencia comprimida para operadores · No opinión: presión, timing y asimetría",
-    "tab1_item1": "Mapa de señales (macro → micro)",
-    "tab1_item2": "Stress-test de escenarios y efectos de segundo orden",
-    "tab1_item3": "Ventanas de timing, triggers y restricciones",
-    "tab2_title": "Rutas estratégicas",
-    "tab2_body": "Caminos privados de la intención a la ejecución: discreción, velocidad y palanca",
+    "title": "Leemos señales. Diseñamos rutas. Protegemos la ventaja.",
+    "statement": "Althara es un canal privado de inteligencia para operadores. Entregamos dossiers y rutas de acción para decidir antes, con mínima exposición.",
+    "line1": "Señales",
+    "line2": "Dossiers",
+    "line3": "Rutas de acción",
+    "paragraph": "Althara transforma señales débiles en decisiones claras: contexto, restricciones y ventanas de timing. Todo bajo un canal privado y acceso curado.",
+    "tab1_title": "Dossiers",
+    "tab1_body": "Inteligencia comprimida para operar: qué cambia, por qué importa y cuándo se activa",
+    "tab1_item1": "Mapa de señales (macro → micro) con implicaciones",
+    "tab1_item2": "Efectos de segundo orden y puntos de fricción",
+    "tab1_item3": "Ventanas de timing, activadores y restricciones",
+    "tab2_title": "Rutas de acción",
+    "tab2_body": "De la intención a la ejecución: secuencia, actores, acceso y discreción",
     "tab2_item1": "Secuenciación: qué se mueve primero",
-    "tab2_item2": "Diseño de ruta: actores, acceso, dependencias",
+    "tab2_item2": "Ruta: dependencias, actores, acceso y palancas",
     "tab2_item3": "Cadencia de ejecución con mínima exposición",
     "tab3_title": "Marco de decisión",
-    "tab3_body": "Un marco que resiste la ambigüedad · Decisiones ancladas al downside y la asimetría",
-    "tab3_item1": "Árboles de decisión, umbrales y go/no-go",
-    "tab3_item2": "Envolvente de riesgo: lógica downside-first",
-    "tab3_item3": "Checklist operativo para ejecución",
-    "outputLabel": "OUTPUT",
+    "tab3_body": "Un marco para decidir bajo ambigüedad: umbrales, riesgos y siguiente paso",
+    "tab3_item1": "Árboles de decisión y criterios de continuar o no",
+    "tab3_item2": "Riesgo a la baja primero: límites y coberturas",
+    "tab3_item3": "Checklist operativo para ejecutar",
+    "inPracticeTitle": "En la práctica",
+    "inPracticeExample": "Un operador usó nuestra ruta para ejecutar antes del giro del relato: disparador claro, secuencia definida y mínima exposición.",
+    "outputLabel": "ENTREGABLES",
     "progress": {
       "paused": "Pausado",
-      "autoplay": "Autoplay · Hover o tap para navegar"
+      "autoplay": "Autoplay · Toca o desliza para navegar"
     }
   },
   "trackRecord": {
     "label": "TRACK RECORD (SELECCIÓN)",
-    "metric1": { "value": "50+", "label": "Mercados mapeados" },
+    "metric1": { "value": "50+", "label": "Mercados analizados" },
     "metric2": { "value": "200+", "label": "Señales monitorizadas" },
-    "metric3": { "value": "150+", "label": "Briefings entregados" },
+    "metric3": { "value": "150+", "label": "Dossiers y briefings" },
     "metric4": { "value": "30+", "label": "Operadores apoyados" },
     "footnote": "No publicamos lo que protegemos"
   },
   "manifesto": {
-    "statement": "La privacidad es arquitectura",
-    "subline": "Trabajamos upstream"
+    "statement": "La privacidad es operativa",
+    "subline": "Del contexto a la ejecución"
   },
   "featuredDossiers": {
     "label": "DOSSIERS DESTACADOS",
-    "tapToSwitch": "TOCA PARA CAMBIAR",
+    "title": "Dossiers privados para decidir antes",
+    "ctaCard": "Ver dossier →",
+    "tapToSwitch": "DESLIZA PARA VER MÁS",
     "dossierTag": "DOSSIER",
     "dossier1": {
       "title": "El cambio silencioso",
       "year": "2026",
-      "description": "Donde los incentivos se mueven antes que la narrativa"
+      "description": "Dónde se mueven los incentivos antes que la narrativa"
     },
     "dossier2": {
       "title": "Gravedad del capital",
@@ -131,20 +109,20 @@
       "year": "2025",
       "description": "Cuando el comprador real no es el usuario"
     },
-    "cta": "Solicitar briefing note",
-    "microcopy": "Los dossiers no son públicos"
+    "cta": "Solicitar nota de contexto",
+    "microcopy": "Se comparten bajo acceso curado"
   },
   "method": {
     "label": "MÉTODO",
     "phase1": {
       "title": "CAPTURA",
       "bullet1": "Recogemos señales débiles a través de sistemas",
-      "bullet2": "El ruido se filtra · Los patrones se conservan"
+      "bullet2": "Filtramos ruido · Conservamos patrones"
     },
     "phase2": {
       "title": "FILTRA",
       "bullet1": "Separamos narrativa de mecánica",
-      "bullet2": "Hacemos stress-test de supuestos"
+      "bullet2": "Probamos supuestos (stress-test)"
     },
     "phase3": {
       "title": "MODELA",
@@ -153,7 +131,7 @@
     },
     "phase4": {
       "title": "RUTA",
-      "bullet1": "Convertimos insight en caminos de acción",
+      "bullet1": "Convertimos insight en pasos accionables",
       "bullet2": "Decisiones claras · Exposición mínima"
     },
     "phase5": {
@@ -161,15 +139,15 @@
       "bullet1": "Actualizamos el modelo a medida que la realidad se mueve",
       "bullet2": "Refinamiento continuo"
     },
-    "finalLine": "No vendemos certeza · Construimos ventaja",
+    "finalLine": "No vendemos certeza · Construimos ventaja operativa",
     "statusLabel": "ESTADO",
     "activeWindow": "Ventana activa",
-    "outputLabel": "OUTPUT",
+    "outputLabel": "ENTREGABLES",
     "outputs": [
+      "Dossier",
       "Briefing",
-      "Ruta",
-      "Modelo",
       "Ruta de acción",
+      "Modelo",
       "Bucle de revisión"
     ],
     "mode": {
@@ -177,7 +155,7 @@
       "autoplay": "AUTOPLAY"
     },
     "controls": {
-      "navigate": "Hover o tap para navegar",
+      "navigate": "Toca o desliza para navegar",
       "autoplay": "Escaneo automático"
     }
   },
@@ -243,8 +221,8 @@
   },
   "contactModal": {
     "title": "Contacta con Althara",
-    "joinTitle": "Únete a Althara",
-    "description": "Conectamos inversores y propietarios de activos premium de forma inteligente",
+    "joinTitle": "Solicitar acceso",
+    "description": "Acceso privado a dossiers, señales y rutas de acción para operadores. Envíanos tu solicitud y te respondemos en privado.",
     "form": {
       "name": "Nombre *",
       "email": "Email *",
@@ -255,7 +233,7 @@
       "submitting": "Enviando..."
     },
     "messages": {
-      "success": "¡Perfecto! Te contactaremos pronto.",
+      "success": "Perfecto. Te contactaremos en privado.",
       "error": "Error al enviar. Inténtalo de nuevo."
     }
   },

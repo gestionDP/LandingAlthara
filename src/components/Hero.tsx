@@ -97,23 +97,10 @@ export default function Hero() {
                         {t('ctaPrimary')}
                       </Button>
 
-                      <button
-                        onClick={() => {
-                          const methodSection = document.getElementById('method');
-                          methodSection?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className="text-[#e6e2d7]/80 hover:text-[#e6e2d7] font-light text-sm transition-all duration-200 underline underline-offset-4 decoration-[#e6e2d7]/30 hover:decoration-[#e6e2d7]/60"
-                      >
-                        {t('ctaSecondary')}
-                      </button>
+                    
                     </motion.div>
 
-                    <motion.p
-                      style={{ opacity: useTransform(progress, [0.16, 0.28], [0, 1]) }}
-                      className="text-xs tracking-[0.22em] text-[#e6e2d7]/35"
-                    >
-                      NO PITCHES. NO NOISE. CONTEXT ONLY.
-                    </motion.p>
+                
                   </div>
                 </div>
               </motion.div>
