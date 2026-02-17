@@ -6,7 +6,7 @@ import EditorialCollage from '@/components/EditorialCollage';
 import PositionSection from '@/components/PositionSection';
 import ManifestoStatement from '@/components/ManifestoStatement';
 import FeaturedDossiers from '@/components/FeaturedDossiers';
-import MethodPhases from '@/components/MethodPhases';
+import MethodPhasesStepByStep from '@/components/MethodPhasesStepByStep';
 import SelectedEnvironments from '@/components/SelectedEnvironments';
 import FinalCta from '@/components/FinalCta';
 import Footer from '@/components/Footer';
@@ -23,11 +23,10 @@ export default function Home() {
 
       <ManifestoStatement />
 
-      <FeaturedDossiers />
 
       <EditorialCollage />
 
-      <MethodPhases />
+      <MethodPhasesStepByStep />
 
       <SelectedEnvironments />
 

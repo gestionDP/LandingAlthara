@@ -8,6 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { contactService, ContactFormData } from '@/lib/api';
 import { useTranslations } from 'next-intl';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const inputClass =
+  'h-12 w-full rounded-none border border-[#e6e2d7]/20 bg-transparent px-4 text-[#e6e2d7] placeholder:text-[#e6e2d7]/40 font-light tracking-editorial text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#e6e2d7]/40 focus-visible:border-[#e6e2d7]/40 transition-colors';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -21,19 +25,13 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     phone: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<
-    'idle' | 'success' | 'error'
-  >('idle');
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
-
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -41,92 +39,91 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus('idle');
-
     const result = await contactService.submitContactForm(formData);
-
     if (result.success) {
       setSubmitStatus('success');
-      setFormData({
-        email: '',
-        phone: '',
-      });
+      setFormData({ email: '', phone: '' });
       setTimeout(() => {
         onClose();
         setSubmitStatus('idle');
-      }, 2000);
+      }, 2200);
     } else {
       setSubmitStatus('error');
     }
-
     setIsSubmitting(false);
   };
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const FormContent = ({ showLogo = false }: { showLogo?: boolean }) => (
-    <div className="space-y-6">
-      {showLogo && (
-        <div className="flex justify-center mb-6">
-          <Image
-            src="/svg/logo.svg"
-            alt="Althara Logo"
-            width={200}
-            height={50}
-          />
-        </div>
-      )}
+    <div className="space-y-8">
+      
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-4">
+        <div className="space-y-1">
+          <p className="text-xs tracking-[0.28em] text-[#e6e2d7]/50 font-light">
+            {t('form.email')}
+          </p>
           <Input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             required
-            placeholder={t('form.email')}
-            className="h-12"
+            placeholder="nombre@empresa.com"
+            className={inputClass}
           />
+        </div>
+        <div className="space-y-1">
+          <p className="text-xs tracking-[0.28em] text-[#e6e2d7]/50 font-light">
+            {t('form.phone')}
+          </p>
           <Input
             type="tel"
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            placeholder={t('form.phone')}
-            className="h-12"
+            placeholder="+34 600 00 00 00"
+            className={inputClass}
           />
         </div>
 
-        {submitStatus === 'success' && (
-          <div className="p-3 bg-green-50 border border-green-200">
-            <p className="text-green-700 text-sm font-medium text-center">
-              {t('messages.success')}
-            </p>
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {submitStatus === 'success' && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="py-3 px-4 border border-[#e6e2d7]/25 bg-[#e6e2d7]/5"
+            >
+              <p className="text-sm text-[#e6e2d7]/90 font-light text-center">
+                {t('messages.success')}
+              </p>
+            </motion.div>
+          )}
+          {submitStatus === 'error' && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="py-3 px-4 border border-[#e6e2d7]/20 bg-[#e6e2d7]/5"
+            >
+              <p className="text-sm text-[#e6e2d7]/80 font-light text-center">
+                {t('messages.error')}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {submitStatus === 'error' && (
-          <div className="p-3 bg-red-50 border border-red-200">
-            <p className="text-red-700 text-sm font-medium text-center">
-              {t('messages.error')}
-            </p>
-          </div>
-        )}
-
-        <div className="pt-6 pb-2">
+        <div className="pt-2">
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-12 bg-[#0a0a0a] hover:bg-[#0a0a0a]/90 text-[#e6e2d7]"
+            className="w-full h-12 rounded-none font-light tracking-editorial text-sm bg-[#e6e2d7] text-[#0a0a0a] hover:bg-[#e6e2d7]/90 border-0 transition-colors"
           >
             {isSubmitting ? t('form.submitting') : t('form.submit')}
           </Button>
@@ -138,8 +135,11 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   if (isMobile) {
     return (
       <BottomSheet open={isOpen} onOpenChange={onClose}>
-        <BottomSheetContent className="pb-8">
-          <FormContent showLogo={true} />
+        <BottomSheetContent className="bg-[#0a0a0a] border-[#e6e2d7]/10 pb-10 pt-8 px-6">
+          <p className="text-xs tracking-extreme-editorial text-[#e6e2d7]/60 font-light mb-6">
+            SOLICITUD
+          </p>
+          <FormContent showLogo />
         </BottomSheetContent>
       </BottomSheet>
     );
@@ -147,31 +147,39 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto p-0">
+      <DialogContent
+        className="max-w-4xl w-full max-h-[90vh] overflow-hidden p-0 gap-0 border border-[#e6e2d7]/15 bg-[#0a0a0a] [&>button]:text-[#e6e2d7] [&>button]:opacity-70 [&>button]:hover:opacity-100 [&>button]:ring-offset-[#0a0a0a] [&>button]:focus-visible:ring-[#e6e2d7]/40"
+        aria-describedby={undefined}
+      >
         <DialogTitle className="sr-only">{t('title')}</DialogTitle>
-        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[500px]">
-          <div className="relative ">
+        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[480px]">
+          {/* Panel izquierdo: imagen + copy */}
+          <div className="relative min-h-[240px] lg:min-h-0">
             <Image
               src="/jpg/4.jpg"
-              alt="Althara - Plataforma de inversión premium"
+              alt=""
               fill
               className="object-cover"
+              sizes="(min-width: 1024px) 50vw, 100vw"
             />
-            <div className="absolute inset-0 bg-althara-dark-blue/20"></div>
-            <div className="absolute inset-0 flex items-center justify-center p-8 lg:p-12">
-              <div className="text-center text-[#e6e2d7] px-6 lg:px-8">
-                <h2 className="text-3xl lg:text-4xl font-light mb-4 leading-tight">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/90 via-[#0a0a0a]/40 to-[#0a0a0a]/20" />
+            <div className="absolute inset-0 flex items-end p-8 lg:p-10">
+              <div className="space-y-3">
+              
+                <h2 className="text-2xl lg:text-3xl font-playfair font-normal text-[#e6e2d7] leading-tight max-w-sm">
                   {t('joinTitle')}
                 </h2>
-                <p className="text-base lg:text-lg leading-relaxed opacity-90">
+                <p className="text-sm lg:text-base text-[#e6e2d7]/80 font-light leading-relaxed max-w-sm">
                   {t('description')}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="p-8 lg:p-12 flex flex-col justify-center bg-althara-dark-blue">
-            <FormContent showLogo={true} />
+          {/* Panel derecho: formulario */}
+          <div className="flex flex-col justify-center p-8 lg:p-10 lg:pl-12 bg-[#0a0a0a] border-t lg:border-t-0 lg:border-l border-[#e6e2d7]/10">
+          
+            <FormContent showLogo />
           </div>
         </div>
       </DialogContent>

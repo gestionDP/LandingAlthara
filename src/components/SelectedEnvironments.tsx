@@ -10,6 +10,7 @@ import {
   useReducedMotion,
   type Transition,
 } from 'framer-motion';
+import { useCarouselCore } from '@/hooks/useCarouselCore';
 
 type EnvTile = {
   label: string;
@@ -50,84 +51,21 @@ export default function SelectedEnvironments() {
 
   const reduceMotion = useReducedMotion();
 
-  const [activeIndex, setActiveIndex] = React.useState(0);
-
-  const [isPaused, setIsPaused] = React.useState(false);
-  const resumeTimeoutRef = React.useRef<number | null>(null);
-  const autoplayTimeoutRef = React.useRef<number | null>(null);
-
-  const clearResumeTimeout = React.useCallback(() => {
-    if (resumeTimeoutRef.current) {
-      window.clearTimeout(resumeTimeoutRef.current);
-      resumeTimeoutRef.current = null;
-    }
-  }, []);
-
-  const clearAutoplayTimeout = React.useCallback(() => {
-    if (autoplayTimeoutRef.current) {
-      window.clearTimeout(autoplayTimeoutRef.current);
-      autoplayTimeoutRef.current = null;
-    }
-  }, []);
-
-  const pauseTemporarily = React.useCallback(
-    (ms: number) => {
-      setIsPaused(true);
-      clearResumeTimeout();
-      resumeTimeoutRef.current = window.setTimeout(() => {
-        setIsPaused(false);
-      }, ms);
-    },
-    [clearResumeTimeout]
-  );
-
-  React.useEffect(() => {
-    const onVisibilityChange = () => {
-      if (document.visibilityState !== 'visible') {
-        setIsPaused(true);
-      }
-    };
-
-    document.addEventListener('visibilitychange', onVisibilityChange);
-    return () =>
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-  }, []);
-
-  React.useEffect(() => {
-    if (reduceMotion) return;
-    if (isPaused) {
-      clearAutoplayTimeout();
-      return;
-    }
-    if (document.visibilityState !== 'visible') return;
-
-    clearAutoplayTimeout();
-    autoplayTimeoutRef.current = window.setTimeout(() => {
-      setActiveIndex((prev) => (prev + 1) % environments.length);
-    }, AUTOPLAY_MS);
-
-    return () => clearAutoplayTimeout();
-  }, [
-    reduceMotion,
-    isPaused,
-    environments.length,
-    clearAutoplayTimeout,
+  const {
     activeIndex,
-  ]);
-
-  React.useEffect(() => {
-    return () => {
-      clearResumeTimeout();
-      clearAutoplayTimeout();
-    };
-  }, [clearResumeTimeout, clearAutoplayTimeout]);
-
-  React.useEffect(() => {
-    setActiveIndex((prev) => {
-      if (environments.length === 0) return 0;
-      return prev >= environments.length ? 0 : prev;
-    });
-  }, [environments.length]);
+    setActiveIndex,
+    goNext,
+    goPrev,
+    isPaused,
+    setIsPaused,
+    pauseTemporarily,
+  } = useCarouselCore({
+    itemCount: environments.length,
+    autoplay: !reduceMotion,
+    interval: AUTOPLAY_MS,
+    pauseOnHover: true,
+    loop: true,
+  });
 
   const isOdd = environments.length % 2 === 1;
   const gridColsClass = [
@@ -213,29 +151,24 @@ export default function SelectedEnvironments() {
     active: { opacity: 1 },
   };
 
-  const onKeyDownTile = (e: React.KeyboardEvent<HTMLButtonElement>, idx: number) => {
+  const onKeyDownTile = (e: React.KeyboardEvent<HTMLButtonElement>) => {
     if (environments.length === 0) return;
 
     if (e.key === 'ArrowRight') {
       e.preventDefault();
-      const next = (idx + 1) % environments.length;
-      setActiveIndex(next);
+      goNext();
       pauseTemporarily(3500);
     }
-
     if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      const prev = (idx - 1 + environments.length) % environments.length;
-      setActiveIndex(prev);
+      goPrev();
       pauseTemporarily(3500);
     }
-
     if (e.key === 'Home') {
       e.preventDefault();
       setActiveIndex(0);
       pauseTemporarily(3500);
     }
-
     if (e.key === 'End') {
       e.preventDefault();
       setActiveIndex(environments.length - 1);
@@ -283,7 +216,7 @@ export default function SelectedEnvironments() {
                     setActiveIndex(idx);
                     pauseTemporarily(3500);
                   }}
-                  onKeyDown={(e) => onKeyDownTile(e, idx)}
+                  onKeyDown={onKeyDownTile}
                   className={[
                     'relative text-left',
                     'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-0',

@@ -115,45 +115,13 @@ const TileCard = React.memo(function TileCard({
                 initial={{ x: '-22%', y: '18%', scale: 1.1, opacity: 0.0 }}
                 animate={{ x: '22%', y: '-18%', scale: 1.22, opacity: 1 }}
                 transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-                style={{
-                  background:
-                    'radial-gradient(600px 420px at 30% 60%, rgba(230,226,215,0.16), rgba(10,10,10,0) 55%)',
-                  mixBlendMode: 'screen',
-                }}
+              
               />
             </motion.div>
           )}
         </AnimatePresence>
 
-        <AnimatePresence>
-          {isActive && (
-            <motion.div
-              key="caption"
-              layoutId="caption"
-              className="absolute left-0 right-0 bottom-0"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <div className="p-4 md:p-5 border-t border-[#e6e2d7]/12 bg-[#0f0f0f]/25 md:bg-[#0f0f0f]/22 backdrop-blur-md md:backdrop-blur-xl">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-[11px] tracking-[0.28em] text-[#e6e2d7]/55">
-                    {tile.tag ?? 'ALTHARA'}
-                  </span>
-                  <span className="h-px w-10 bg-[#e6e2d7]/15" />
-                  <span className="text-[11px] tracking-[0.28em] text-[#e6e2d7]/35">
-                    /0{index + 1}
-                  </span>
-                </div>
-
-                <div className="text-sm md:text-base text-[#e6e2d7]/85 font-light leading-snug">
-                  {tile.phrase}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+       
 
         <div className="pointer-events-none absolute top-3 right-3">
           <div
