@@ -157,3 +157,6 @@ storybook-static/
 
 docs/build/
 docs/dist/
+
+# clerk configuration (can include secrets)
+/.clerk/

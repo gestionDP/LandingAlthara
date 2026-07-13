@@ -55,6 +55,14 @@ export default function Footer() {
                   {t('quickLinks.access')}
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/dataroom"
+                  className="text-[#e6e2d7] hover:text-[#e6e2d7]/80 text-sm transition-colors"
+                >
+                  {t('quickLinks.portal')}
+                </Link>
+              </li>
             </ul>
           </div>
 

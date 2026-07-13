@@ -1,6 +1,8 @@
 export interface ContactFormData {
   email: string;
   phone: string;
+  /** Tipo de inversión/segmento seleccionado */
+  investorType?: string;
 }
 
 export interface ContactResponse {
@@ -20,7 +22,8 @@ export const contactService = {
         body: JSON.stringify({
           email: formData.email,
           phone: formData.phone,
-          _subject: `Nueva solicitud de contacto - ${formData.email}`,
+          investorType: formData.investorType ?? "Sin especificar",
+          _subject: `Nueva solicitud de acceso${formData.investorType ? ` · ${formData.investorType}` : ""} - ${formData.email}`,
         }),
       });
 

@@ -130,7 +130,7 @@ export default function CustomCursor() {
       }}
     >
       {cursorText ? (
-        <div className="px-3 py-1.5 bg-[#e6e2d7] text-[#0a0a0a] text-xs tracking-wide-editorial font-light rounded-sm">
+        <div className="px-3 py-1.5 bg-[#e6e2d7] text-[#0a0a0a] text-xs tracking-wide-editorial font-light">
           {cursorText}
         </div>
       ) : (

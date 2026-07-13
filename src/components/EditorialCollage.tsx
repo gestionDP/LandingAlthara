@@ -126,7 +126,7 @@ const TileCard = React.memo(function TileCard({
         <div className="pointer-events-none absolute top-3 right-3">
           <div
             className={[
-              'h-2 w-2 rounded-full transition-all duration-500',
+              'h-2 w-2 transition-all duration-500',
               isActive ? 'bg-[#e6e2d7]/55' : 'bg-[#e6e2d7]/15',
             ].join(' ')}
           />
