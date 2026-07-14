@@ -1,7 +1,7 @@
 /**
  * Projects + investor↔project assignments (many-to-many with lifecycle).
  */
-import { and, eq, inArray, isNull, sql } from 'drizzle-orm';
+import { and, eq, inArray, isNull, like, sql } from 'drizzle-orm';
 import { db, schema } from '../db/client';
 import { DATAROOM_TENANT, env } from '../config';
 import { slugify } from '../core/naming.ts';
@@ -13,6 +13,27 @@ import { AuthzError, type Investor } from '../lib/authz';
 
 const T = DATAROOM_TENANT;
 
+/**
+ * Genera un slug único entre los proyectos ACTIVOS (no borrados) del tenant.
+ * Los proyectos borrados lógicamente no reservan el slug (índice parcial), así
+ * que un nombre repetido tras un borrado recupera su slug base.
+ */
+async function uniqueProjectSlug(base: string): Promise<string> {
+  const rows = await db()
+    .select({ slug: schema.projects.slug })
+    .from(schema.projects)
+    .where(and(
+      eq(schema.projects.tenant, T),
+      isNull(schema.projects.deletedAt),
+      like(schema.projects.slug, `${base}%`),
+    ));
+  const taken = new Set(rows.map((r) => r.slug));
+  if (!taken.has(base)) return base;
+  let n = 2;
+  while (taken.has(`${base}-${n}`)) n++;
+  return `${base}-${n}`;
+}
+
 export async function createProject(
   input: {
     name: string; internalCode?: string; description?: string; investmentType?: string;
@@ -20,7 +41,7 @@ export async function createProject(
   },
   actor: AuditActor,
 ) {
-  const slug = slugify(input.name);
+  const slug = await uniqueProjectSlug(slugify(input.name));
   const [project] = await db().insert(schema.projects).values({
     tenant: T,
     name: input.name,
@@ -106,18 +127,21 @@ export async function grantProjectAccess(
     .where(and(eq(schema.investors.id, input.investorId), eq(schema.investors.tenant, T))).limit(1);
   if (!investor) throw new AuthzError(404, 'investor_not_found');
 
-  // Idempotent: upsert on (investor, project); regrant reactivates.
+  // Invitación: la asignación nace en 'pending'; el inversor la acepta o
+  // rechaza desde su portal. Si ya estaba 'active' se mantiene (idempotente);
+  // una re-invitación de un acceso revocado vuelve a 'pending'.
   await db().insert(schema.projectAccess).values({
     tenant: T,
     investorId: input.investorId,
     projectId: input.projectId,
+    status: 'pending',
     accessLevel: input.accessLevel ?? 'full',
     internalNotes: input.notes ?? null,
     grantedBy: actor.id ?? null,
   }).onConflictDoUpdate({
     target: [schema.projectAccess.investorId, schema.projectAccess.projectId],
     set: {
-      status: 'active',
+      status: sql`case when ${schema.projectAccess.status} = 'active' then 'active'::dataroom.access_status else 'pending'::dataroom.access_status end`,
       accessLevel: input.accessLevel ?? 'full',
       grantedBy: actor.id ?? null,
       grantedAt: new Date(),
@@ -181,6 +205,34 @@ export async function revokeProjectAccess(
       });
     }
   }
+  return { ok: true };
+}
+
+/** El inversor acepta o rechaza una invitación pendiente a un proyecto. */
+export async function respondProjectInvitation(
+  investor: Investor,
+  projectId: string,
+  accept: boolean,
+) {
+  const [row] = await db().select().from(schema.projectAccess).where(and(
+    eq(schema.projectAccess.investorId, investor.id),
+    eq(schema.projectAccess.projectId, projectId),
+    eq(schema.projectAccess.tenant, T),
+  )).limit(1);
+  if (!row || row.status !== 'pending') throw new AuthzError(404, 'no_pending_invitation');
+
+  await db().update(schema.projectAccess)
+    .set(accept
+      ? { status: 'active', grantedAt: new Date() }
+      : { status: 'revoked', revokedAt: new Date(), revokedBy: investor.id })
+    .where(eq(schema.projectAccess.id, row.id));
+
+  await writeAudit({
+    tenant: T,
+    actor: { type: 'investor', id: investor.id, email: investor.email },
+    action: accept ? 'project.invitation_accepted' : 'project.invitation_declined',
+    entityType: 'project_access', entityId: `${investor.id}:${projectId}`,
+  });
   return { ok: true };
 }
 

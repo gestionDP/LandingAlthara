@@ -1,4 +1,7 @@
 
+# Almacenamiento local del dataroom (dev sin GCS)
+.dataroom-storage/
+
 node_modules/
 npm-debug.log*
 yarn-debug.log*

@@ -22,7 +22,7 @@ export type ProjectStatus =
   | 'closed'
   | 'archived';
 
-export type AccessStatus = 'active' | 'suspended' | 'revoked';
+export type AccessStatus = 'pending' | 'active' | 'suspended' | 'revoked';
 
 export type DocumentStatus = 'draft' | 'published' | 'archived' | 'revoked';
 

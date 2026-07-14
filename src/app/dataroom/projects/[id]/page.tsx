@@ -7,7 +7,8 @@
  */
 import { use, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { fetchJson, Spinner, ErrorBox, EmptyState, Badge, FileIcon, formatBytes, formatDate } from '../../components/ui';
+import { fetchJson, Spinner, ErrorBox, EmptyState, Badge, FileIcon, formatDate, FolderGlyph, FolderIconFilled, LibrarySearch, ViewToggle, KebabMenu, DocViewer } from '../../components/ui';
+import { useDataroomSearch } from '../../DataroomShell';
 
 interface Doc {
   id: string; title: string; description: string | null; category: string | null;
@@ -34,10 +35,12 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState<string>('all');
+  const [folder, setFolder] = useState<string | null>(null);
+  const [view, setView] = useState<'list' | 'grid'>('list');
   const [ndaOpen, setNdaOpen] = useState(false);
   const [busyDoc, setBusyDoc] = useState<string | null>(null);
   const [docError, setDocError] = useState<string | null>(null);
+  const [viewer, setViewer] = useState<{ title: string; src: string; mimeType?: string | null; canDownload: boolean; docId: string; revoke?: string } | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -49,14 +52,27 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
 
   useEffect(() => { load(); }, [load]);
 
-  const filtered = useMemo(() => {
-    if (!data) return [];
-    return data.documents.filter((d) => {
-      if (category !== 'all' && d.categorySlug !== category) return false;
-      if (search && !d.title.toLowerCase().includes(search.toLowerCase())) return false;
-      return true;
-    });
-  }, [data, search, category]);
+  const globalSearch = useDataroomSearch();
+
+  // Navegación por carpetas (categorías) estilo SharePoint.
+  const nav = useMemo(() => {
+    if (!data) return { folders: [] as { slug: string; name: string; count: number }[], docs: [] as Doc[], currentName: null as string | null };
+    const q = (search.trim() || globalSearch.trim()).toLowerCase();
+    const searching = q.length > 0;
+    const catsWithDocs = data.categories
+      .filter((c) => data.documents.some((d) => d.categorySlug === c.slug))
+      .map((c) => ({ slug: c.slug, name: c.name, count: data.documents.filter((d) => d.categorySlug === c.slug).length }));
+    const currentName = folder ? (data.categories.find((c) => c.slug === folder)?.name ?? null) : null;
+
+    if (searching) {
+      return { folders: [], docs: data.documents.filter((d) => d.title.toLowerCase().includes(q)), currentName };
+    }
+    if (folder) {
+      return { folders: [], docs: data.documents.filter((d) => d.categorySlug === folder), currentName };
+    }
+    // Raíz: carpetas + documentos sin categoría.
+    return { folders: catsWithDocs, docs: data.documents.filter((d) => !d.categorySlug), currentName: null };
+  }, [data, search, globalSearch, folder]);
 
   async function openDoc(doc: Doc, kind: 'preview' | 'download') {
     setBusyDoc(doc.id);
@@ -92,6 +108,42 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
     } finally {
       setBusyDoc(null);
     }
+  }
+
+  async function openPreview(doc: Doc) {
+    if (doc.locked) return;
+    setBusyDoc(doc.id);
+    setDocError(null);
+    try {
+      const res = await fetch(`/api/dataroom/documents/${doc.id}/preview`, { cache: 'no-store' });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        setDocError(
+          res.status === 423
+            ? 'Debe firmar el NDA para acceder a este documento.'
+            : body?.error === 'rate_limited'
+              ? 'Demasiadas solicitudes, espere un momento.'
+              : 'Documento no disponible.',
+        );
+        return;
+      }
+      const ct = res.headers.get('content-type') ?? '';
+      if (ct.includes('application/json')) {
+        const { url } = await res.json();
+        setViewer({ title: doc.title, src: url, mimeType: doc.mimeType, canDownload: doc.canDownload, docId: doc.id });
+      } else {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        setViewer({ title: doc.title, src: url, mimeType: doc.mimeType ?? ct, canDownload: doc.canDownload, docId: doc.id, revoke: url });
+      }
+    } finally {
+      setBusyDoc(null);
+    }
+  }
+
+  function closeViewer() {
+    if (viewer?.revoke) { const r = viewer.revoke; setTimeout(() => URL.revokeObjectURL(r), 1000); }
+    setViewer(null);
   }
 
   if (loading) return <Spinner label="Cargando data room…" />;
@@ -144,123 +196,159 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
         <ErrorBox message="El acceso a la documentación sensible está bloqueado. El acuerdo de confidencialidad ha cambiado o su firma ha sido revocada. Contacte con su gestor en Althara." />
       )}
 
-      {/* Barra estilo biblioteca: buscador + carpetas de categorías */}
-      <div className="space-y-3">
-        <input
-          placeholder="Buscar en esta biblioteca…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-md border border-[#1c3742]/20 bg-white px-4 py-2 text-sm shadow-sm placeholder:text-[#1c3742]/35 focus:border-[#1c3742]/50 focus:outline-none"
-        />
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setCategory('all')}
-            className={`px-3.5 py-1.5 text-xs font-medium transition ${category === 'all' ? 'bg-[#1c3742] text-[#e6e2d7]' : 'border border-[#1c3742]/20 bg-white text-[#1c3742]/70 hover:bg-[#1c3742]/5'}`}
-          >
-            Todos los documentos
-          </button>
-          {data.categories
-            .filter((c) => data.documents.some((d) => d.categorySlug === c.slug))
-            .map((c) => {
-              const count = data.documents.filter((d) => d.categorySlug === c.slug).length;
-              return (
-                <button
-                  key={c.slug}
-                  onClick={() => setCategory(category === c.slug ? 'all' : c.slug)}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium transition ${category === c.slug ? 'bg-[#1c3742] text-[#e6e2d7]' : 'border border-[#1c3742]/20 bg-white text-[#1c3742]/70 hover:bg-[#1c3742]/5'}`}
-                >
-                  {c.name}
-                  <span className={category === c.slug ? 'text-[#e6e2d7]/60' : 'text-[#1c3742]/40'}>{count}</span>
-                </button>
-              );
-            })}
-        </div>
-      </div>
-
       {docError && <ErrorBox message={docError} />}
 
-      {filtered.length === 0 ? (
-        <EmptyState
-          title={data.documents.length === 0 ? 'Todavía no hay documentos publicados' : 'Sin resultados'}
-          subtitle={data.documents.length === 0 ? 'Recibirá una notificación cuando se publique documentación.' : 'Pruebe con otra búsqueda o categoría.'}
-        />
-      ) : (
-        <div className="overflow-x-auto border border-[#1c3742]/10 bg-white shadow-sm">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[#1c3742]/15 text-left text-[11px] uppercase tracking-wider text-[#1c3742]/50">
-                <th className="px-4 py-3">Documento</th>
-                <th className="px-4 py-3">Categoría</th>
-                <th className="px-4 py-3">Nivel</th>
-                <th className="px-4 py-3">Tamaño</th>
-                <th className="px-4 py-3">Versión</th>
-                <th className="px-4 py-3">Fecha</th>
-                <th className="px-4 py-3 text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((doc) => (
-                <tr key={doc.id} className="border-b border-[#1c3742]/10 last:border-0 hover:bg-[#1c3742]/[0.04]">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      {doc.locked ? (
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#1c3742]/5 text-[10px] font-bold uppercase tracking-wide text-[#1c3742]/50" title="Bloqueado" aria-hidden>NDA</span>
-                      ) : (
-                        <FileIcon mimeType={doc.mimeType} />
-                      )}
-                      <div>
-                        <p className={doc.locked ? 'text-[#1c3742]/50' : 'font-medium'}>{doc.title}</p>
-                        {doc.description && !doc.locked && (
-                          <p className="text-xs text-[#1c3742]/50">{doc.description}</p>
-                        )}
-                      </div>
-                      {doc.isNew && (
-                        <span className="bg-[#1c3742] px-2 py-0.5 text-[10px] font-semibold text-[#e6e2d7]">Nuevo</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-[#1c3742]/60">{doc.category ?? '—'}</td>
-                  <td className="px-4 py-3"><Badge value={doc.confidentiality} /></td>
-                  <td className="px-4 py-3 text-[#1c3742]/60">{doc.locked ? '—' : formatBytes(doc.sizeBytes)}</td>
-                  <td className="px-4 py-3 text-[#1c3742]/60">{doc.locked ? '—' : `v${doc.versionNumber ?? 1}`}</td>
-                  <td className="px-4 py-3 text-[#1c3742]/60">{formatDate(doc.updatedAt)}</td>
-                  <td className="px-4 py-3 text-right">
-                    {doc.locked ? (
-                      <span className="text-xs text-[#8a5a33]/90">
-                        {doc.lockReason === 'nda_required' ? 'Requiere NDA' : 'No disponible'}
-                      </span>
-                    ) : (
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => openDoc(doc, 'preview')}
-                          disabled={busyDoc === doc.id}
-                          className="border border-[#1c3742]/30 px-3 py-1 text-xs hover:bg-[#1c3742]/5 disabled:opacity-40"
-                        >
-                          Ver
-                        </button>
-                        {doc.canDownload && (
-                          <button
-                            onClick={() => openDoc(doc, 'download')}
-                            disabled={busyDoc === doc.id}
-                            className="bg-[#1c3742] px-3 py-1 text-xs font-semibold text-[#e6e2d7] disabled:opacity-40"
-                          >
-                            Descargar
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Biblioteca de documentos — estilo SharePoint (carpetas navegables) */}
+      <div className="border border-[#1c3742]/12 bg-white shadow-sm">
+        {/* Command bar + breadcrumb */}
+        <div className="flex flex-col gap-3 border-b border-[#1c3742]/10 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-center gap-1.5 text-sm">
+            <FolderGlyph className="h-5 w-5 shrink-0 text-[#c08552]" />
+            <button type="button" onClick={() => { setFolder(null); setSearch(''); }} className="font-medium text-[#1c3742] hover:underline">
+              Documentos
+            </button>
+            {nav.currentName && (
+              <>
+                <span className="text-[#1c3742]/35">›</span>
+                <span className="truncate font-medium text-[#1c3742]">{nav.currentName}</span>
+              </>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <LibrarySearch value={search} onChange={setSearch} />
+            <ViewToggle view={view} onChange={setView} />
+          </div>
         </div>
-      )}
+
+        {nav.folders.length === 0 && nav.docs.length === 0 ? (
+          <div className="p-4">
+            <EmptyState
+              title={data.documents.length === 0 ? 'Todavía no hay documentos publicados' : search ? 'Sin resultados' : 'Esta carpeta está vacía'}
+              subtitle={data.documents.length === 0 ? 'Recibirá una notificación cuando se publique documentación.' : 'Pruebe con otra búsqueda o carpeta.'}
+            />
+          </div>
+        ) : view === 'grid' ? (
+          <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 lg:grid-cols-4">
+            {nav.folders.map((f) => (
+              <button key={f.slug} type="button" onClick={() => setFolder(f.slug)}
+                className="flex items-center gap-3 border border-[#1c3742]/12 bg-white p-3 text-left transition-colors hover:bg-[#1c3742]/[0.03]">
+                <FolderIconFilled className="h-10 w-10 shrink-0" />
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-medium text-[#1c3742]">{f.name}</span>
+                  <span className="block text-[11px] text-[#1c3742]/45">{f.count} elemento(s)</span>
+                </span>
+              </button>
+            ))}
+            {nav.docs.map((doc) => (
+              <div key={doc.id} className="group flex flex-col border border-[#1c3742]/12 bg-white transition-shadow hover:shadow-md">
+                <button type="button" onClick={() => openPreview(doc)} disabled={doc.locked || busyDoc === doc.id}
+                  className="flex flex-1 flex-col items-center justify-center gap-3 p-6 disabled:cursor-default">
+                  {doc.locked
+                    ? <span className="flex h-12 w-12 items-center justify-center bg-[#1c3742]/5 text-xs font-bold text-[#1c3742]/50" aria-hidden>NDA</span>
+                    : <FileIcon mimeType={doc.mimeType} fileName={doc.title} />}
+                </button>
+                <div className="flex items-center justify-between gap-1 border-t border-[#1c3742]/10 px-3 py-2">
+                  <p className={`truncate text-xs ${doc.locked ? 'text-[#1c3742]/50' : 'font-medium text-[#1c3742]'}`}>{doc.title}</p>
+                  {doc.locked
+                    ? <span className="shrink-0 text-[10px] text-[#c08552]">NDA</span>
+                    : <KebabMenu items={[
+                        { label: 'Vista previa', onClick: () => openPreview(doc) },
+                        ...(doc.canDownload ? [{ label: 'Descargar', onClick: () => openDoc(doc, 'download') }] : []),
+                      ]} />}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[#1c3742]/10 bg-[#1c3742]/[0.03] text-left text-[11px] uppercase tracking-wider text-[#1c3742]/55">
+                  <th className="px-4 py-2.5 font-semibold">Nombre</th>
+                  <th className="px-4 py-2.5 font-semibold">Modificado</th>
+                  <th className="px-4 py-2.5 font-semibold">Modificado por</th>
+                  <th className="w-10 px-2 py-2.5" />
+                </tr>
+              </thead>
+              <tbody>
+                {nav.folders.map((f) => (
+                  <tr key={f.slug} onClick={() => setFolder(f.slug)}
+                    className="cursor-pointer border-b border-[#1c3742]/[0.07] hover:bg-[#1c3742]/[0.04]">
+                    <td className="px-4 py-2.5">
+                      <div className="flex items-center gap-3">
+                        <FolderIconFilled className="h-8 w-8 shrink-0" />
+                        <span className="truncate font-medium text-[#1c3742] hover:underline">{f.name}</span>
+                        <span className="text-xs text-[#1c3742]/40">{f.count}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-2.5 text-[#1c3742]/60">—</td>
+                    <td className="px-4 py-2.5 text-[#1c3742]/60">Althara</td>
+                    <td className="px-2 py-2.5" />
+                  </tr>
+                ))}
+                {nav.docs.map((doc) => (
+                  <tr key={doc.id} className="group border-b border-[#1c3742]/[0.07] last:border-0 hover:bg-[#1c3742]/[0.04]">
+                    <td className="px-4 py-2.5">
+                      <div className="flex items-center gap-3">
+                        {doc.locked ? (
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#1c3742]/5 text-[10px] font-bold uppercase tracking-wide text-[#1c3742]/50" title="Bloqueado" aria-hidden>NDA</span>
+                        ) : (
+                          <FileIcon mimeType={doc.mimeType} fileName={doc.title} />
+                        )}
+                        <button type="button" onClick={() => openPreview(doc)} disabled={doc.locked || busyDoc === doc.id} className="min-w-0 text-left disabled:cursor-default">
+                          <p className={doc.locked ? 'truncate text-[#1c3742]/50' : 'truncate font-medium text-[#1c3742] hover:underline'}>{doc.title}</p>
+                          {doc.description && !doc.locked && (
+                            <p className="truncate text-xs text-[#1c3742]/50">{doc.description}</p>
+                          )}
+                        </button>
+                        {doc.confidentiality === 'sensitive' && !doc.locked && (
+                          <span className="shrink-0 text-[10px] uppercase tracking-wider text-[#c08552]" title="Confidencial">Confidencial</span>
+                        )}
+                        {doc.isNew && (
+                          <span className="shrink-0 bg-[#1c3742] px-2 py-0.5 text-[10px] font-semibold text-[#e6e2d7]">Nuevo</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-2.5 text-[#1c3742]/60">{formatDate(doc.updatedAt)}</td>
+                    <td className="px-4 py-2.5 text-[#1c3742]/60">Althara</td>
+                    <td className="px-2 py-2.5">
+                      {doc.locked ? (
+                        <span className="block text-right text-xs text-[#c08552]">{doc.lockReason === 'nda_required' ? 'NDA' : '—'}</span>
+                      ) : (
+                        <div className="flex justify-end">
+                          <KebabMenu items={[
+                            { label: 'Vista previa', onClick: () => openPreview(doc) },
+                            ...(doc.canDownload ? [{ label: 'Descargar', onClick: () => openDoc(doc, 'download') }] : []),
+                          ]} />
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {hasLockedDocs && ndaPending && (
         <p className="text-xs text-[#1c3742]/50">
           Los documentos bloqueados se desbloquearan automaticamente al firmar el NDA.
         </p>
+      )}
+
+      {viewer && (
+        <DocViewer
+          title={viewer.title}
+          src={viewer.src}
+          mimeType={viewer.mimeType}
+          onClose={closeViewer}
+          onDownload={
+            viewer.canDownload
+              ? () => { const d = data?.documents.find((x) => x.id === viewer.docId); if (d) openDoc(d, 'download'); }
+              : undefined
+          }
+        />
       )}
 
       {ndaOpen && (

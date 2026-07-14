@@ -45,14 +45,8 @@ export default function Thesis() {
           </motion.div>
         </div>
 
-        <div className="flex flex-col justify-between gap-8 md:col-span-5">
-          <Reveal delay={0.1}>
-            <p className="text-xl font-medium leading-relaxed text-[#1c3742]/80 md:text-2xl">{t('p1')}</p>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="text-base leading-relaxed text-[#1c3742]/50 md:text-lg">{t('p2')}</p>
-          </Reveal>
-          <Reveal delay={0.25} className="relative hidden h-48 overflow-hidden md:block lg:h-60">
+        <div className="flex flex-col md:col-span-5">
+          <Reveal delay={0.1} className="relative flex-1 min-h-[28vh] overflow-hidden">
             <Image
               src="/png/home2.png"
               alt="Detalle arquitectónico de una vivienda"
@@ -61,11 +55,21 @@ export default function Thesis() {
               className="object-cover transition-transform duration-700 hover:scale-[1.04]"
             />
           </Reveal>
-          <Reveal delay={0.3}>
-            <p className="font-playfair text-2xl italic leading-snug text-[#1c3742] md:text-3xl">
-              {t('quote')}
-            </p>
-          </Reveal>
+          <div className="flex flex-col gap-6 pt-8">
+            <Reveal delay={0.15}>
+              <p className="text-xl font-medium leading-relaxed text-[#1c3742]/80 md:text-2xl">{t('p1')}</p>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <p className="text-base leading-relaxed text-[#1c3742]/50 md:text-lg">{t('p2')}</p>
+            </Reveal>
+            <Reveal delay={0.25}>
+              <div className="mt-2 border-l-2 border-[#c08552] pl-5">
+                <p className="font-playfair text-xl italic leading-snug text-[#1c3742] md:text-2xl">
+                  {t('quote')}
+                </p>
+              </div>
+            </Reveal>
+          </div>
         </div>
       </div>
     </section>

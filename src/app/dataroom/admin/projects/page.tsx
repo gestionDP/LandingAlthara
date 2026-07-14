@@ -1,9 +1,10 @@
 'use client';
 
 /** Admin — projects table + create. */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { fetchJson, Spinner, ErrorBox, EmptyState, Badge, formatDate } from '../../components/ui';
+import { useDataroomSearch } from '../../DataroomShell';
 
 interface ProjectRow {
   id: string; name: string; internalCode: string | null; status: string;
@@ -15,6 +16,7 @@ export default function AdminProjects() {
   const [rows, setRows] = useState<ProjectRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const q = useDataroomSearch();
 
   const load = useCallback(async () => {
     setError(null);
@@ -25,10 +27,26 @@ export default function AdminProjects() {
 
   useEffect(() => { load(); }, [load]);
 
+  const filtered = useMemo(() => {
+    if (!rows) return null;
+    const s = q.trim().toLowerCase();
+    if (!s) return rows;
+    return rows.filter((r) =>
+      `${r.name} ${r.internalCode ?? ''} ${r.investmentType ?? ''} ${r.ownerName ?? ''}`.toLowerCase().includes(s));
+  }, [rows, q]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-playfair text-2xl">Proyectos</h1>
+        <div>
+          <h1 className="font-playfair text-2xl">Proyectos</h1>
+          {rows && (
+            <p className="mt-0.5 text-xs text-[#1c3742]/50">
+              {rows.length} {rows.length === 1 ? 'proyecto' : 'proyectos'}
+              {q.trim() && ` · ${filtered?.length ?? 0} en la búsqueda`}
+            </p>
+          )}
+        </div>
         <button onClick={() => setShowCreate(true)}
           className="bg-[#1c3742] px-4 py-2 text-sm font-semibold text-[#e6e2d7]">
           + Nuevo proyecto
@@ -38,7 +56,10 @@ export default function AdminProjects() {
       {error && <ErrorBox message="No se ha podido cargar el listado." onRetry={load} />}
       {!rows && !error && <Spinner label="Cargando proyectos…" />}
       {rows && rows.length === 0 && <EmptyState title="Sin proyectos" subtitle="Cree el primer proyecto para empezar a subir documentación." />}
-      {rows && rows.length > 0 && (
+      {filtered && rows && rows.length > 0 && filtered.length === 0 && (
+        <EmptyState title="Sin resultados" subtitle="Ningún proyecto coincide con la búsqueda del portal." />
+      )}
+      {filtered && filtered.length > 0 && (
         <div className="overflow-x-auto border border-[#1c3742]/10 bg-white shadow-sm">
           <table className="w-full text-sm">
             <thead>
@@ -53,7 +74,7 @@ export default function AdminProjects() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => (
+              {filtered.map((r) => (
                 <tr key={r.id} className="border-b border-[#1c3742]/10 last:border-0 hover:bg-[#1c3742]/[0.04]">
                   <td className="px-4 py-3">
                     <Link href={`/dataroom/admin/projects/${r.id}`} className="hover:underline">

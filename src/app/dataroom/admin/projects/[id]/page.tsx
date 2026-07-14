@@ -6,12 +6,15 @@
  * Todo se gestiona desde esta página: asignar/revocar inversores, subir,
  * publicar, versionar, notificar y eliminar.
  */
-import { use, useCallback, useEffect, useRef, useState } from 'react';
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   fetchJson, Spinner, ErrorBox, Badge, STATUS_LABELS, actionLabel, formatDate, formatBytes,
+  FileIcon, accessLevelLabel, ACCESS_LEVEL_HINTS, FolderGlyph, FolderIconFilled, LibrarySearch, ViewToggle,
+  KebabMenu, DocViewer, type MenuItem,
 } from '../../../components/ui';
+import { useDataroomSearch } from '../../../DataroomShell';
 
 interface Detail {
   project: {
@@ -20,7 +23,7 @@ interface Detail {
     ndaRequired: boolean; ndaPolicy: string; updatedAt: string;
   };
   investors: { access: { status: string; accessLevel: string; grantedAt: string }; investorId: string; email: string; firstName: string | null; lastName: string | null; investorStatus: string }[];
-  documents: { id: string; title: string; status: string; confidentiality: string; downloadable: boolean; requiresNda: boolean; updatedAt: string }[];
+  documents: { id: string; title: string; status: string; confidentiality: string; downloadable: boolean; requiresNda: boolean; updatedAt: string; categoryId: string | null }[];
   categories: { id: string; name: string; slug: string }[];
   ndaVersions: { id: string; version: number; title: string; active: boolean; createdAt: string }[];
   signatures: { id: string; investorId: string; status: string; signedAt: string; signerFullName: string; hasCopy: string | null }[];
@@ -39,6 +42,11 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
   const [error, setError] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [docSearch, setDocSearch] = useState('');
+  const [docFolder, setDocFolder] = useState<string | null>(null);
+  const [docView, setDocView] = useState<'list' | 'grid'>('list');
+  const [shareDoc, setShareDoc] = useState<{ id: string; title: string; confidentiality: string } | null>(null);
+  const [viewer, setViewer] = useState<{ title: string; src: string; mimeType?: string | null; docId: string } | null>(null);
 
   const load = useCallback(async () => {
     const [d, inv] = await Promise.all([
@@ -51,6 +59,24 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
   }, [id]);
 
   useEffect(() => { load(); }, [load]);
+
+  const globalSearch = useDataroomSearch();
+
+  // Navegación por carpetas (categorías) estilo SharePoint.
+  const docNav = useMemo(() => {
+    const docs = data?.documents ?? [];
+    const cats = data?.categories ?? [];
+    const q = (docSearch.trim() || globalSearch.trim()).toLowerCase();
+    const searching = q.length > 0;
+    const catsWithDocs = cats
+      .filter((c) => docs.some((d) => d.categoryId === c.id))
+      .map((c) => ({ id: c.id, name: c.name, count: docs.filter((d) => d.categoryId === c.id).length }));
+    const currentName = docFolder ? (cats.find((c) => c.id === docFolder)?.name ?? null) : null;
+
+    if (searching) return { folders: [], docs: docs.filter((d) => d.title.toLowerCase().includes(q)), currentName };
+    if (docFolder) return { folders: [], docs: docs.filter((d) => d.categoryId === docFolder), currentName };
+    return { folders: catsWithDocs, docs: docs.filter((d) => !d.categoryId), currentName: null };
+  }, [data, docSearch, globalSearch, docFolder]);
 
   async function patch(body: Record<string, unknown>, okMsg = 'Guardado.') {
     setBusy(true);
@@ -65,6 +91,20 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
       method: 'PATCH', body: JSON.stringify({ action }),
     });
     if (res.ok) load(); else setMsg(`Error: ${res.error}`);
+  }
+
+  async function openPreview(id: string, title: string) {
+    setMsg(null);
+    const res = await fetchJson<{ url: string; mimeType: string | null }>(`/api/dataroom/admin/documents/${id}/file?kind=preview`);
+    if (res.ok && res.data?.url) setViewer({ title, src: res.data.url, mimeType: res.data.mimeType, docId: id });
+    else setMsg('No se ha podido abrir el documento.');
+  }
+
+  async function downloadDoc(id: string) {
+    setMsg(null);
+    const res = await fetchJson<{ url: string }>(`/api/dataroom/admin/documents/${id}/file?kind=download`);
+    if (res.ok && res.data?.url) window.open(res.data.url, '_blank', 'noopener');
+    else setMsg('No se ha podido descargar el documento.');
   }
 
   async function deleteDoc(docId: string, title: string) {
@@ -87,13 +127,14 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
 
   const p = data.project;
   const activeInvestors = data.investors.filter((i) => i.access.status === 'active');
+  const assignedInvestors = data.investors.filter((i) => i.access.status !== 'revoked');
   const publishedDocs = data.documents.filter((d) => d.status === 'published');
   const hasNda = data.ndaVersions.some((v) => v.active);
 
   // Pasos del flujo de puesta en marcha
   const steps = [
     ...(p.ndaRequired ? [{ label: 'Publicar el NDA global', done: hasNda, action: () => router.push('/dataroom/admin/nda'), cta: 'Ir al NDA' }] : []),
-    { label: 'Asignar inversores', done: activeInvestors.length > 0, cta: 'Abajo ↓' },
+    { label: 'Asignar inversores', done: assignedInvestors.length > 0, cta: 'Abajo ↓' },
     { label: 'Subir y publicar documentos', done: publishedDocs.length > 0, cta: 'Abajo ↓' },
     { label: 'Activar el proyecto', done: p.status === 'active', action: () => patch({ action: 'update', data: { status: 'active' } }, 'Proyecto activado.'), cta: 'Activar' },
   ];
@@ -101,7 +142,6 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
 
   const section = 'border border-[#1c3742]/10 bg-white p-5 shadow-sm';
   const h = 'mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#1c3742]/50';
-  const btn = 'border border-[#1c3742]/30 px-3 py-1.5 text-xs hover:bg-[#1c3742]/5 disabled:opacity-40';
 
   return (
     <div className="space-y-6">
@@ -173,16 +213,16 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
               <li key={i.investorId} className="flex items-center justify-between gap-2 bg-[#faf9f5] px-3 py-2">
                 <Link href={`/dataroom/admin/investors/${i.investorId}`} className="hover:underline">
                   {[i.firstName, i.lastName].filter(Boolean).join(' ') || i.email}
-                  <span className="ml-2 text-xs text-[#1c3742]/40">
-                    {STATUS_LABELS[i.access.accessLevel] ?? i.access.accessLevel} · desde {formatDate(i.access.grantedAt)}
+                  <span className="ml-2 text-xs text-[#1c3742]/40" title={ACCESS_LEVEL_HINTS[i.access.accessLevel]}>
+                    {accessLevelLabel(i.access.accessLevel)} · desde {formatDate(i.access.grantedAt)}
                   </span>
                 </Link>
                 <div className="flex items-center gap-2">
                   <Badge value={i.access.status} />
-                  {i.access.status === 'active' && (
+                  {(i.access.status === 'active' || i.access.status === 'pending') && (
                     <button
                       onClick={async () => {
-                        if (!confirm('¿Retirar el acceso? Es inmediato.')) return;
+                        if (!confirm(i.access.status === 'pending' ? '¿Cancelar la invitación?' : '¿Retirar el acceso? Es inmediato.')) return;
                         const res = await fetchJson(`/api/dataroom/admin/investors/${i.investorId}/projects`, {
                           method: 'DELETE', body: JSON.stringify({ projectId: id, notify: true }),
                         });
@@ -190,7 +230,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
                       }}
                       className="text-xs text-red-700 hover:underline"
                     >
-                      Revocar
+                      {i.access.status === 'pending' ? 'Cancelar' : 'Revocar'}
                     </button>
                   )}
                 </div>
@@ -229,58 +269,102 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
             Sin NDA publicado, los inversores no podrán desbloquear la documentación confidencial.
           </p>
         )}
+        {p.ndaRequired && (
+          <div className="mt-4">
+            <p className="mb-2 text-[11px] uppercase tracking-wider text-[#1c3742]/45">Firmas del NDA en este proyecto</p>
+            {data.signatures.filter((s) => s.status === 'signed').length === 0 ? (
+              <p className="text-xs text-[#1c3742]/50">Todavía no hay firmas.</p>
+            ) : (
+              <ul className="space-y-1">
+                {data.signatures.filter((s) => s.status === 'signed').map((s) => (
+                  <li key={s.id} className="flex flex-wrap items-center gap-2 border border-[#1c3742]/10 bg-[#faf9f5] px-3 py-2 text-sm">
+                    <span className="font-medium">{s.signerFullName}</span>
+                    <Badge value="signed" />
+                    <span className="text-xs text-[#1c3742]/50">Firmado el {formatDate(s.signedAt)}</span>
+                    {s.hasCopy && <span className="ml-auto text-[11px] text-[#1c3742]/45">Copia registrada</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p className="mt-2 text-[11px] text-[#1c3742]/45">
+              El NDA es único para todo el portal: una sola firma desbloquea toda la documentación confidencial de los proyectos que lo requieren (no se firma archivo por archivo).
+            </p>
+          </div>
+        )}
       </section>
 
       {/* 3. Documentos */}
       <UploadPanel projectId={id} categories={data.categories} investors={activeInvestors} onUploaded={load} />
 
-      <section className={section}>
-        <h2 className={h}>Documentos ({data.documents.length})</h2>
+      {/* Biblioteca de documentos — estilo SharePoint (carpetas navegables) */}
+      <section className="border border-[#1c3742]/10 bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-[#1c3742]/10 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-center gap-1.5 text-sm">
+            <FolderGlyph className="h-5 w-5 shrink-0 text-[#c08552]" />
+            <button type="button" onClick={() => { setDocFolder(null); setDocSearch(''); }} className="font-medium text-[#1c3742] hover:underline">Documentos</button>
+            {docNav.currentName && (
+              <>
+                <span className="text-[#1c3742]/35">›</span>
+                <span className="truncate font-medium text-[#1c3742]">{docNav.currentName}</span>
+              </>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {data.documents.length > 0 && <LibrarySearch value={docSearch} onChange={setDocSearch} />}
+            <ViewToggle view={docView} onChange={setDocView} />
+          </div>
+        </div>
+
         {data.documents.length === 0 ? (
-          <p className="text-sm text-[#1c3742]/50">Todavía no hay documentos. Súbalos con el panel de arriba.</p>
+          <p className="p-4 text-sm text-[#1c3742]/50">Todavía no hay documentos. Súbalos con el panel de arriba.</p>
+        ) : docNav.folders.length === 0 && docNav.docs.length === 0 ? (
+          <p className="p-4 text-sm text-[#1c3742]/50">{docSearch ? 'Sin resultados para la búsqueda.' : 'Esta carpeta está vacía.'}</p>
+        ) : docView === 'grid' ? (
+          <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 lg:grid-cols-4">
+            {docNav.folders.map((f) => (
+              <button key={f.id} type="button" onClick={() => setDocFolder(f.id)}
+                className="flex items-center gap-3 border border-[#1c3742]/12 bg-white p-3 text-left transition-colors hover:bg-[#1c3742]/[0.03]">
+                <FolderIconFilled className="h-10 w-10 shrink-0" />
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-medium text-[#1c3742]">{f.name}</span>
+                  <span className="block text-[11px] text-[#1c3742]/45">{f.count} elemento(s)</span>
+                </span>
+              </button>
+            ))}
+            {docNav.docs.map((d) => (
+              <AdminDocRow key={d.id} view="grid" d={d} onPreview={openPreview} onDownload={downloadDoc} onShare={setShareDoc} docAction={docAction} deleteDoc={deleteDoc} reload={load} />
+            ))}
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[#1c3742]/15 text-left text-[11px] uppercase tracking-wider text-[#1c3742]/50">
-                  <th className="px-3 py-2">Título</th>
-                  <th className="px-3 py-2">Estado</th>
-                  <th className="px-3 py-2">Nivel</th>
-                  <th className="px-3 py-2">NDA</th>
-                  <th className="px-3 py-2">Descarga</th>
-                  <th className="px-3 py-2">Actualizado</th>
-                  <th className="px-3 py-2 text-right">Acciones</th>
+                <tr className="border-b border-[#1c3742]/10 bg-[#1c3742]/[0.03] text-left text-[11px] uppercase tracking-wider text-[#1c3742]/55">
+                  <th className="px-4 py-2.5 font-semibold">Nombre</th>
+                  <th className="px-4 py-2.5 font-semibold">Estado</th>
+                  <th className="px-4 py-2.5 font-semibold">Modificado</th>
+                  <th className="px-4 py-2.5 font-semibold">Modificado por</th>
+                  <th className="w-10 px-2 py-2.5" />
                 </tr>
               </thead>
               <tbody>
-                {data.documents.map((d) => (
-                  <tr key={d.id} className="border-b border-[#1c3742]/10 last:border-0">
-                    <td className="px-3 py-2">{d.title}</td>
-                    <td className="px-3 py-2"><Badge value={d.status} /></td>
-                    <td className="px-3 py-2"><Badge value={d.confidentiality} /></td>
-                    <td className="px-3 py-2 text-xs">{d.requiresNda ? 'Sí' : 'No'}</td>
-                    <td className="px-3 py-2 text-xs">{d.downloadable ? 'Sí' : 'Solo vista'}</td>
-                    <td className="px-3 py-2 text-[#1c3742]/60">{formatDate(d.updatedAt)}</td>
-                    <td className="px-3 py-2">
-                      <div className="flex justify-end gap-2">
-                        {d.status === 'draft' && <button className={btn} onClick={() => docAction(d.id, 'publish')}>Publicar</button>}
-                        {d.status === 'published' && (
-                          <>
-                            <button className={btn} onClick={() => docAction(d.id, 'notify')}>Notificar</button>
-                            <NewVersionButton docId={d.id} onDone={load} />
-                            <button className={btn} onClick={() => confirm('¿Archivar documento? Dejará de ser visible.') && docAction(d.id, 'archive')}>Archivar</button>
-                          </>
-                        )}
-                        {d.status === 'archived' && <button className={btn} onClick={() => docAction(d.id, 'publish')}>Republicar</button>}
-                        <button
-                          className="border border-red-300 px-3 py-1.5 text-xs text-red-700 hover:bg-red-50"
-                          onClick={() => deleteDoc(d.id, d.title)}
-                        >
-                          Eliminar
-                        </button>
+                {docNav.folders.map((f) => (
+                  <tr key={f.id} onClick={() => setDocFolder(f.id)} className="cursor-pointer border-b border-[#1c3742]/[0.07] hover:bg-[#1c3742]/[0.04]">
+                    <td className="px-4 py-2.5">
+                      <div className="flex items-center gap-3">
+                        <FolderIconFilled className="h-8 w-8 shrink-0" />
+                        <span className="truncate font-medium text-[#1c3742] hover:underline">{f.name}</span>
+                        <span className="text-xs text-[#1c3742]/40">{f.count}</span>
                       </div>
                     </td>
+                    <td className="px-4 py-2.5" />
+                    <td className="px-4 py-2.5 text-[#1c3742]/60">—</td>
+                    <td className="px-4 py-2.5 text-[#1c3742]/60">Althara</td>
+                    <td className="px-2 py-2.5" />
                   </tr>
+                ))}
+                {docNav.docs.map((d) => (
+                  <AdminDocRow key={d.id} view="list" d={d} onPreview={openPreview} onDownload={downloadDoc} onShare={setShareDoc} docAction={docAction} deleteDoc={deleteDoc} reload={load} />
                 ))}
               </tbody>
             </table>
@@ -290,7 +374,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
 
       <section className={section}>
         <h2 className={h}>Actividad</h2>
-        <ul className="space-y-1 text-xs text-[#1c3742]/70">
+        <ul className="max-h-64 space-y-1 overflow-auto pr-1 text-xs text-[#1c3742]/70">
           {data.activity.map((a) => (
             <li key={a.id}>
               {formatDate(a.createdAt)} — {actionLabel(a.action)}
@@ -301,7 +385,228 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
         </ul>
       </section>
 
+      {shareDoc && (
+        <ShareDialog
+          doc={shareDoc}
+          investors={activeInvestors}
+          onClose={() => setShareDoc(null)}
+        />
+      )}
+      {viewer && (
+        <DocViewer
+          title={viewer.title}
+          src={viewer.src}
+          mimeType={viewer.mimeType}
+          onClose={() => setViewer(null)}
+          onDownload={() => downloadDoc(viewer.docId)}
+        />
+      )}
     </div>
+  );
+}
+
+/**
+ * Compartir un archivo con inversores concretos (estilo Google Drive).
+ * Cada inversor puede estar en "Ver" (permitido), "Bloquear" (denegado) o
+ * "Automático" (según su nivel de acceso y la confidencialidad del archivo).
+ */
+function ShareDialog({ doc, investors, onClose }: {
+  doc: { id: string; title: string; confidentiality: string };
+  investors: Detail['investors'];
+  onClose: () => void;
+}) {
+  const [perms, setPerms] = useState<Record<string, 'allow' | 'deny'>>({});
+  const [loading, setLoading] = useState(true);
+  const [savingId, setSavingId] = useState<string | null>(null);
+
+  const loadPerms = useCallback(async () => {
+    const res = await fetchJson<{ permissions: { perm: { investorId: string; effect: 'allow' | 'deny' } }[] }>(
+      `/api/dataroom/admin/documents/${doc.id}`,
+    );
+    const map: Record<string, 'allow' | 'deny'> = {};
+    if (res.ok && res.data?.permissions) {
+      for (const p of res.data.permissions) map[p.perm.investorId] = p.perm.effect;
+    }
+    setPerms(map);
+    setLoading(false);
+  }, [doc.id]);
+
+  useEffect(() => { loadPerms(); }, [loadPerms]);
+
+  async function setEffect(investorId: string, effect: 'allow' | 'deny' | 'clear') {
+    setSavingId(investorId);
+    const res = await fetchJson(`/api/dataroom/admin/documents/${doc.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ action: 'set_permission', permission: { investorId, effect } }),
+    });
+    if (res.ok) {
+      setPerms((prev) => {
+        const next = { ...prev };
+        if (effect === 'clear') delete next[investorId];
+        else next[investorId] = effect;
+        return next;
+      });
+    }
+    setSavingId(null);
+  }
+
+  /** Qué ve el inversor "en automático", según nivel de acceso y confidencialidad. */
+  function autoEffect(accessLevel: string): 've' | 'no_ve' {
+    if (accessLevel === 'full') return 've';
+    return doc.confidentiality === 'generic' ? 've' : 'no_ve';
+  }
+
+  const seg = (activeState: boolean) =>
+    `px-2.5 py-1 text-[11px] font-medium transition ${
+      activeState ? 'bg-[#1c3742] text-[#e6e2d7]' : 'text-[#1c3742]/70 hover:bg-[#1c3742]/[0.06]'
+    }`;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#102027]/50 p-4" role="dialog" aria-modal="true">
+      <div className="flex max-h-[85vh] w-full max-w-lg flex-col border border-[#1c3742]/20 bg-white">
+        <div className="flex items-start justify-between gap-3 border-b border-[#1c3742]/15 px-5 py-4">
+          <div>
+            <h2 className="font-playfair text-lg leading-tight">Compartir archivo</h2>
+            <p className="mt-0.5 truncate text-xs text-[#1c3742]/55">{doc.title}</p>
+          </div>
+          <button onClick={onClose} className="text-[#1c3742]/60 hover:text-[#1c3742]" aria-label="Cerrar">✕</button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-5 py-4">
+          <p className="mb-4 text-xs text-[#1c3742]/60">
+            Elige quién puede ver este archivo. <strong>Automático</strong> sigue el nivel de acceso del
+            inversor; <strong>Ver</strong> lo comparte siempre; <strong>Bloquear</strong> se lo oculta aunque
+            tenga acceso completo.
+          </p>
+          {loading ? (
+            <Spinner label="Cargando permisos…" />
+          ) : investors.length === 0 ? (
+            <p className="text-sm text-[#1c3742]/50">Este proyecto todavía no tiene inversores con acceso.</p>
+          ) : (
+            <ul className="space-y-2">
+              {investors.map((i) => {
+                const current = perms[i.investorId]; // allow | deny | undefined
+                const auto = autoEffect(i.access.accessLevel);
+                return (
+                  <li key={i.investorId} className="flex flex-wrap items-center justify-between gap-2 border border-[#1c3742]/10 px-3 py-2">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm">
+                        {[i.firstName, i.lastName].filter(Boolean).join(' ') || i.email}
+                      </p>
+                      <p className="text-[11px] text-[#1c3742]/45">
+                        {accessLevelLabel(i.access.accessLevel)}
+                        {' · '}
+                        {!current
+                          ? `Automático: ${auto === 've' ? 've el archivo' : 'no lo ve'}`
+                          : current === 'allow' ? 'Compartido' : 'Bloqueado'}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 border border-[#1c3742]/20" aria-busy={savingId === i.investorId}>
+                      <button className={seg(current === 'allow')} onClick={() => setEffect(i.investorId, 'allow')}>Ver</button>
+                      <button className={`${seg(!current)} border-x border-[#1c3742]/15`} onClick={() => setEffect(i.investorId, 'clear')}>Auto</button>
+                      <button className={seg(current === 'deny')} onClick={() => setEffect(i.investorId, 'deny')}>Bloquear</button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
+        <div className="flex justify-end border-t border-[#1c3742]/15 px-5 py-3">
+          <button onClick={onClose} className="bg-[#1c3742] px-5 py-2 text-sm font-semibold text-[#e6e2d7]">Hecho</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type AdminDoc = Detail['documents'][number];
+
+/** Documento estilo SharePoint: clic en el nombre abre el visor; menú ⋮ persistente. Lista o cuadrícula. */
+function AdminDocRow({ d, view, onPreview, onDownload, onShare, docAction, deleteDoc, reload }: {
+  d: AdminDoc;
+  view: 'list' | 'grid';
+  onPreview: (id: string, title: string) => void;
+  onDownload: (id: string) => void;
+  onShare: (doc: { id: string; title: string; confidentiality: string }) => void;
+  docAction: (id: string, action: string) => void;
+  deleteDoc: (id: string, title: string) => void;
+  reload: () => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  async function onNewVersion(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const form = new FormData();
+    form.append('file', file);
+    form.append('publish', 'true');
+    form.append('comment', 'Nueva versión');
+    await fetch(`/api/dataroom/admin/documents/${d.id}`, { method: 'POST', body: form });
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = '';
+    reload();
+  }
+
+  const items: MenuItem[] = [
+    { label: 'Vista previa', onClick: () => onPreview(d.id, d.title) },
+    { label: 'Descargar', onClick: () => onDownload(d.id) },
+    { label: 'Compartir', onClick: () => onShare({ id: d.id, title: d.title, confidentiality: d.confidentiality }) },
+    ...(d.status === 'draft' ? [{ label: 'Publicar', onClick: () => docAction(d.id, 'publish') }] : []),
+    ...(d.status === 'published'
+      ? [
+          { label: 'Notificar a inversores', onClick: () => docAction(d.id, 'notify') },
+          { label: uploading ? 'Subiendo…' : 'Subir nueva versión', onClick: () => fileRef.current?.click() },
+          { label: 'Archivar', onClick: () => { if (confirm('¿Archivar documento? Dejará de ser visible.')) docAction(d.id, 'archive'); } },
+        ]
+      : []),
+    ...(d.status === 'archived' ? [{ label: 'Republicar', onClick: () => docAction(d.id, 'publish') }] : []),
+    { label: 'Eliminar', danger: true, onClick: () => deleteDoc(d.id, d.title) },
+  ];
+
+  const hiddenInput = (
+    <input ref={fileRef} type="file" hidden onChange={onNewVersion} accept=".pdf,.docx,.xlsx,.pptx,.csv,.png,.jpg,.jpeg,.webp" />
+  );
+
+  if (view === 'grid') {
+    return (
+      <div className="group flex flex-col border border-[#1c3742]/12 bg-white transition-shadow hover:shadow-md">
+        <button type="button" onClick={() => onPreview(d.id, d.title)} className="flex flex-1 flex-col items-center justify-center gap-3 p-6">
+          <FileIcon fileName={d.title} />
+        </button>
+        <div className="flex items-center justify-between gap-1 border-t border-[#1c3742]/10 px-3 py-2">
+          <p className="truncate text-xs font-medium text-[#1c3742]">{d.title}</p>
+          {hiddenInput}
+          <KebabMenu items={items} />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <tr className="group border-b border-[#1c3742]/[0.07] last:border-0 hover:bg-[#1c3742]/[0.04]">
+      <td className="px-4 py-2.5">
+        <div className="flex items-center gap-3">
+          <FileIcon fileName={d.title} />
+          <button type="button" onClick={() => onPreview(d.id, d.title)} className="min-w-0 text-left">
+            <p className="truncate font-medium text-[#1c3742] hover:underline">{d.title}</p>
+          </button>
+          {d.confidentiality === 'sensitive' && (
+            <span className="shrink-0 text-[10px] uppercase tracking-wider text-[#c08552]">Confidencial</span>
+          )}
+        </div>
+      </td>
+      <td className="px-4 py-2.5"><Badge value={d.status} /></td>
+      <td className="px-4 py-2.5 text-[#1c3742]/60">{formatDate(d.updatedAt)}</td>
+      <td className="px-4 py-2.5 text-[#1c3742]/60">Althara</td>
+      <td className="px-2 py-2.5">
+        {hiddenInput}
+        <div className="flex justify-end"><KebabMenu items={items} /></div>
+      </td>
+    </tr>
   );
 }
 
@@ -351,9 +656,10 @@ function AssignInvestor({ projectId, allInvestors, assigned, onChanged, onError 
         ))}
       </select>
       <select value={level} onChange={(e) => setLevel(e.target.value as 'full' | 'generic')}
+        title={ACCESS_LEVEL_HINTS[level]}
         className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-2 text-sm">
-        <option value="full">Acceso completo</option>
-        <option value="generic">Solo documentación general</option>
+        <option value="full">Acceso completo — todos los documentos</option>
+        <option value="generic">Acceso limitado — solo documentos generales</option>
       </select>
       <button onClick={grant} disabled={!investorId || busy}
         className="bg-[#1c3742] px-4 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40">
@@ -432,9 +738,10 @@ function UploadPanel({ projectId, categories, investors, onUploaded }: {
           {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
         <select value={meta.confidentiality} onChange={(e) => setMeta({ ...meta, confidentiality: e.target.value, requiresNda: e.target.value === 'sensitive' })}
+          title="Confidencial: solo lo ven los inversores con acceso completo. General: lo ven todos."
           className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1.5 text-xs">
-          <option value="sensitive">Confidencial</option>
-          <option value="generic">General</option>
+          <option value="sensitive">Confidencial — solo acceso completo</option>
+          <option value="generic">General — visible para todos</option>
         </select>
       </div>
       <div className="mt-3 flex flex-wrap gap-4">
@@ -483,35 +790,4 @@ function UploadPanel({ projectId, categories, investors, onUploaded }: {
   );
 }
 
-function NewVersionButton({ docId, onDone }: { docId: string; onDone: () => void }) {
-  const ref = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState(false);
-
-  async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setBusy(true);
-    const form = new FormData();
-    form.append('file', file);
-    form.append('publish', 'true');
-    form.append('comment', 'Nueva versión');
-    await fetch(`/api/dataroom/admin/documents/${docId}`, { method: 'POST', body: form });
-    setBusy(false);
-    if (ref.current) ref.current.value = '';
-    onDone();
-  }
-
-  return (
-    <>
-      <input ref={ref} type="file" hidden onChange={onFile} accept=".pdf,.docx,.xlsx,.pptx,.csv,.png,.jpg,.jpeg,.webp" />
-      <button
-        onClick={() => ref.current?.click()}
-        disabled={busy}
-        className="border border-[#1c3742]/30 px-3 py-1.5 text-xs hover:bg-[#1c3742]/5 disabled:opacity-40"
-      >
-        {busy ? 'Subiendo…' : 'Nueva versión'}
-      </button>
-    </>
-  );
-}
 

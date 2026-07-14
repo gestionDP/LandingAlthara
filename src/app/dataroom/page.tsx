@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { fetchJson, Spinner, ErrorBox, EmptyState, Badge, formatDate } from './components/ui';
+import { fetchJson, Spinner, ErrorBox, EmptyState, Badge, formatDate, FolderIconFilled } from './components/ui';
 
 interface PortalData {
   investor: { firstName: string | null; email: string; status: string };
@@ -15,6 +15,7 @@ interface PortalData {
   }[];
   notifications: { id: string; type: string; payload: { projectName?: string; count?: number } | null; createdAt: string; readAt: string | null }[];
   recentAccess: { documentId: string; kind: string; createdAt: string }[];
+  pendingInvitations: { projectId: string; name: string; investmentType: string | null; description: string | null; grantedAt: string; accessLevel: string }[];
 }
 
 export default function DataroomHome() {
@@ -22,6 +23,7 @@ export default function DataroomHome() {
   const [data, setData] = useState<PortalData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [respBusy, setRespBusy] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -49,6 +51,16 @@ export default function DataroomHome() {
 
   useEffect(() => { load(); }, [load]);
 
+  async function respondInvitation(projectId: string, action: 'accept' | 'reject') {
+    setRespBusy(projectId);
+    const res = await fetchJson(`/api/dataroom/projects/${projectId}/access`, {
+      method: 'POST',
+      body: JSON.stringify({ action }),
+    });
+    setRespBusy(null);
+    if (res.ok) load();
+  }
+
   if (loading) return <Spinner label="Cargando su portal…" />;
   if (error === 'pending_activation') {
     return (
@@ -71,14 +83,61 @@ export default function DataroomHome() {
 
   return (
     <div className="space-y-10">
-      <div>
-        <h1 className="font-playfair text-3xl">
-          Bienvenido{data.investor.firstName ? `, ${data.investor.firstName}` : ''}
-        </h1>
-        <p className="mt-1 text-sm text-[#1c3742]/60">
-          Cuenta <Badge value={data.investor.status} /> · {data.investor.email}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="font-playfair text-3xl">
+            Bienvenido{data.investor.firstName ? `, ${data.investor.firstName}` : ''}
+          </h1>
+          <p className="mt-1 text-sm text-[#1c3742]/60">
+            Cuenta <Badge value={data.investor.status} /> · {data.investor.email}
+          </p>
+        </div>
+        <Link
+          href="/dataroom/profile"
+          className="border border-[#1c3742]/25 px-4 py-2 text-xs font-medium text-[#1c3742] transition-colors hover:bg-[#1c3742]/5"
+        >
+          Mi perfil
+        </Link>
       </div>
+
+      {data.pendingInvitations.length > 0 && (
+        <section className="border border-[#c08552]/40 bg-[#c08552]/[0.06] p-5">
+          <h2 className="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#8a5a33]">
+            Invitaciones pendientes
+          </h2>
+          <p className="mb-4 text-sm text-[#1c3742]/60">
+            Le han invitado a estos proyectos. Acéptelos para acceder a su documentación.
+          </p>
+          <ul className="space-y-3">
+            {data.pendingInvitations.map((inv) => (
+              <li key={inv.projectId} className="flex flex-wrap items-center justify-between gap-3 border border-[#1c3742]/10 bg-white p-4">
+                <div className="min-w-0">
+                  <p className="font-playfair text-lg leading-snug">{inv.name}</p>
+                  <p className="text-[11px] uppercase tracking-wider text-[#1c3742]/50">
+                    {inv.investmentType ?? 'Proyecto de inversión'} · invitación del {formatDate(inv.grantedAt)}
+                  </p>
+                </div>
+                <div className="flex shrink-0 gap-2">
+                  <button
+                    onClick={() => respondInvitation(inv.projectId, 'accept')}
+                    disabled={respBusy === inv.projectId}
+                    className="bg-[#1c3742] px-4 py-2 text-xs font-semibold text-[#e6e2d7] transition-colors hover:bg-[#c08552] disabled:opacity-40"
+                  >
+                    {respBusy === inv.projectId ? '…' : 'Aceptar'}
+                  </button>
+                  <button
+                    onClick={() => respondInvitation(inv.projectId, 'reject')}
+                    disabled={respBusy === inv.projectId}
+                    className="border border-[#1c3742]/25 px-4 py-2 text-xs font-medium text-[#1c3742] transition-colors hover:bg-[#1c3742]/5 disabled:opacity-40"
+                  >
+                    Rechazar
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section>
         <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#1c3742]/50">
@@ -99,7 +158,7 @@ export default function DataroomHome() {
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center bg-[#1c3742]/5 text-[10px] font-bold uppercase tracking-wide text-[#c08552]" aria-hidden>DIR</span>
+                    <FolderIconFilled className="h-10 w-10 shrink-0" />
                     <h3 className="font-playfair text-lg leading-snug">{p.name}</h3>
                   </div>
                   {p.newDocumentCount > 0 && (

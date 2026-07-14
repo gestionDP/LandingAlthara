@@ -66,9 +66,11 @@ export function computeDocumentAccess(i: AccessInput): AccessDecision {
 
   const isSensitive = i.document.confidentiality === 'sensitive';
 
-  // A "generic"-level assignment only grants generic documents, unless an
-  // explicit allow permission was created for this document+investor.
-  if (isSensitive && i.assignment.accessLevel === 'generic' && i.permission?.effect !== 'allow') {
+  // "Acceso limitado" (accessLevel 'generic'): modelo tipo Google Drive — el
+  // inversor solo ve los documentos que se le han compartido explícitamente
+  // (permiso 'allow'). Sin permiso explícito no ve NADA, sea general o
+  // confidencial. El "acceso completo" ('full') ve todo por defecto.
+  if (i.assignment.accessLevel === 'generic' && i.permission?.effect !== 'allow') {
     return DENY('level_insufficient');
   }
 
@@ -92,7 +94,9 @@ export function computeProjectVisibility(i: {
 }): boolean {
   if (!i.sameTenant) return false;
   if (!investorCanAccessPortal(i.investorStatus)) return false;
-  if (!i.assignment || i.assignment.status === 'revoked') return false;
+  // Solo un acceso ACTIVO muestra el proyecto. 'pending' (invitación sin
+  // aceptar), 'suspended' o 'revoked' no lo muestran.
+  if (!i.assignment || i.assignment.status !== 'active') return false;
   if (i.projectStatus === 'draft' || i.projectStatus === 'archived') return false;
   return true;
 }

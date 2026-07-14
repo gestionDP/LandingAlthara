@@ -109,7 +109,7 @@ export default function AdminNda() {
         {data.signatures.length === 0 ? (
           <p className="text-sm text-[#1c3742]/50">Nadie ha firmado todavía.</p>
         ) : (
-          <ul className="space-y-1 text-sm">
+          <ul className="max-h-72 space-y-1 overflow-auto pr-1 text-sm">
             {data.signatures.map((s) => (
               <li key={s.id} className="flex items-center justify-between bg-[#faf9f5] px-3 py-2">
                 <span>{s.signerFullName} <span className="text-xs text-[#1c3742]/40">· {s.email} · v{s.version} · {formatDate(s.signedAt)}</span></span>

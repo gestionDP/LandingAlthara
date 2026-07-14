@@ -99,7 +99,7 @@ export default function Segments() {
                   onClick={() => setModalType(t(`items.${c.i}`))}
                   onMouseEnter={() => setActive(idx)}
                   onMouseLeave={() => setActive(null)}
-                  className="group relative aspect-[4/5] w-[240px] shrink-0 overflow-hidden text-left md:w-[280px]"
+                  className="group relative aspect-[3/5] w-[280px] shrink-0 overflow-hidden text-left md:w-[340px]"
                   aria-label={t(`items.${c.i}`)}
                 >
                   <Image

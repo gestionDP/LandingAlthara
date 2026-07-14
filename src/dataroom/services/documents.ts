@@ -57,11 +57,20 @@ export async function uploadDocument(input: UploadDocumentInput, actor: AuditAct
     createdBy: actor.id ?? null,
   }).returning();
 
-  const version = await addVersion(
-    { documentId: document.id, file: input.file, comment: 'Versión inicial', publish: input.publish },
-    actor,
-    { skipSupersede: true, ext: check.ext },
-  );
+  let version;
+  try {
+    version = await addVersion(
+      { documentId: document.id, file: input.file, comment: 'Versión inicial', publish: input.publish },
+      actor,
+      { skipSupersede: true, ext: check.ext },
+    );
+  } catch (err) {
+    // Si falla el guardado del fichero, deshacemos el documento recién creado
+    // para no dejar un borrador huérfano sin versión.
+    await db().delete(schema.documentVersions).where(eq(schema.documentVersions.documentId, document.id));
+    await db().delete(schema.documents).where(eq(schema.documents.id, document.id));
+    throw err;
+  }
 
   if (input.restrictToInvestorIds?.length) {
     await db().insert(schema.documentPermissions).values(
@@ -434,4 +443,29 @@ export async function serveDocument(
     downloadName: fileName,
   });
   return { type: 'url', url };
+}
+
+/**
+ * ADMIN: URL firmada del documento (sin marca de agua, sin registro de
+ * descarga de inversor). Permite abrir/previsualizar el archivo cargado.
+ */
+export async function serveDocumentAsAdmin(
+  documentId: string,
+  kind: 'preview' | 'download',
+): Promise<{ url: string; mimeType: string | null; fileName: string }> {
+  const [document] = await db().select().from(schema.documents)
+    .where(and(eq(schema.documents.id, documentId), eq(schema.documents.tenant, T))).limit(1);
+  if (!document || !document.currentVersionId) throw new AuthzError(404, 'not_found');
+  const [version] = await db().select().from(schema.documentVersions)
+    .where(eq(schema.documentVersions.id, document.currentVersionId)).limit(1);
+  if (!version) throw new AuthzError(404, 'not_found');
+
+  const ext = version.storagePath.split('.').pop() ?? 'bin';
+  const fileName = safeDownloadName(document.title, ext);
+  const url = await signedUrl({
+    path: version.storagePath,
+    disposition: kind === 'preview' ? 'inline' : 'attachment',
+    downloadName: fileName,
+  });
+  return { url, mimeType: version.mimeType, fileName };
 }

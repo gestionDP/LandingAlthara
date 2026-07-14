@@ -1,4 +1,5 @@
 /** INVESTOR — profile + portal summary (projects, notifications, recent activity). */
+import { z } from 'zod';
 import { and, desc, eq, isNull } from 'drizzle-orm';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { requireInvestor, requireAdmin, errorResponse, AuthzError } from '@/dataroom/lib/authz';
@@ -57,7 +58,7 @@ export async function GET() {
       .set({ lastAccessAt: new Date() })
       .where(eq(schema.investors.id, investor.id));
 
-    const [projects, notifications, recentAccess] = await Promise.all([
+    const [projects, notifications, recentAccess, pendingInvitations] = await Promise.all([
       listAuthorizedProjects(investor),
       db().select().from(schema.notifications)
         .where(eq(schema.notifications.investorId, investor.id))
@@ -69,6 +70,21 @@ export async function GET() {
       }).from(schema.downloads)
         .where(eq(schema.downloads.investorId, investor.id))
         .orderBy(desc(schema.downloads.createdAt)).limit(10),
+      db().select({
+        projectId: schema.projects.id,
+        name: schema.projects.name,
+        investmentType: schema.projects.investmentType,
+        description: schema.projects.description,
+        grantedAt: schema.projectAccess.grantedAt,
+        accessLevel: schema.projectAccess.accessLevel,
+      }).from(schema.projectAccess)
+        .innerJoin(schema.projects, eq(schema.projectAccess.projectId, schema.projects.id))
+        .where(and(
+          eq(schema.projectAccess.investorId, investor.id),
+          eq(schema.projectAccess.status, 'pending'),
+          eq(schema.projects.tenant, DATAROOM_TENANT),
+          isNull(schema.projects.deletedAt),
+        )),
     ]);
 
     return Response.json({
@@ -78,11 +94,51 @@ export async function GET() {
         email: investor.email,
         status: investor.status,
         language: investor.language,
+        phone: investor.phone,
+        company: investor.company,
+        country: investor.country,
+        investorType: investor.investorType,
       },
       projects,
       notifications,
       recentAccess,
+      pendingInvitations,
     });
+  } catch (err) {
+    return errorResponse(err);
+  }
+}
+
+const ProfileSchema = z.object({
+  firstName: z.string().trim().max(120).optional(),
+  lastName: z.string().trim().max(120).optional(),
+  phone: z.string().trim().max(40).optional(),
+  company: z.string().trim().max(160).optional(),
+  country: z.string().trim().max(80).optional(),
+  investorType: z.enum(['individual', 'legal_entity', 'professional', 'institutional']).optional(),
+  language: z.enum(['es', 'en']).optional(),
+});
+
+/** El propio inversor completa/edita sus datos de perfil. */
+export async function PATCH(req: Request) {
+  try {
+    const investor = await requireInvestor();
+    const body = await req.json().catch(() => null);
+    const parsed = ProfileSchema.safeParse(body);
+    if (!parsed.success) return Response.json({ error: 'invalid_request' }, { status: 400 });
+
+    const p = parsed.data;
+    const set: Record<string, unknown> = { updatedAt: new Date() };
+    (['firstName', 'lastName', 'phone', 'company', 'country', 'investorType', 'language'] as const)
+      .forEach((k) => {
+        if (p[k] !== undefined) set[k] = p[k] === '' ? null : p[k];
+      });
+
+    await db().update(schema.investors)
+      .set(set)
+      .where(eq(schema.investors.id, investor.id));
+
+    return Response.json({ ok: true });
   } catch (err) {
     return errorResponse(err);
   }

@@ -1,11 +1,13 @@
 @import 'tailwindcss';
 
-* {
-  cursor: auto;
-}
-
-body {
-  cursor: auto;
+/* Cursor de puntero en elementos interactivos (botones, enlaces, selects…). */
+button:not(:disabled),
+[role='button'],
+a[href],
+summary,
+select,
+.cursor-pointer {
+  cursor: pointer;
 }
 
 /* Neutraliza el amarillo del autocompletado de Chrome/WebKit en los inputs.

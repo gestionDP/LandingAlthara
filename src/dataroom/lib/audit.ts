@@ -25,6 +25,8 @@ export type AuditAction =
   | 'project.updated'
   | 'project.access_granted'
   | 'project.access_revoked'
+  | 'project.invitation_accepted'
+  | 'project.invitation_declined'
   | 'nda.opened'
   | 'nda.signed'
   | 'nda.version_created'

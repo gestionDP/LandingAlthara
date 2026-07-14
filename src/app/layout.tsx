@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Montserrat, Playfair_Display } from 'next/font/google';
 import './globals.css';
-import CustomCursor from '@/components/CustomCursor';
 import MessagesProvider from '@/components/MessagesProvider';
 import { headers } from 'next/headers';
 
@@ -54,7 +53,6 @@ export default async function RootLayout({
         className={`${montserrat.variable} ${playfairDisplay.variable} font-montserrat antialiased`}
       >
         <MessagesProvider>
-          <CustomCursor />
           {children}
         </MessagesProvider>
       </body>

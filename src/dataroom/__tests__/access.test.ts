@@ -63,11 +63,18 @@ describe('computeDocumentAccess — deny by default', () => {
     });
     assert.ok(d.canView);
   });
-  it('generic-level assignment cannot see sensitive docs unless explicitly allowed', () => {
-    const base = { ...allowed, assignment: { status: 'active', accessLevel: 'generic' } as const };
-    assert.equal(computeDocumentAccess(base).reason, 'level_insufficient');
-    const withAllow = computeDocumentAccess({ ...base, permission: { effect: 'allow', canDownload: true } });
-    assert.ok(withAllow.canView);
+  it('limited (generic) assignment sees ONLY explicitly-shared docs — pure Drive model', () => {
+    // Sin permiso allow no ve nada, ni general ni confidencial.
+    for (const conf of ['generic', 'sensitive'] as const) {
+      const base = {
+        ...allowed,
+        assignment: { status: 'active', accessLevel: 'generic' } as const,
+        document: { ...allowed.document, confidentiality: conf },
+      };
+      assert.equal(computeDocumentAccess(base).reason, 'level_insufficient');
+      const withAllow = computeDocumentAccess({ ...base, permission: { effect: 'allow', canDownload: true } });
+      assert.ok(withAllow.canView, `shared ${conf} doc should be visible`);
+    }
   });
   it('can revoke download while keeping preview', () => {
     const d = computeDocumentAccess({ ...allowed, permission: { effect: 'allow', canDownload: false } });

@@ -16,6 +16,7 @@ const ACTION_LABELS: Record<string, string> = {
   'investor.suspended': 'Inversor suspendido',
   'investor.reactivated': 'Inversor reactivado',
   'investor.disabled': 'Inversor desactivado',
+  'investor.deleted': 'Inversor eliminado',
   'invitation.sent': 'Invitación enviada',
   'invitation.resent': 'Invitación reenviada',
   'invitation.revoked': 'Invitación revocada',
@@ -26,8 +27,11 @@ const ACTION_LABELS: Record<string, string> = {
   'auth.denied': 'Acceso denegado',
   'project.created': 'Proyecto creado',
   'project.updated': 'Proyecto editado',
+  'project.deleted': 'Proyecto eliminado',
   'project.access_granted': 'Acceso a proyecto concedido',
   'project.access_revoked': 'Acceso a proyecto revocado',
+  'project.invitation_accepted': 'Invitación a proyecto aceptada',
+  'project.invitation_declined': 'Invitación a proyecto rechazada',
   'nda.opened': 'NDA abierto',
   'nda.signed': 'NDA firmado',
   'nda.version_created': 'Nueva versión de NDA',
@@ -78,10 +82,10 @@ export default function AdminAudit() {
       {!rows && !error && <Spinner label="Cargando eventos…" />}
       {rows && rows.length === 0 && <EmptyState title="Sin eventos" />}
       {rows && rows.length > 0 && (
-        <div className="overflow-x-auto border border-[#1c3742]/10 bg-white shadow-sm">
+        <div className="max-h-[65vh] overflow-auto border border-[#1c3742]/10 bg-white shadow-sm">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-[#1c3742]/15 text-left text-[10px] uppercase tracking-wider text-[#1c3742]/50">
+              <tr className="sticky top-0 z-10 border-b border-[#1c3742]/15 bg-[#f8f9f9] text-left text-[10px] uppercase tracking-wider text-[#1c3742]/50">
                 <th className="px-3 py-2">Fecha</th>
                 <th className="px-3 py-2">Actor</th>
                 <th className="px-3 py-2">Acción</th>

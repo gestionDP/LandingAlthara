@@ -3,6 +3,7 @@
  * "dataroom" inside the existing Althara Neon database (logical isolation,
  * zero contact with shared/public models).
  */
+import { sql } from 'drizzle-orm';
 import {
   pgSchema,
   uuid,
@@ -53,7 +54,7 @@ export const projectStatusEnum = dataroom.enum('project_status', [
   'archived',
 ]);
 
-export const accessStatusEnum = dataroom.enum('access_status', ['active', 'suspended', 'revoked']);
+export const accessStatusEnum = dataroom.enum('access_status', ['pending', 'active', 'suspended', 'revoked']);
 
 export const accessLevelEnum = dataroom.enum('access_level', ['generic', 'full']);
 
@@ -166,7 +167,9 @@ export const projects = dataroom.table(
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
   },
   (t) => [
-    uniqueIndex('uq_projects_tenant_slug').on(t.tenant, t.slug),
+    // Parcial: los proyectos borrados (deleted_at) no reservan el slug, de modo
+    // que se puede recrear un proyecto con el mismo nombre tras eliminarlo.
+    uniqueIndex('uq_projects_tenant_slug').on(t.tenant, t.slug).where(sql`deleted_at IS NULL`),
     index('ix_projects_tenant_status').on(t.tenant, t.status),
   ],
 );
