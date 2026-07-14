@@ -87,6 +87,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
       return { id: c.id, name: c.name, level: c.level, count, expected };
     });
     const currentName = docFolder ? (cats.find((c) => c.id === docFolder)?.name ?? null) : null;
+    const currentLevel = docFolder ? (cats.find((c) => c.id === docFolder)?.level ?? null) : null;
 
     // Progreso global del data room (solo carpetas estándar con contenido esperado).
     const standard = allFolders.filter((f) => f.expected != null);
@@ -106,7 +107,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
       const cmp = av < bv ? -1 : av > bv ? 1 : 0;
       return sort.dir === 'asc' ? cmp : -cmp;
     });
-    return { folders, docs, currentName: searching ? null : currentName, overall, expectedTotal, uploadedTotal };
+    return { folders, docs, currentName: searching ? null : currentName, currentLevel: searching ? null : currentLevel, overall, expectedTotal, uploadedTotal };
   }, [data, docSearch, globalSearch, docFolder, sort]);
 
   async function patch(body: Record<string, unknown>, okMsg = 'Guardado.') {
@@ -476,7 +477,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
       {tab === 'docs' && (
       <div className="space-y-5">
       <UploadPanel projectId={id} categories={data.categories} investors={activeInvestors}
-        currentFolderId={docFolder} currentFolderName={docNav.currentName} onUploaded={load} />
+        currentFolderId={docFolder} currentFolderName={docNav.currentName} currentFolderLevel={docNav.currentLevel} onUploaded={load} />
 
       {/* Biblioteca de documentos — estilo SharePoint (carpetas navegables) */}
       <section
@@ -1216,12 +1217,20 @@ function AssignInvestor({ projectId, allInvestors, assigned, onChanged, onError 
   );
 }
 
-function UploadPanel({ projectId, categories, investors, currentFolderId, currentFolderName, onUploaded }: {
+/** Ajustes de acceso por defecto según el nivel de la carpeta (spec). */
+function levelDefaults(level: number | null | undefined) {
+  if (level === 1) return { requiresNda: false, confidentiality: 'generic', downloadable: false };
+  if (level === 2) return { requiresNda: true, confidentiality: 'sensitive' };
+  return {};
+}
+
+function UploadPanel({ projectId, categories, investors, currentFolderId, currentFolderName, currentFolderLevel, onUploaded }: {
   projectId: string;
-  categories: { id: string; name: string }[];
+  categories: { id: string; name: string; level: number }[];
   investors: Detail['investors'];
   currentFolderId: string | null;
   currentFolderName: string | null;
+  currentFolderLevel: number | null;
   onUploaded: () => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -1230,10 +1239,14 @@ function UploadPanel({ projectId, categories, investors, currentFolderId, curren
     categoryId: '', confidentiality: 'sensitive', downloadable: true, requiresNda: true,
     publish: true, notify: false, restrict: false,
   });
-  // El destino sigue a la carpeta que el admin tiene abierta abajo (como en Drive).
+  // El destino sigue a la carpeta abierta (como en Drive) y los ajustes de
+  // acceso se alinean con su NIVEL (spec): Nivel 1 = sin NDA, solo visualización;
+  // Nivel 2 = confidencial, requiere NDA.
   useEffect(() => {
-    if (currentFolderId) setMeta((m) => ({ ...m, categoryId: currentFolderId }));
-  }, [currentFolderId]);
+    if (!currentFolderId) return;
+    setMeta((m) => ({ ...m, categoryId: currentFolderId, ...levelDefaults(currentFolderLevel) }));
+  }, [currentFolderId, currentFolderLevel]);
+  const targetCat = categories.find((c) => c.id === meta.categoryId) ?? null;
   const [selectedInvestors, setSelectedInvestors] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<string | null>(null);
@@ -1281,9 +1294,11 @@ function UploadPanel({ projectId, categories, investors, currentFolderId, curren
     <section className="border border-[#1c3742]/10 bg-white p-5 rounded-lg">
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1c3742]/50">Subir documentos</h2>
-        {currentFolderName ? (
+        {targetCat ? (
           <span className="rounded-full border border-[#1c3742]/15 bg-[#1c3742]/5 px-2.5 py-0.5 text-[11px] text-[#1c3742]/70">
-            Subiendo a: <strong>{currentFolderName}</strong>
+            Subiendo a: <strong>{targetCat.name}</strong>
+            {targetCat.level === 1 && ' · Nivel 1 (sin NDA, solo visualización)'}
+            {targetCat.level === 2 && ' · Nivel 2 (confidencial, requiere NDA)'}
           </span>
         ) : (
           <span className="text-[11px] text-[#c08552]">Entre en una carpeta (abajo) o elija una para fijar el destino.</span>
@@ -1298,7 +1313,11 @@ function UploadPanel({ projectId, categories, investors, currentFolderId, curren
           onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
           className="text-xs file:mr-3 file:rounded-md file:border-0 file:bg-[#1c3742] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[#e6e2d7]"
         />
-        <select value={meta.categoryId} onChange={(e) => setMeta({ ...meta, categoryId: e.target.value })}
+        <select value={meta.categoryId}
+          onChange={(e) => {
+            const cat = categories.find((c) => c.id === e.target.value);
+            setMeta((m) => ({ ...m, categoryId: e.target.value, ...levelDefaults(cat?.level) }));
+          }}
           title="Carpeta donde se guardará el documento. Es obligatorio para mantener el orden."
           className={`border bg-[#faf9f5] px-2 py-1.5 text-xs rounded-md ${meta.categoryId ? 'border-[#1c3742]/25' : 'border-[#c08552]/60'}`}>
           <option value="">Elegir carpeta… *</option>
