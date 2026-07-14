@@ -11,18 +11,29 @@ export function canWatermark(mimeType: string, sizeBytes: number): boolean {
   return mimeType === 'application/pdf' && sizeBytes <= MAX_WATERMARK_BYTES;
 }
 
+/**
+ * Formats a Date into a stable, human-readable UTC timestamp such as
+ * "2026-07-14 15:32 UTC" (deterministic — derived from toISOString).
+ */
+function formatWatermarkTimestamp(date: Date): string {
+  return `${date.toISOString().slice(0, 16).replace('T', ' ')} UTC`;
+}
+
 export async function watermarkPdf(input: {
   pdf: Buffer;
   investorName: string;
   investorEmail: string;
   downloadId: string;
+  /** When the download was served. Defaults to now. Kept optional so existing callers are unaffected. */
+  timestamp?: Date;
 }): Promise<Buffer> {
   const doc = await PDFDocument.load(input.pdf, { ignoreEncryption: true });
   const font = await doc.embedFont(StandardFonts.Helvetica);
+  const timestampLabel = formatWatermarkTimestamp(input.timestamp ?? new Date());
   const stamp = [
     'CONFIDENCIAL — ALTHARA',
-    `${input.investorName} · ${maskEmail(input.investorEmail)}`,
-    `${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC · ${input.downloadId.slice(0, 8)}`,
+    `${input.investorName} · ${maskEmail(input.investorEmail)} · ${timestampLabel}`,
+    `${timestampLabel} · ${input.downloadId.slice(0, 8)}`,
   ].join('   |   ');
 
   for (const page of doc.getPages()) {

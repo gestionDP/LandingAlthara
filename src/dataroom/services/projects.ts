@@ -55,15 +55,22 @@ export async function createProject(
     createdBy: actor.id ?? null,
   }).returning();
 
-  // Default document categories
-  const defaults = [
-    'Presentación corporativa', 'Resumen del proyecto', 'Información financiera',
-    'Información legal', 'Due diligence', 'Garantías', 'Estructura societaria',
-    'Contratos', 'Documentación de suscripción', 'Anexos',
+  // Estructura de carpetas por defecto (spec ALT-RM): 0-1 = Nivel 1 (bienvenida
+  // y resumen, solo vista tras verificar identidad); 2-8 = Nivel 2 (requiere NDA).
+  const defaults: { name: string; level: number }[] = [
+    { name: '0. Bienvenida', level: 1 },
+    { name: '1. Resumen de la operación', level: 1 },
+    { name: '2. Información corporativa', level: 2 },
+    { name: '3. Información financiera', level: 2 },
+    { name: '4. Información legal', level: 2 },
+    { name: '5. Fiscal', level: 2 },
+    { name: '6. Due diligence', level: 2 },
+    { name: '7. Garantías y contratos', level: 2 },
+    { name: '8. Anexos', level: 2 },
   ];
   await db().insert(schema.documentCategories).values(
-    defaults.map((name, i) => ({
-      tenant: T, projectId: project.id, name, slug: slugify(name), sortOrder: i,
+    defaults.map((c, i) => ({
+      tenant: T, projectId: project.id, name: c.name, slug: slugify(c.name), sortOrder: i, level: c.level,
     })),
   );
 

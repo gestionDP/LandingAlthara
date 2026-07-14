@@ -20,6 +20,7 @@ import {
 } from '../core/states.ts';
 import { writeAudit, type AuditActor, type RequestMeta } from '../lib/audit';
 import { sendTransactionalEmail } from '../lib/emails/send';
+import { encryptKyc } from '../lib/kyc-crypto';
 import { AuthzError } from '../lib/authz';
 
 const T = DATAROOM_TENANT;
@@ -245,6 +246,13 @@ export interface CompleteRegistrationInput {
   acceptPrivacy: boolean;
   acceptTerms: boolean;
   language?: 'es' | 'en';
+  // KYC (verificación de identidad) — se recoge en la activación.
+  kyc: {
+    documentType: 'dni' | 'nie' | 'passport' | 'other';
+    documentNumber: string;
+    residenceCountry: string;
+    investorProfile: Record<string, unknown>;
+  };
 }
 
 /**
@@ -305,10 +313,12 @@ export async function completeRegistration(input: CompleteRegistrationInput, req
     .returning({ id: schema.invitations.id });
   if (burned.length === 0) return { ok: false as const, reason: 'used' as const }; // raced
 
+  // Cuenta creada, pero la identidad debe validarla el admin: pending_validation.
   await db().update(schema.investors)
     .set({
       clerkUserId,
-      status: 'active',
+      status: 'pending_validation',
+      rejectionReason: null,
       firstName: input.firstName,
       lastName: input.lastName,
       phone: input.phone ?? null,
@@ -319,22 +329,43 @@ export async function completeRegistration(input: CompleteRegistrationInput, req
       privacyAcceptedAt: now,
       termsAcceptedAt: now,
       termsVersion: LEGAL_TERMS_VERSION,
-      activatedAt: now,
       updatedAt: now,
     })
     .where(eq(schema.investors.id, investor.id));
+
+  // Guardar el KYC cifrado.
+  await db().insert(schema.investorKyc).values({
+    tenant: T,
+    investorId: investor.id,
+    documentType: input.kyc.documentType,
+    residenceCountry: input.kyc.residenceCountry,
+    encryptedPayload: encryptKyc({
+      documentNumber: input.kyc.documentNumber,
+      phone: input.phone ?? null,
+      investorProfile: input.kyc.investorProfile,
+    }),
+  }).onConflictDoUpdate({
+    target: schema.investorKyc.investorId,
+    set: {
+      documentType: input.kyc.documentType,
+      residenceCountry: input.kyc.residenceCountry,
+      encryptedPayload: encryptKyc({
+        documentNumber: input.kyc.documentNumber,
+        phone: input.phone ?? null,
+        investorProfile: input.kyc.investorProfile,
+      }),
+      submittedAt: now,
+      updatedAt: now,
+    },
+  });
 
   await writeAudit({
     tenant: T, actor: { type: 'investor', id: investor.id, email: investor.email },
     action: 'registration.completed', entityType: 'investor', entityId: investor.id, req,
   });
-
-  await sendTransactionalEmail({
-    template: 'account_activated',
-    locale: (input.language ?? investor.language ?? 'es') as 'es' | 'en',
-    to: investor.email,
-    investorId: investor.id,
-    params: { investorName: input.firstName, actionUrl: `${env.appBaseUrl()}/dataroom` },
+  await writeAudit({
+    tenant: T, actor: { type: 'investor', id: investor.id, email: investor.email },
+    action: 'kyc.submitted', entityType: 'investor', entityId: investor.id, req,
   });
 
   return { ok: true as const };

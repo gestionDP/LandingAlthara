@@ -15,6 +15,23 @@ interface Doc {
   categorySlug: string | null; confidentiality: string; updatedAt: string; isNew: boolean;
   locked: boolean; lockReason?: string; canDownload: boolean;
   mimeType?: string | null; sizeBytes?: number | null; versionNumber?: number | null;
+  folderLevel?: number; indexState?: 'disponible' | 'pendiente' | 'en_revision';
+}
+
+/** Semáforo de estado del documento (spec ALT-RM). */
+function Semaforo({ state }: { state?: string }) {
+  const map: Record<string, { dot: string; label: string }> = {
+    disponible: { dot: 'bg-[#2e9e5a]', label: 'Disponible' },
+    pendiente: { dot: 'bg-[#c08552]', label: 'Pendiente' },
+    en_revision: { dot: 'bg-[#1c3742]/35', label: 'En revisión' },
+  };
+  const s = map[state ?? ''] ?? map.pendiente;
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[11px] text-[#1c3742]/70">
+      <span className={`h-2 w-2 rounded-full ${s.dot}`} aria-hidden />
+      {s.label}
+    </span>
+  );
 }
 
 interface ProjectData {
@@ -37,6 +54,7 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
   const [search, setSearch] = useState('');
   const [folder, setFolder] = useState<string | null>(null);
   const [view, setView] = useState<'list' | 'grid'>('list');
+  const [sort, setSort] = useState<{ key: 'name' | 'modified'; dir: 'asc' | 'desc' }>({ key: 'name', dir: 'asc' });
   const [ndaOpen, setNdaOpen] = useState(false);
   const [busyDoc, setBusyDoc] = useState<string | null>(null);
   const [docError, setDocError] = useState<string | null>(null);
@@ -64,15 +82,20 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
       .map((c) => ({ slug: c.slug, name: c.name, count: data.documents.filter((d) => d.categorySlug === c.slug).length }));
     const currentName = folder ? (data.categories.find((c) => c.slug === folder)?.name ?? null) : null;
 
-    if (searching) {
-      return { folders: [], docs: data.documents.filter((d) => d.title.toLowerCase().includes(q)), currentName };
-    }
-    if (folder) {
-      return { folders: [], docs: data.documents.filter((d) => d.categorySlug === folder), currentName };
-    }
-    // Raíz: carpetas + documentos sin categoría.
-    return { folders: catsWithDocs, docs: data.documents.filter((d) => !d.categorySlug), currentName: null };
-  }, [data, search, globalSearch, folder]);
+    let folders: { slug: string; name: string; count: number }[] = [];
+    let rawDocs: Doc[];
+    if (searching) rawDocs = data.documents.filter((d) => d.title.toLowerCase().includes(q));
+    else if (folder) rawDocs = data.documents.filter((d) => d.categorySlug === folder);
+    else { folders = catsWithDocs; rawDocs = data.documents.filter((d) => !d.categorySlug); }
+
+    const docs = [...rawDocs].sort((a, b) => {
+      const av = sort.key === 'name' ? a.title.toLowerCase() : a.updatedAt;
+      const bv = sort.key === 'name' ? b.title.toLowerCase() : b.updatedAt;
+      const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+      return sort.dir === 'asc' ? cmp : -cmp;
+    });
+    return { folders, docs, currentName: searching ? null : currentName };
+  }, [data, search, globalSearch, folder, sort]);
 
   async function openDoc(doc: Doc, kind: 'preview' | 'download') {
     setBusyDoc(doc.id);
@@ -155,6 +178,15 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
   const ndaBlocked = data.ndaState === 'expired' || data.ndaState === 'revoked';
   const hasLockedDocs = data.documents.some((d) => d.locked && d.lockReason === 'nda_required');
 
+  const toggleSort = (k: 'name' | 'modified') =>
+    setSort((s) => (s.key === k ? { key: k, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { key: k, dir: 'asc' }));
+  const SortBtn = ({ label, k }: { label: string; k: 'name' | 'modified' }) => (
+    <button onClick={() => toggleSort(k)} className="inline-flex items-center gap-1 font-semibold uppercase tracking-wider hover:text-[#1c3742]">
+      {label}
+      <span className="text-[10px] text-[#c08552]">{sort.key === k ? (sort.dir === 'asc' ? '▲' : '▼') : ''}</span>
+    </button>
+  );
+
   return (
     <div className="space-y-8">
       <div>
@@ -177,7 +209,7 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
       )}
 
       {ndaPending && (
-        <div className="flex flex-col items-start gap-3 border border-[#c08552]/40 bg-[#c08552]/10 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col items-start gap-3 border border-[#c08552]/40 bg-[#c08552]/10 p-5 rounded-lg sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-medium text-[#6d4526]">Documentación confidencial bloqueada</p>
             <p className="mt-1 text-sm text-[#8a5a33]/90">
@@ -186,7 +218,7 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
           </div>
           <button
             onClick={() => setNdaOpen(true)}
-            className="shrink-0 bg-[#c08552] px-5 py-2 text-sm font-semibold text-white"
+            className="shrink-0 bg-[#c08552] px-5 py-2 text-sm font-semibold text-white rounded-md"
           >
             Revisar y firmar NDA
           </button>
@@ -199,7 +231,7 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
       {docError && <ErrorBox message={docError} />}
 
       {/* Biblioteca de documentos — estilo SharePoint (carpetas navegables) */}
-      <div className="border border-[#1c3742]/12 bg-white shadow-sm">
+      <div className="border border-[#1c3742]/12 bg-white rounded-lg">
         {/* Command bar + breadcrumb */}
         <div className="flex flex-col gap-3 border-b border-[#1c3742]/10 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-1.5 text-sm">
@@ -231,7 +263,7 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
           <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 lg:grid-cols-4">
             {nav.folders.map((f) => (
               <button key={f.slug} type="button" onClick={() => setFolder(f.slug)}
-                className="flex items-center gap-3 border border-[#1c3742]/12 bg-white p-3 text-left transition-colors hover:bg-[#1c3742]/[0.03]">
+                className="flex items-center gap-3 border border-[#1c3742]/12 bg-white p-3 text-left transition-colors hover:bg-[#1c3742]/[0.03] rounded-lg">
                 <FolderIconFilled className="h-10 w-10 shrink-0" />
                 <span className="min-w-0">
                   <span className="block truncate text-sm font-medium text-[#1c3742]">{f.name}</span>
@@ -240,21 +272,24 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
               </button>
             ))}
             {nav.docs.map((doc) => (
-              <div key={doc.id} className="group flex flex-col border border-[#1c3742]/12 bg-white transition-shadow hover:shadow-md">
+              <div key={doc.id} className="group flex flex-col border border-[#1c3742]/12 bg-white rounded-lg transition-colors hover:border-[#1c3742]/25">
                 <button type="button" onClick={() => openPreview(doc)} disabled={doc.locked || busyDoc === doc.id}
                   className="flex flex-1 flex-col items-center justify-center gap-3 p-6 disabled:cursor-default">
                   {doc.locked
-                    ? <span className="flex h-12 w-12 items-center justify-center bg-[#1c3742]/5 text-xs font-bold text-[#1c3742]/50" aria-hidden>NDA</span>
+                    ? <span className="flex h-12 w-12 items-center justify-center rounded-md bg-[#1c3742]/5 text-[10px] font-bold text-[#1c3742]/50" aria-hidden>{doc.indexState === 'en_revision' ? 'REV' : 'NDA'}</span>
                     : <FileIcon mimeType={doc.mimeType} fileName={doc.title} />}
                 </button>
                 <div className="flex items-center justify-between gap-1 border-t border-[#1c3742]/10 px-3 py-2">
-                  <p className={`truncate text-xs ${doc.locked ? 'text-[#1c3742]/50' : 'font-medium text-[#1c3742]'}`}>{doc.title}</p>
-                  {doc.locked
-                    ? <span className="shrink-0 text-[10px] text-[#c08552]">NDA</span>
-                    : <KebabMenu items={[
-                        { label: 'Vista previa', onClick: () => openPreview(doc) },
-                        ...(doc.canDownload ? [{ label: 'Descargar', onClick: () => openDoc(doc, 'download') }] : []),
-                      ]} />}
+                  <div className="min-w-0">
+                    <p className={`truncate text-xs ${doc.locked ? 'text-[#1c3742]/50' : 'font-medium text-[#1c3742]'}`}>{doc.title}</p>
+                    <Semaforo state={doc.indexState} />
+                  </div>
+                  {!doc.locked && (
+                    <KebabMenu items={[
+                      { label: 'Vista previa', onClick: () => openPreview(doc) },
+                      ...(doc.canDownload ? [{ label: 'Descargar', onClick: () => openDoc(doc, 'download') }] : []),
+                    ]} />
+                  )}
                 </div>
               </div>
             ))}
@@ -264,9 +299,9 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[#1c3742]/10 bg-[#1c3742]/[0.03] text-left text-[11px] uppercase tracking-wider text-[#1c3742]/55">
-                  <th className="px-4 py-2.5 font-semibold">Nombre</th>
-                  <th className="px-4 py-2.5 font-semibold">Modificado</th>
-                  <th className="px-4 py-2.5 font-semibold">Modificado por</th>
+                  <th className="px-4 py-2.5"><SortBtn label="Nombre" k="name" /></th>
+                  <th className="px-4 py-2.5 font-semibold">Estado</th>
+                  <th className="px-4 py-2.5"><SortBtn label="Modificado" k="modified" /></th>
                   <th className="w-10 px-2 py-2.5" />
                 </tr>
               </thead>
@@ -281,8 +316,8 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
                         <span className="text-xs text-[#1c3742]/40">{f.count}</span>
                       </div>
                     </td>
+                    <td className="px-4 py-2.5" />
                     <td className="px-4 py-2.5 text-[#1c3742]/60">—</td>
-                    <td className="px-4 py-2.5 text-[#1c3742]/60">Althara</td>
                     <td className="px-2 py-2.5" />
                   </tr>
                 ))}
@@ -291,7 +326,7 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
                     <td className="px-4 py-2.5">
                       <div className="flex items-center gap-3">
                         {doc.locked ? (
-                          <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#1c3742]/5 text-[10px] font-bold uppercase tracking-wide text-[#1c3742]/50" title="Bloqueado" aria-hidden>NDA</span>
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#1c3742]/5 text-[10px] font-bold uppercase tracking-wide text-[#1c3742]/50" title="Bloqueado" aria-hidden>NDA</span>
                         ) : (
                           <FileIcon mimeType={doc.mimeType} fileName={doc.title} />
                         )}
@@ -301,19 +336,19 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
                             <p className="truncate text-xs text-[#1c3742]/50">{doc.description}</p>
                           )}
                         </button>
-                        {doc.confidentiality === 'sensitive' && !doc.locked && (
-                          <span className="shrink-0 text-[10px] uppercase tracking-wider text-[#c08552]" title="Confidencial">Confidencial</span>
+                        {doc.folderLevel === 1 && (
+                          <span className="shrink-0 text-[10px] uppercase tracking-wider text-[#1c3742]/40" title="Carpeta de Nivel 1 (solo vista)">Nivel 1</span>
                         )}
                         {doc.isNew && (
-                          <span className="shrink-0 bg-[#1c3742] px-2 py-0.5 text-[10px] font-semibold text-[#e6e2d7]">Nuevo</span>
+                          <span className="shrink-0 bg-[#1c3742] px-2 py-0.5 text-[10px] font-semibold text-[#e6e2d7] rounded-md">Nuevo</span>
                         )}
                       </div>
                     </td>
+                    <td className="px-4 py-2.5"><Semaforo state={doc.indexState} /></td>
                     <td className="px-4 py-2.5 text-[#1c3742]/60">{formatDate(doc.updatedAt)}</td>
-                    <td className="px-4 py-2.5 text-[#1c3742]/60">Althara</td>
                     <td className="px-2 py-2.5">
                       {doc.locked ? (
-                        <span className="block text-right text-xs text-[#c08552]">{doc.lockReason === 'nda_required' ? 'NDA' : '—'}</span>
+                        <span className="block text-right text-xs text-[#c08552]">{doc.lockReason === 'nda_required' ? 'NDA' : doc.lockReason === 'in_review' ? '—' : '—'}</span>
                       ) : (
                         <div className="flex justify-end">
                           <KebabMenu items={[
@@ -397,7 +432,7 @@ function NdaModal({ projectId, onClose, onSigned }: { projectId: string; onClose
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#102027]/50 p-4" role="dialog" aria-modal="true">
-      <div className="flex max-h-[85vh] w-full max-w-2xl flex-col border border-[#1c3742]/20 bg-white">
+      <div className="flex max-h-[85vh] w-full max-w-2xl flex-col border border-[#1c3742]/20 bg-white rounded-lg">
         <div className="flex items-center justify-between border-b border-[#1c3742]/15 px-6 py-4">
           <h2 className="font-playfair text-lg">Acuerdo de confidencialidad</h2>
           <button onClick={onClose} className="text-[#1c3742]/60 hover:text-[#1c3742]" aria-label="Cerrar">✕</button>
@@ -412,7 +447,7 @@ function NdaModal({ projectId, onClose, onSigned }: { projectId: string; onClose
               <p className="mb-2 text-xs uppercase tracking-wider text-[#1c3742]/50">
                 {payload.version.title} — versión {payload.version.version}
               </p>
-              <div className="whitespace-pre-wrap border border-[#1c3742]/10 bg-[#faf9f5] p-4 text-xs leading-relaxed text-[#1c3742]/80">
+              <div className="whitespace-pre-wrap border border-[#1c3742]/10 bg-[#faf9f5] p-4 text-xs leading-relaxed text-[#1c3742]/80 rounded-md">
                 {payload.version.bodyText}
               </div>
             </>
@@ -424,7 +459,7 @@ function NdaModal({ projectId, onClose, onSigned }: { projectId: string; onClose
               placeholder="Nombre y apellidos completos (firma)"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full border border-[#1c3742]/25 bg-[#faf9f5] px-3 py-2 text-sm placeholder:text-[#1c3742]/30 focus:outline-none"
+              className="w-full border border-[#1c3742]/25 bg-[#faf9f5] px-3 py-2 text-sm placeholder:text-[#1c3742]/30 focus:outline-none rounded-md"
             />
             <label className="flex items-start gap-2 text-xs text-[#1c3742]/70">
               <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5" />
@@ -432,11 +467,11 @@ function NdaModal({ projectId, onClose, onSigned }: { projectId: string; onClose
             </label>
             {error && <p className="text-sm text-red-700">{error}</p>}
             <div className="flex justify-end gap-3">
-              <button onClick={onClose} className="border border-[#1c3742]/30 px-4 py-2 text-sm">Cancelar</button>
+              <button onClick={onClose} className="border border-[#1c3742]/30 px-4 py-2 text-sm rounded-md">Cancelar</button>
               <button
                 onClick={sign}
                 disabled={!accepted || fullName.trim().length < 5 || signing}
-                className="bg-[#1c3742] px-5 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40"
+                className="bg-[#1c3742] px-5 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40 rounded-md"
               >
                 {signing ? 'Firmando…' : 'Firmar NDA'}
               </button>

@@ -23,6 +23,9 @@ const ACTION_LABELS: Record<string, string> = {
   'invitation.validated': 'Invitación validada',
   'invitation.validation_failed': 'Validación de invitación fallida',
   'registration.completed': 'Registro completado',
+  'kyc.submitted': 'KYC enviado',
+  'kyc.validated': 'KYC validado',
+  'kyc.rejected': 'KYC rechazado',
   'auth.login': 'Inicio de sesión',
   'auth.denied': 'Acceso denegado',
   'project.created': 'Proyecto creado',
@@ -39,6 +42,9 @@ const ACTION_LABELS: Record<string, string> = {
   'document.published': 'Documento publicado',
   'document.versioned': 'Documento versionado',
   'document.archived': 'Documento archivado',
+  'document.renamed': 'Documento renombrado',
+  'review.approved': 'Visado aprobado',
+  'review.rejected': 'Visado rechazado',
   'document.viewed': 'Documento visualizado',
   'document.downloaded': 'Documento descargado',
   'document.access_denied': 'Acceso a documento denegado',
@@ -73,7 +79,7 @@ export default function AdminAudit() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-playfair text-2xl">Auditoría</h1>
         <select value={action} onChange={(e) => { setAction(e.target.value); setOffset(0); }}
-          className="border border-[#1c3742]/25 bg-white px-3 py-2 text-sm">
+          className="border border-[#1c3742]/25 bg-white px-3 py-2 text-sm rounded-md">
           {ACTIONS.map((a) => <option key={a} value={a}>{a ? ACTION_LABELS[a] : 'Todas las acciones'}</option>)}
         </select>
       </div>
@@ -82,7 +88,7 @@ export default function AdminAudit() {
       {!rows && !error && <Spinner label="Cargando eventos…" />}
       {rows && rows.length === 0 && <EmptyState title="Sin eventos" />}
       {rows && rows.length > 0 && (
-        <div className="max-h-[65vh] overflow-auto border border-[#1c3742]/10 bg-white shadow-sm">
+        <div className="max-h-[65vh] overflow-auto border border-[#1c3742]/10 bg-white rounded-lg">
           <table className="w-full text-xs">
             <thead>
               <tr className="sticky top-0 z-10 border-b border-[#1c3742]/15 bg-[#f8f9f9] text-left text-[10px] uppercase tracking-wider text-[#1c3742]/50">
@@ -115,9 +121,9 @@ export default function AdminAudit() {
       )}
       <div className="flex gap-2">
         <button disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - limit))}
-          className="border border-[#1c3742]/30 px-3 py-1.5 text-xs disabled:opacity-30">← Anteriores</button>
+          className="border border-[#1c3742]/30 px-3 py-1.5 text-xs disabled:opacity-30 rounded-md">← Anteriores</button>
         <button disabled={!rows || rows.length < limit} onClick={() => setOffset(offset + limit)}
-          className="border border-[#1c3742]/30 px-3 py-1.5 text-xs disabled:opacity-30">Siguientes →</button>
+          className="border border-[#1c3742]/30 px-3 py-1.5 text-xs disabled:opacity-30 rounded-md">Siguientes →</button>
       </div>
     </div>
   );

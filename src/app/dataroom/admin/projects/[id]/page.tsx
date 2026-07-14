@@ -12,9 +12,9 @@ import { useRouter } from 'next/navigation';
 import {
   fetchJson, Spinner, ErrorBox, Badge, STATUS_LABELS, actionLabel, formatDate, formatBytes,
   FileIcon, accessLevelLabel, ACCESS_LEVEL_HINTS, FolderGlyph, FolderIconFilled, LibrarySearch, ViewToggle,
-  KebabMenu, DocViewer, type MenuItem,
+  KebabMenu, DocViewer, VisadoProgress, VisadoInline, type MenuItem,
 } from '../../../components/ui';
-import { useDataroomSearch } from '../../../DataroomShell';
+import { useDataroomSearch, useToast } from '../../../DataroomShell';
 
 interface Detail {
   project: {
@@ -23,8 +23,8 @@ interface Detail {
     ndaRequired: boolean; ndaPolicy: string; updatedAt: string;
   };
   investors: { access: { status: string; accessLevel: string; grantedAt: string }; investorId: string; email: string; firstName: string | null; lastName: string | null; investorStatus: string }[];
-  documents: { id: string; title: string; status: string; confidentiality: string; downloadable: boolean; requiresNda: boolean; updatedAt: string; categoryId: string | null }[];
-  categories: { id: string; name: string; slug: string }[];
+  documents: { id: string; title: string; status: string; confidentiality: string; downloadable: boolean; requiresNda: boolean; updatedAt: string; categoryId: string | null; legalStatus: string; taxStatus: string; legalReason: string | null; taxReason: string | null }[];
+  categories: { id: string; name: string; slug: string; level: number }[];
   ndaVersions: { id: string; version: number; title: string; active: boolean; createdAt: string }[];
   signatures: { id: string; investorId: string; status: string; signedAt: string; signerFullName: string; hasCopy: string | null }[];
   activity: { id: string; action: string; result: string; createdAt: string; actorEmail: string | null }[];
@@ -47,7 +47,14 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
   const [docView, setDocView] = useState<'list' | 'grid'>('list');
   const [shareDoc, setShareDoc] = useState<{ id: string; title: string; confidentiality: string } | null>(null);
   const [viewer, setViewer] = useState<{ title: string; src: string; mimeType?: string | null; docId: string } | null>(null);
+  const [detailsDoc, setDetailsDoc] = useState<{ id: string; title: string } | null>(null);
+  const [movingDoc, setMovingDoc] = useState<{ id: string; title: string } | null>(null);
   const [tab, setTab] = useState<'docs' | 'investors' | 'nda' | 'activity'>('docs');
+  const [sort, setSort] = useState<{ key: 'name' | 'status' | 'modified'; dir: 'asc' | 'desc' }>({ key: 'name', dir: 'asc' });
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [dragOver, setDragOver] = useState(false);
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const toast = useToast();
 
   const load = useCallback(async () => {
     const [d, inv] = await Promise.all([
@@ -63,21 +70,31 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
 
   const globalSearch = useDataroomSearch();
 
-  // Navegación por carpetas (categorías) estilo SharePoint.
+  // Navegación por carpetas (categorías) estilo SharePoint, con orden por columna.
   const docNav = useMemo(() => {
-    const docs = data?.documents ?? [];
+    const allDocs = data?.documents ?? [];
     const cats = data?.categories ?? [];
     const q = (docSearch.trim() || globalSearch.trim()).toLowerCase();
     const searching = q.length > 0;
     const catsWithDocs = cats
-      .filter((c) => docs.some((d) => d.categoryId === c.id))
-      .map((c) => ({ id: c.id, name: c.name, count: docs.filter((d) => d.categoryId === c.id).length }));
+      .filter((c) => allDocs.some((d) => d.categoryId === c.id))
+      .map((c) => ({ id: c.id, name: c.name, level: c.level, count: allDocs.filter((d) => d.categoryId === c.id).length }));
     const currentName = docFolder ? (cats.find((c) => c.id === docFolder)?.name ?? null) : null;
 
-    if (searching) return { folders: [], docs: docs.filter((d) => d.title.toLowerCase().includes(q)), currentName };
-    if (docFolder) return { folders: [], docs: docs.filter((d) => d.categoryId === docFolder), currentName };
-    return { folders: catsWithDocs, docs: docs.filter((d) => !d.categoryId), currentName: null };
-  }, [data, docSearch, globalSearch, docFolder]);
+    let folders: { id: string; name: string; count: number; level: number }[] = [];
+    let rawDocs = allDocs;
+    if (searching) rawDocs = allDocs.filter((d) => d.title.toLowerCase().includes(q));
+    else if (docFolder) rawDocs = allDocs.filter((d) => d.categoryId === docFolder);
+    else { folders = catsWithDocs; rawDocs = allDocs.filter((d) => !d.categoryId); }
+
+    const docs = [...rawDocs].sort((a, b) => {
+      const av = sort.key === 'name' ? a.title.toLowerCase() : sort.key === 'status' ? a.status : a.updatedAt;
+      const bv = sort.key === 'name' ? b.title.toLowerCase() : sort.key === 'status' ? b.status : b.updatedAt;
+      const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+      return sort.dir === 'asc' ? cmp : -cmp;
+    });
+    return { folders, docs, currentName: searching ? null : currentName };
+  }, [data, docSearch, globalSearch, docFolder, sort]);
 
   async function patch(body: Record<string, unknown>, okMsg = 'Guardado.') {
     setBusy(true);
@@ -111,7 +128,105 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
   async function deleteDoc(docId: string, title: string) {
     if (!confirm(`¿Eliminar «${title}»? Dejará de ser visible para todos (el registro se conserva en auditoría).`)) return;
     const res = await fetchJson(`/api/dataroom/admin/documents/${docId}`, { method: 'DELETE' });
-    if (res.ok) load(); else setMsg(`Error: ${res.error}`);
+    if (res.ok) { toast('Documento eliminado.'); load(); } else toast(`Error: ${res.error}`, 'error');
+  }
+
+  function toggleSort(key: 'name' | 'status' | 'modified') {
+    setSort((s) => (s.key === key ? { key, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'asc' }));
+  }
+
+  function toggleSelect(docId: string) {
+    setSelected((prev) => {
+      const n = new Set(prev);
+      if (n.has(docId)) n.delete(docId); else n.add(docId);
+      return n;
+    });
+  }
+
+  async function renameDoc(docId: string, current: string) {
+    const title = window.prompt('Nuevo nombre del documento:', current);
+    if (!title || title.trim() === '' || title.trim() === current) return;
+    const res = await fetchJson(`/api/dataroom/admin/documents/${docId}`, {
+      method: 'PATCH', body: JSON.stringify({ action: 'rename', title: title.trim() }),
+    });
+    if (res.ok) { toast('Documento renombrado.'); load(); } else toast('No se pudo renombrar.', 'error');
+  }
+
+  async function bulkAction(kind: 'archive' | 'delete' | 'download') {
+    const ids = [...selected];
+    if (ids.length === 0) return;
+    if (kind === 'download') { for (const did of ids) await downloadDoc(did); return; }
+    if (kind === 'delete' && !confirm(`¿Eliminar ${ids.length} documento(s)? Dejarán de ser visibles.`)) return;
+    setBulkBusy(true);
+    let ok = 0;
+    for (const did of ids) {
+      const res = kind === 'delete'
+        ? await fetchJson(`/api/dataroom/admin/documents/${did}`, { method: 'DELETE' })
+        : await fetchJson(`/api/dataroom/admin/documents/${did}`, { method: 'PATCH', body: JSON.stringify({ action: 'archive' }) });
+      if (res.ok) ok++;
+    }
+    setBulkBusy(false);
+    setSelected(new Set());
+    await load();
+    toast(`${ok} de ${ids.length} documento(s) ${kind === 'delete' ? 'eliminados' : 'archivados'}.`, ok === ids.length ? 'ok' : 'error');
+  }
+
+  async function createFolder() {
+    const name = window.prompt('Nombre de la nueva carpeta:');
+    if (!name || !name.trim()) return;
+    // Aceptar = Nivel 1 (bienvenida, solo vista); Cancelar = Nivel 2 (confidencial, NDA).
+    const level = window.confirm('¿Carpeta de NIVEL 1 (bienvenida/resumen, visible tras verificar identidad, solo vista)?\n\nAceptar = Nivel 1 · Cancelar = Nivel 2 (confidencial, requiere NDA)') ? 1 : 2;
+    const res = await fetchJson(`/api/dataroom/admin/projects/${id}/categories`, { method: 'POST', body: JSON.stringify({ name: name.trim(), level }) });
+    if (res.ok) { toast(`Carpeta creada (Nivel ${level}).`); load(); } else toast('No se pudo crear la carpeta.', 'error');
+  }
+
+  async function setFolderLevel(catId: string, level: number) {
+    const res = await fetchJson(`/api/dataroom/admin/categories/${catId}`, { method: 'PATCH', body: JSON.stringify({ level }) });
+    if (res.ok) { toast(`Carpeta marcada como Nivel ${level}.`); load(); } else toast('No se pudo cambiar el nivel.', 'error');
+  }
+
+  async function renameFolder(catId: string, current: string) {
+    const name = window.prompt('Nuevo nombre de la carpeta:', current);
+    if (!name || !name.trim() || name.trim() === current) return;
+    const res = await fetchJson(`/api/dataroom/admin/categories/${catId}`, { method: 'PATCH', body: JSON.stringify({ name: name.trim() }) });
+    if (res.ok) { toast('Carpeta renombrada.'); load(); } else toast('No se pudo renombrar.', 'error');
+  }
+
+  async function deleteFolder(catId: string, name: string) {
+    if (!confirm(`¿Eliminar la carpeta «${name}»? Sus documentos pasarán a la raíz (no se borran).`)) return;
+    const res = await fetchJson(`/api/dataroom/admin/categories/${catId}`, { method: 'DELETE' });
+    if (res.ok) { toast('Carpeta eliminada.'); if (docFolder === catId) setDocFolder(null); load(); } else toast('No se pudo eliminar.', 'error');
+  }
+
+  async function moveDoc(docId: string, categoryId: string | null) {
+    const res = await fetchJson(`/api/dataroom/admin/documents/${docId}`, { method: 'PATCH', body: JSON.stringify({ action: 'move', categoryId }) });
+    if (res.ok) { toast('Documento movido.'); setMovingDoc(null); load(); } else toast('No se pudo mover.', 'error');
+  }
+
+  async function uploadDropped(files: File[]) {
+    if (files.length === 0) return;
+    setBulkBusy(true);
+    const form = new FormData();
+    for (const f of files) form.append('files', f);
+    form.append('meta', JSON.stringify({
+      categoryId: docFolder || undefined,
+      confidentiality: 'sensitive',
+      downloadable: true,
+      requiresNda: true,
+      publish: false,
+    }));
+    try {
+      const res = await fetch(`/api/dataroom/admin/projects/${id}/documents`, { method: 'POST', body: form });
+      const body = await res.json().catch(() => null);
+      if (res.ok && body?.results) {
+        const okN = body.results.filter((r: { ok: boolean }) => r.ok).length;
+        toast(`${okN} archivo(s) subido(s) como borrador. Revísalos y publícalos.`, okN ? 'ok' : 'error');
+        load();
+      } else toast('Error al subir los archivos.', 'error');
+    } catch {
+      toast('Error de red al subir.', 'error');
+    }
+    setBulkBusy(false);
   }
 
   async function deleteProject() {
@@ -141,8 +256,15 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
   ];
   const setupPending = steps.some((s) => !s.done);
 
-  const section = 'border border-[#1c3742]/10 bg-white p-5 shadow-sm';
+  const section = 'border border-[#1c3742]/10 bg-white p-5 rounded-lg';
   const h = 'mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#1c3742]/50';
+
+  const SortBtn = ({ label, k }: { label: string; k: 'name' | 'status' | 'modified' }) => (
+    <button onClick={() => toggleSort(k)} className="inline-flex items-center gap-1 font-semibold uppercase tracking-wider hover:text-[#1c3742]">
+      {label}
+      <span className="text-[10px] text-[#c08552]">{sort.key === k ? (sort.dir === 'asc' ? '▲' : '▼') : ''}</span>
+    </button>
+  );
 
   return (
     <div className="space-y-6">
@@ -155,14 +277,14 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
           value={p.status}
           disabled={busy}
           onChange={(e) => patch({ action: 'update', data: { status: e.target.value } }, 'Estado actualizado.')}
-          className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1 text-xs"
+          className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1 text-xs rounded-md"
         >
           {PROJECT_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABELS[s] ?? s}</option>)}
         </select>
         <button
           onClick={deleteProject}
           disabled={busy}
-          className="ml-auto border border-red-300 px-3 py-1.5 text-xs text-red-700 hover:bg-red-50 disabled:opacity-40"
+          className="ml-auto border border-red-300 px-3 py-1.5 text-xs text-red-700 hover:bg-red-50 disabled:opacity-40 rounded-md"
         >
           Eliminar proyecto
         </button>
@@ -171,20 +293,20 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
 
       {/* Flujo guiado de puesta en marcha */}
       {setupPending && (
-        <div className="border border-[#c08552]/40 bg-[#c08552]/10 p-5">
+        <div className="border border-[#c08552]/40 bg-[#c08552]/10 p-5 rounded-lg">
           <p className="text-sm font-semibold text-[#1c3742]">Puesta en marcha del proyecto</p>
           <p className="mt-1 text-xs text-[#1c3742]/60">
             Los inversores solo verán el proyecto cuando esté <strong>Activo</strong>, tenga inversores asignados y documentos publicados.
           </p>
           <ol className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map((s, i) => (
-              <li key={i} className={`flex items-center gap-3 border p-3 text-sm ${s.done ? 'border-[#1c3742]/30 bg-[#1c3742]/5' : 'border-[#1c3742]/15 bg-white'}`}>
-                <span className={`flex h-6 w-6 shrink-0 items-center justify-center text-xs font-bold ${s.done ? 'bg-[#1c3742] text-[#e6e2d7]' : 'bg-[#1c3742]/10 text-[#1c3742]'}`}>
+              <li key={i} className={`flex items-center gap-3 border p-3 text-sm rounded-md ${s.done ? 'border-[#1c3742]/30 bg-[#1c3742]/5' : 'border-[#1c3742]/15 bg-white'}`}>
+                <span className={`flex h-6 w-6 shrink-0 items-center justify-center text-xs font-bold rounded-full ${s.done ? 'bg-[#1c3742] text-[#e6e2d7]' : 'bg-[#1c3742]/10 text-[#1c3742]'}`}>
                   {s.done ? '✓' : i + 1}
                 </span>
                 <span className={s.done ? 'text-[#1c3742] font-medium' : 'text-[#1c3742]'}>{s.label}</span>
                 {!s.done && s.action && (
-                  <button onClick={s.action} className="ml-auto shrink-0 bg-[#1c3742] px-2.5 py-1 text-[11px] font-semibold text-[#e6e2d7]">
+                  <button onClick={s.action} className="ml-auto shrink-0 bg-[#1c3742] px-2.5 py-1 text-[11px] font-semibold text-[#e6e2d7] rounded-md">
                     {s.cta}
                   </button>
                 )}
@@ -232,7 +354,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
         ) : (
           <ul className="mt-3 space-y-1 text-sm">
             {data.investors.map((i) => (
-              <li key={i.investorId} className="flex items-center justify-between gap-2 bg-[#faf9f5] px-3 py-2">
+              <li key={i.investorId} className="flex items-center justify-between gap-2 bg-[#faf9f5] px-3 py-2 rounded-md">
                 <Link href={`/dataroom/admin/investors/${i.investorId}`} className="hover:underline">
                   {[i.firstName, i.lastName].filter(Boolean).join(' ') || i.email}
                   <span className="ml-2 text-xs text-[#1c3742]/40" title={ACCESS_LEVEL_HINTS[i.access.accessLevel]}>
@@ -289,7 +411,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
           </Link>
         </div>
         {p.ndaRequired && !hasNda && (
-          <p className="mt-2 border border-[#c08552]/40 bg-[#c08552]/10 p-3 text-xs text-[#8a5a33]">
+          <p className="mt-2 border border-[#c08552]/40 bg-[#c08552]/10 p-3 text-xs text-[#8a5a33] rounded-md">
             Sin NDA publicado, los inversores no podrán desbloquear la documentación confidencial.
           </p>
         )}
@@ -301,7 +423,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
             ) : (
               <ul className="space-y-1">
                 {data.signatures.filter((s) => s.status === 'signed').map((s) => (
-                  <li key={s.id} className="flex flex-wrap items-center gap-2 border border-[#1c3742]/10 bg-[#faf9f5] px-3 py-2 text-sm">
+                  <li key={s.id} className="flex flex-wrap items-center gap-2 border border-[#1c3742]/10 bg-[#faf9f5] px-3 py-2 text-sm rounded-md">
                     <span className="font-medium">{s.signerFullName}</span>
                     <Badge value="signed" />
                     <span className="text-xs text-[#1c3742]/50">Firmado el {formatDate(s.signedAt)}</span>
@@ -324,23 +446,43 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
       <UploadPanel projectId={id} categories={data.categories} investors={activeInvestors} onUploaded={load} />
 
       {/* Biblioteca de documentos — estilo SharePoint (carpetas navegables) */}
-      <section className="border border-[#1c3742]/10 bg-white shadow-sm">
-        <div className="flex flex-col gap-3 border-b border-[#1c3742]/10 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 items-center gap-1.5 text-sm">
-            <FolderGlyph className="h-5 w-5 shrink-0 text-[#c08552]" />
-            <button type="button" onClick={() => { setDocFolder(null); setDocSearch(''); }} className="font-medium text-[#1c3742] hover:underline">Documentos</button>
-            {docNav.currentName && (
-              <>
-                <span className="text-[#1c3742]/35">›</span>
-                <span className="truncate font-medium text-[#1c3742]">{docNav.currentName}</span>
-              </>
-            )}
+      <section
+        className="relative border border-[#1c3742]/10 bg-white rounded-lg"
+        onDragOver={(e) => { e.preventDefault(); if (!dragOver) setDragOver(true); }}
+        onDragLeave={(e) => { if (e.currentTarget === e.target) setDragOver(false); }}
+        onDrop={(e) => { e.preventDefault(); setDragOver(false); uploadDropped(Array.from(e.dataTransfer.files ?? [])); }}
+      >
+        {selected.size > 0 ? (
+          <div className="flex flex-wrap items-center gap-3 border-b border-[#1c3742]/10 bg-[#1c3742]/[0.05] px-3 py-2.5 text-sm">
+            <button onClick={() => setSelected(new Set())} aria-label="Cancelar selección" className="text-[#1c3742]/60 hover:text-[#1c3742]">✕</button>
+            <span className="font-medium text-[#1c3742]">{selected.size} seleccionado(s)</span>
+            <div className="ml-auto flex flex-wrap gap-2">
+              <button disabled={bulkBusy} onClick={() => bulkAction('download')} className="border border-[#1c3742]/25 px-3 py-1.5 text-xs hover:bg-[#1c3742]/5 disabled:opacity-40 rounded-md">Descargar</button>
+              <button disabled={bulkBusy} onClick={() => bulkAction('archive')} className="border border-[#1c3742]/25 px-3 py-1.5 text-xs hover:bg-[#1c3742]/5 disabled:opacity-40 rounded-md">Archivar</button>
+              <button disabled={bulkBusy} onClick={() => bulkAction('delete')} className="border border-red-300 px-3 py-1.5 text-xs text-red-700 hover:bg-red-50 disabled:opacity-40 rounded-md">Eliminar</button>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            {data.documents.length > 0 && <LibrarySearch value={docSearch} onChange={setDocSearch} />}
-            <ViewToggle view={docView} onChange={setDocView} />
+        ) : (
+          <div className="flex flex-col gap-3 border-b border-[#1c3742]/10 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-1.5 text-sm">
+              <FolderGlyph className="h-5 w-5 shrink-0 text-[#c08552]" />
+              <button type="button" onClick={() => { setDocFolder(null); setDocSearch(''); }} className="font-medium text-[#1c3742] hover:underline">Documentos</button>
+              {docNav.currentName && (
+                <>
+                  <span className="text-[#1c3742]/35">›</span>
+                  <span className="truncate font-medium text-[#1c3742]">{docNav.currentName}</span>
+                </>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {data.documents.length > 0 && <LibrarySearch value={docSearch} onChange={setDocSearch} />}
+              <button onClick={createFolder} className="whitespace-nowrap border border-[#1c3742]/25 px-3 py-2 text-xs font-medium hover:bg-[#1c3742]/5 rounded-md">
+                + Carpeta
+              </button>
+              <ViewToggle view={docView} onChange={setDocView} />
+            </div>
           </div>
-        </div>
+        )}
 
         {data.documents.length === 0 ? (
           <p className="p-4 text-sm text-[#1c3742]/50">Todavía no hay documentos. Súbalos con el panel de arriba.</p>
@@ -349,17 +491,23 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
         ) : docView === 'grid' ? (
           <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 lg:grid-cols-4">
             {docNav.folders.map((f) => (
-              <button key={f.id} type="button" onClick={() => setDocFolder(f.id)}
-                className="flex items-center gap-3 border border-[#1c3742]/12 bg-white p-3 text-left transition-colors hover:bg-[#1c3742]/[0.03]">
-                <FolderIconFilled className="h-10 w-10 shrink-0" />
-                <span className="min-w-0">
-                  <span className="block truncate text-sm font-medium text-[#1c3742]">{f.name}</span>
-                  <span className="block text-[11px] text-[#1c3742]/45">{f.count} elemento(s)</span>
-                </span>
-              </button>
+              <div key={f.id} className="flex items-center gap-2 border border-[#1c3742]/12 bg-white p-3 transition-colors hover:bg-[#1c3742]/[0.03] rounded-lg">
+                <button type="button" onClick={() => setDocFolder(f.id)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+                  <FolderIconFilled className="h-10 w-10 shrink-0" />
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-medium text-[#1c3742]">{f.name}</span>
+                    <span className="block text-[11px] text-[#1c3742]/45">{f.count} elemento(s) · Nivel {f.level}</span>
+                  </span>
+                </button>
+                <KebabMenu items={[
+                  { label: 'Cambiar nombre', onClick: () => renameFolder(f.id, f.name) },
+                  { label: f.level === 1 ? 'Marcar como Nivel 2 (NDA)' : 'Marcar como Nivel 1 (solo vista)', onClick: () => setFolderLevel(f.id, f.level === 1 ? 2 : 1) },
+                  { label: 'Eliminar carpeta', danger: true, onClick: () => deleteFolder(f.id, f.name) },
+                ]} />
+              </div>
             ))}
             {docNav.docs.map((d) => (
-              <AdminDocRow key={d.id} view="grid" d={d} onPreview={openPreview} onDownload={downloadDoc} onShare={setShareDoc} docAction={docAction} deleteDoc={deleteDoc} reload={load} />
+              <AdminDocRow key={d.id} view="grid" d={d} selected={selected.has(d.id)} onToggleSelect={toggleSelect} onRename={renameDoc} onMove={(did, t) => setMovingDoc({ id: did, title: t })} onDetails={(did, t) => setDetailsDoc({ id: did, title: t })} onPreview={openPreview} onDownload={downloadDoc} onShare={setShareDoc} docAction={docAction} deleteDoc={deleteDoc} reload={load} />
             ))}
           </div>
         ) : (
@@ -367,9 +515,17 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[#1c3742]/10 bg-[#1c3742]/[0.03] text-left text-[11px] uppercase tracking-wider text-[#1c3742]/55">
-                  <th className="px-4 py-2.5 font-semibold">Nombre</th>
-                  <th className="px-4 py-2.5 font-semibold">Estado</th>
-                  <th className="px-4 py-2.5 font-semibold">Modificado</th>
+                  <th className="w-10 px-3 py-2.5">
+                    <input
+                      type="checkbox"
+                      aria-label="Seleccionar todo"
+                      checked={docNav.docs.length > 0 && docNav.docs.every((d) => selected.has(d.id))}
+                      onChange={(e) => setSelected(e.target.checked ? new Set(docNav.docs.map((d) => d.id)) : new Set())}
+                    />
+                  </th>
+                  <th className="px-4 py-2.5"><SortBtn label="Nombre" k="name" /></th>
+                  <th className="px-4 py-2.5"><SortBtn label="Estado" k="status" /></th>
+                  <th className="px-4 py-2.5"><SortBtn label="Modificado" k="modified" /></th>
                   <th className="px-4 py-2.5 font-semibold">Modificado por</th>
                   <th className="w-10 px-2 py-2.5" />
                 </tr>
@@ -377,24 +533,39 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
               <tbody>
                 {docNav.folders.map((f) => (
                   <tr key={f.id} onClick={() => setDocFolder(f.id)} className="cursor-pointer border-b border-[#1c3742]/[0.07] hover:bg-[#1c3742]/[0.04]">
+                    <td className="px-3 py-2.5" />
                     <td className="px-4 py-2.5">
                       <div className="flex items-center gap-3">
                         <FolderIconFilled className="h-8 w-8 shrink-0" />
                         <span className="truncate font-medium text-[#1c3742] hover:underline">{f.name}</span>
                         <span className="text-xs text-[#1c3742]/40">{f.count}</span>
+                        <span className="text-[10px] uppercase tracking-wider text-[#c08552]">Nivel {f.level}</span>
                       </div>
                     </td>
                     <td className="px-4 py-2.5" />
                     <td className="px-4 py-2.5 text-[#1c3742]/60">—</td>
                     <td className="px-4 py-2.5 text-[#1c3742]/60">Althara</td>
-                    <td className="px-2 py-2.5" />
+                    <td className="px-2 py-2.5" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex justify-end">
+                        <KebabMenu items={[
+                          { label: 'Cambiar nombre', onClick: () => renameFolder(f.id, f.name) },
+                          { label: f.level === 1 ? 'Marcar como Nivel 2 (NDA)' : 'Marcar como Nivel 1 (solo vista)', onClick: () => setFolderLevel(f.id, f.level === 1 ? 2 : 1) },
+                          { label: 'Eliminar carpeta', danger: true, onClick: () => deleteFolder(f.id, f.name) },
+                        ]} />
+                      </div>
+                    </td>
                   </tr>
                 ))}
                 {docNav.docs.map((d) => (
-                  <AdminDocRow key={d.id} view="list" d={d} onPreview={openPreview} onDownload={downloadDoc} onShare={setShareDoc} docAction={docAction} deleteDoc={deleteDoc} reload={load} />
+                  <AdminDocRow key={d.id} view="list" d={d} selected={selected.has(d.id)} onToggleSelect={toggleSelect} onRename={renameDoc} onMove={(did, t) => setMovingDoc({ id: did, title: t })} onDetails={(did, t) => setDetailsDoc({ id: did, title: t })} onPreview={openPreview} onDownload={downloadDoc} onShare={setShareDoc} docAction={docAction} deleteDoc={deleteDoc} reload={load} />
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+        {dragOver && (
+          <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-lg border-2 border-dashed border-[#c08552] bg-[#c08552]/10 text-sm font-medium text-[#8a5a33]">
+            Suelte los archivos para subirlos {docNav.currentName ? `a «${docNav.currentName}»` : 'aquí'}
           </div>
         )}
       </section>
@@ -432,6 +603,211 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
           onDownload={() => downloadDoc(viewer.docId)}
         />
       )}
+      {detailsDoc && (
+        <DetailsPanel doc={detailsDoc} onClose={() => setDetailsDoc(null)} onChanged={load} />
+      )}
+      {movingDoc && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#102027]/50 p-4" onClick={() => setMovingDoc(null)}>
+          <div className="w-full max-w-sm border border-[#1c3742]/20 bg-white rounded-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b border-[#1c3742]/15 px-5 py-4">
+              <div className="min-w-0">
+                <h2 className="font-playfair text-lg leading-tight">Mover a carpeta</h2>
+                <p className="mt-0.5 truncate text-xs text-[#1c3742]/55">{movingDoc.title}</p>
+              </div>
+              <button onClick={() => setMovingDoc(null)} aria-label="Cerrar" className="text-[#1c3742]/60 hover:text-[#1c3742]">✕</button>
+            </div>
+            <div className="max-h-[60vh] overflow-y-auto p-2">
+              <button onClick={() => moveDoc(movingDoc.id, null)} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm hover:bg-[#1c3742]/[0.06]">
+                <FolderGlyph className="h-5 w-5 text-[#c08552]" /> Raíz (sin carpeta)
+              </button>
+              {data.categories.map((c) => (
+                <button key={c.id} onClick={() => moveDoc(movingDoc.id, c.id)} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm hover:bg-[#1c3742]/[0.06]">
+                  <FolderIconFilled className="h-5 w-5" /> {c.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface DocDetail {
+  document: {
+    id: string; title: string; status: string; confidentiality: string; downloadable: boolean; requiresNda: boolean;
+    currentVersionId: string | null; createdAt: string; updatedAt: string;
+    legalStatus: string; legalReason: string | null; legalReviewedBy: string | null; legalReviewedAt: string | null;
+    taxStatus: string; taxReason: string | null; taxReviewedBy: string | null; taxReviewedAt: string | null;
+  };
+  versions: { id: string; versionNumber: number; originalName: string; mimeType: string; sizeBytes: number; status: string; versionComment: string | null; uploadedBy: string | null; createdAt: string }[];
+  permissions: { perm: { investorId: string; effect: string; canDownload: boolean }; email: string }[];
+  accessLog: { kind: string; watermarked: boolean; createdAt: string; email: string }[];
+}
+
+/** Panel lateral de detalles + historial de versiones (estilo panel «i» de SharePoint). */
+function DetailsPanel({ doc, onClose, onChanged }: {
+  doc: { id: string; title: string };
+  onClose: () => void;
+  onChanged: () => void;
+}) {
+  const [data, setData] = useState<DocDetail | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(async () => {
+    const res = await fetchJson<DocDetail>(`/api/dataroom/admin/documents/${doc.id}`);
+    if (res.ok && res.data) setData(res.data);
+  }, [doc.id]);
+  useEffect(() => { load(); }, [load]);
+
+  async function restore(versionId: string) {
+    if (!confirm('¿Restaurar esta versión como la actual? La versión vigente pasará a histórico.')) return;
+    setBusy(true);
+    const res = await fetchJson(`/api/dataroom/admin/documents/${doc.id}`, {
+      method: 'PATCH', body: JSON.stringify({ action: 'restore_version', versionId }),
+    });
+    setBusy(false);
+    if (res.ok) { await load(); onChanged(); }
+  }
+
+  const hh = 'mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#1c3742]/45';
+  const cur = data?.document.currentVersionId;
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end bg-[#102027]/40" onClick={onClose}>
+      <aside className="flex h-full w-full max-w-md flex-col rounded-l-lg border-l border-[#1c3742]/15 bg-white" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-start justify-between gap-3 border-b border-[#1c3742]/15 px-5 py-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <FileIcon fileName={doc.title} />
+            <p className="truncate font-playfair text-lg">{doc.title}</p>
+          </div>
+          <button onClick={onClose} aria-label="Cerrar" className="text-[#1c3742]/60 hover:text-[#1c3742]">✕</button>
+        </div>
+
+        <div className="flex-1 space-y-6 overflow-y-auto px-5 py-4">
+          {!data ? (
+            <Spinner label="Cargando detalles…" />
+          ) : (
+            <>
+              <section>
+                <h3 className={hh}>Detalles</h3>
+                <dl className="grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
+                  <dt className="text-[#1c3742]/50">Estado</dt><dd><Badge value={data.document.status} /></dd>
+                  <dt className="text-[#1c3742]/50">Nivel</dt><dd><Badge value={data.document.confidentiality} /></dd>
+                  <dt className="text-[#1c3742]/50">Requiere NDA</dt><dd>{data.document.requiresNda ? 'Sí' : 'No'}</dd>
+                  <dt className="text-[#1c3742]/50">Descarga</dt><dd>{data.document.downloadable ? 'Permitida' : 'Solo vista'}</dd>
+                  <dt className="text-[#1c3742]/50">Creado</dt><dd>{formatDate(data.document.createdAt)}</dd>
+                  <dt className="text-[#1c3742]/50">Modificado</dt><dd>{formatDate(data.document.updatedAt)}</dd>
+                </dl>
+              </section>
+
+              <section>
+                <h3 className={hh}>Doble visado</h3>
+                {(() => {
+                  const doc = data.document;
+                  const available = doc.legalStatus === 'approved' && doc.taxStatus === 'approved';
+                  const reviewDetail = (role: string, status: string, reviewedBy: string | null, reviewedAt: string | null, reason: string | null) => (
+                    <div className="border border-[#1c3742]/10 bg-[#faf9f5] px-3 py-2 text-sm rounded-md">
+                      <span className="font-medium text-[#1c3742]">{role}</span>
+                      {reviewedBy || reviewedAt ? (
+                        <p className="mt-1 text-[11px] text-[#1c3742]/50">
+                          {reviewedBy ? reviewedBy : 'Revisor no registrado'}
+                          {reviewedAt ? ` · ${formatDate(reviewedAt)}` : ''}
+                        </p>
+                      ) : (
+                        <p className="mt-1 text-[11px] text-[#1c3742]/45">Sin revisar todavía.</p>
+                      )}
+                      {status === 'rejected' && reason && (
+                        <p className="mt-1 border-l-2 border-red-300 pl-2 text-xs text-red-700">Motivo: {reason}</p>
+                      )}
+                    </div>
+                  );
+                  return (
+                    <>
+                      <VisadoProgress legalStatus={doc.legalStatus} taxStatus={doc.taxStatus} />
+                      <div className="mt-3 space-y-2">
+                        {reviewDetail('Abogado', doc.legalStatus, doc.legalReviewedBy, doc.legalReviewedAt, doc.legalReason)}
+                        {reviewDetail('Fiscal', doc.taxStatus, doc.taxReviewedBy, doc.taxReviewedAt, doc.taxReason)}
+                      </div>
+                      <p className="mt-2 text-sm">
+                        <span className="text-[#1c3742]/50">Disponible para inversores: </span>
+                        <span className={`font-semibold ${available ? 'text-[#2e9e5a]' : 'text-red-700'}`}>
+                          {available ? 'Sí' : 'No'}
+                        </span>
+                      </p>
+                      <p className="mt-1 text-[11px] text-[#1c3742]/45">
+                        Para corregir un rechazo, suba una nueva versión del documento (reinicia el visado).
+                      </p>
+                    </>
+                  );
+                })()}
+              </section>
+
+              <section>
+                <h3 className={hh}>Historial de versiones ({data.versions.length})</h3>
+                <ul className="space-y-2">
+                  {data.versions.map((v) => (
+                    <li key={v.id} className="border border-[#1c3742]/10 bg-[#faf9f5] px-3 py-2 text-sm rounded-md">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-medium">v{v.versionNumber}</span>
+                        {v.id === cur ? (
+                          <span className="bg-[#1c3742] px-2 py-0.5 text-[10px] font-semibold text-[#e6e2d7] rounded-md">Actual</span>
+                        ) : (
+                          <button
+                            onClick={() => restore(v.id)}
+                            disabled={busy}
+                            className="border border-[#1c3742]/25 px-2 py-0.5 text-[11px] hover:bg-[#1c3742]/5 disabled:opacity-40 rounded-md"
+                          >
+                            Restaurar
+                          </button>
+                        )}
+                        <span className="ml-auto text-xs text-[#1c3742]/50">{formatDate(v.createdAt)}</span>
+                      </div>
+                      <p className="mt-1 text-xs text-[#1c3742]/55">
+                        {formatBytes(v.sizeBytes)}{v.versionComment ? ` · ${v.versionComment}` : ''}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              <section>
+                <h3 className={hh}>Permisos por inversor</h3>
+                {data.permissions.length === 0 ? (
+                  <p className="text-sm text-[#1c3742]/50">Sin permisos específicos (aplica el nivel de acceso de cada inversor).</p>
+                ) : (
+                  <ul className="space-y-1 text-sm">
+                    {data.permissions.map((p, i) => (
+                      <li key={i} className="flex items-center justify-between gap-2">
+                        <span className="truncate">{p.email}</span>
+                        <span className={p.perm.effect === 'allow' ? 'text-[#1c3742]' : 'text-red-700'}>
+                          {p.perm.effect === 'allow' ? 'Compartido' : 'Bloqueado'}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+
+              <section>
+                <h3 className={hh}>Accesos recientes</h3>
+                {data.accessLog.length === 0 ? (
+                  <p className="text-sm text-[#1c3742]/50">Todavía sin accesos.</p>
+                ) : (
+                  <ul className="space-y-1 text-xs text-[#1c3742]/70">
+                    {data.accessLog.slice(0, 15).map((a, i) => (
+                      <li key={i} className="flex items-center justify-between gap-2">
+                        <span className="truncate">{a.email} · {a.kind === 'download' ? 'descarga' : 'vista'}</span>
+                        <span className="text-[#1c3742]/45">{formatDate(a.createdAt)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+            </>
+          )}
+        </div>
+      </aside>
     </div>
   );
 }
@@ -494,7 +870,7 @@ function ShareDialog({ doc, investors, onClose }: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#102027]/50 p-4" role="dialog" aria-modal="true">
-      <div className="flex max-h-[85vh] w-full max-w-lg flex-col border border-[#1c3742]/20 bg-white">
+      <div className="flex max-h-[85vh] w-full max-w-lg flex-col border border-[#1c3742]/20 bg-white rounded-lg">
         <div className="flex items-start justify-between gap-3 border-b border-[#1c3742]/15 px-5 py-4">
           <div>
             <h2 className="font-playfair text-lg leading-tight">Compartir archivo</h2>
@@ -519,7 +895,7 @@ function ShareDialog({ doc, investors, onClose }: {
                 const current = perms[i.investorId]; // allow | deny | undefined
                 const auto = autoEffect(i.access.accessLevel);
                 return (
-                  <li key={i.investorId} className="flex flex-wrap items-center justify-between gap-2 border border-[#1c3742]/10 px-3 py-2">
+                  <li key={i.investorId} className="flex flex-wrap items-center justify-between gap-2 border border-[#1c3742]/10 px-3 py-2 rounded-md">
                     <div className="min-w-0">
                       <p className="truncate text-sm">
                         {[i.firstName, i.lastName].filter(Boolean).join(' ') || i.email}
@@ -532,7 +908,7 @@ function ShareDialog({ doc, investors, onClose }: {
                           : current === 'allow' ? 'Compartido' : 'Bloqueado'}
                       </p>
                     </div>
-                    <div className="flex shrink-0 border border-[#1c3742]/20" aria-busy={savingId === i.investorId}>
+                    <div className="flex shrink-0 border border-[#1c3742]/20 rounded-md overflow-hidden" aria-busy={savingId === i.investorId}>
                       <button className={seg(current === 'allow')} onClick={() => setEffect(i.investorId, 'allow')}>Ver</button>
                       <button className={`${seg(!current)} border-x border-[#1c3742]/15`} onClick={() => setEffect(i.investorId, 'clear')}>Auto</button>
                       <button className={seg(current === 'deny')} onClick={() => setEffect(i.investorId, 'deny')}>Bloquear</button>
@@ -545,7 +921,7 @@ function ShareDialog({ doc, investors, onClose }: {
         </div>
 
         <div className="flex justify-end border-t border-[#1c3742]/15 px-5 py-3">
-          <button onClick={onClose} className="bg-[#1c3742] px-5 py-2 text-sm font-semibold text-[#e6e2d7]">Hecho</button>
+          <button onClick={onClose} className="bg-[#1c3742] px-5 py-2 text-sm font-semibold text-[#e6e2d7] rounded-md">Hecho</button>
         </div>
       </div>
     </div>
@@ -555,9 +931,14 @@ function ShareDialog({ doc, investors, onClose }: {
 type AdminDoc = Detail['documents'][number];
 
 /** Documento estilo SharePoint: clic en el nombre abre el visor; menú ⋮ persistente. Lista o cuadrícula. */
-function AdminDocRow({ d, view, onPreview, onDownload, onShare, docAction, deleteDoc, reload }: {
+function AdminDocRow({ d, view, selected, onToggleSelect, onRename, onMove, onDetails, onPreview, onDownload, onShare, docAction, deleteDoc, reload }: {
   d: AdminDoc;
   view: 'list' | 'grid';
+  selected: boolean;
+  onToggleSelect: (id: string) => void;
+  onRename: (id: string, current: string) => void;
+  onMove: (id: string, title: string) => void;
+  onDetails: (id: string, title: string) => void;
   onPreview: (id: string, title: string) => void;
   onDownload: (id: string) => void;
   onShare: (doc: { id: string; title: string; confidentiality: string }) => void;
@@ -585,7 +966,10 @@ function AdminDocRow({ d, view, onPreview, onDownload, onShare, docAction, delet
   const items: MenuItem[] = [
     { label: 'Vista previa', onClick: () => onPreview(d.id, d.title) },
     { label: 'Descargar', onClick: () => onDownload(d.id) },
+    { label: 'Cambiar nombre', onClick: () => onRename(d.id, d.title) },
+    { label: 'Mover a carpeta', onClick: () => onMove(d.id, d.title) },
     { label: 'Compartir', onClick: () => onShare({ id: d.id, title: d.title, confidentiality: d.confidentiality }) },
+    { label: 'Detalles e historial', onClick: () => onDetails(d.id, d.title) },
     ...(d.status === 'draft' ? [{ label: 'Publicar', onClick: () => docAction(d.id, 'publish') }] : []),
     ...(d.status === 'published'
       ? [
@@ -604,12 +988,16 @@ function AdminDocRow({ d, view, onPreview, onDownload, onShare, docAction, delet
 
   if (view === 'grid') {
     return (
-      <div className="group flex flex-col border border-[#1c3742]/12 bg-white transition-shadow hover:shadow-md">
+      <div className={`group flex flex-col border bg-white rounded-lg transition-colors hover:border-[#1c3742]/25 ${selected ? 'border-[#c08552]' : 'border-[#1c3742]/12'}`}>
         <button type="button" onClick={() => onPreview(d.id, d.title)} className="flex flex-1 flex-col items-center justify-center gap-3 p-6">
           <FileIcon fileName={d.title} />
         </button>
-        <div className="flex items-center justify-between gap-1 border-t border-[#1c3742]/10 px-3 py-2">
-          <p className="truncate text-xs font-medium text-[#1c3742]">{d.title}</p>
+        <div className="flex items-center gap-2 border-t border-[#1c3742]/10 px-3 py-2">
+          <input type="checkbox" checked={selected} onChange={() => onToggleSelect(d.id)} aria-label={`Seleccionar ${d.title}`} />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-xs font-medium text-[#1c3742]">{d.title}</p>
+            <VisadoInline legalStatus={d.legalStatus} taxStatus={d.taxStatus} />
+          </div>
           {hiddenInput}
           <KebabMenu items={items} />
         </div>
@@ -618,12 +1006,16 @@ function AdminDocRow({ d, view, onPreview, onDownload, onShare, docAction, delet
   }
 
   return (
-    <tr className="group border-b border-[#1c3742]/[0.07] last:border-0 hover:bg-[#1c3742]/[0.04]">
+    <tr className={`group border-b border-[#1c3742]/[0.07] last:border-0 hover:bg-[#1c3742]/[0.04] ${selected ? 'bg-[#1c3742]/[0.05]' : ''}`}>
+      <td className="px-3 py-2.5">
+        <input type="checkbox" checked={selected} onChange={() => onToggleSelect(d.id)} aria-label={`Seleccionar ${d.title}`} />
+      </td>
       <td className="px-4 py-2.5">
         <div className="flex items-center gap-3">
           <FileIcon fileName={d.title} />
           <button type="button" onClick={() => onPreview(d.id, d.title)} className="min-w-0 text-left">
             <p className="truncate font-medium text-[#1c3742] hover:underline">{d.title}</p>
+            <VisadoInline legalStatus={d.legalStatus} taxStatus={d.taxStatus} />
           </button>
           {d.confidentiality === 'sensitive' && (
             <span className="shrink-0 text-[10px] uppercase tracking-wider text-[#c08552]">Confidencial</span>
@@ -668,7 +1060,7 @@ function AssignInvestor({ projectId, allInvestors, assigned, onChanged, onError 
 
   if (allInvestors.length === 0) {
     return (
-      <p className="border border-[#c08552]/40 bg-[#c08552]/10 p-3 text-xs text-[#8a5a33]">
+      <p className="border border-[#c08552]/40 bg-[#c08552]/10 p-3 text-xs text-[#8a5a33] rounded-md">
         Todavía no hay inversores dados de alta. Créelos primero en la pestaña{' '}
         <Link href="/dataroom/admin/investors" className="underline">Inversores</Link>.
       </p>
@@ -678,7 +1070,7 @@ function AssignInvestor({ projectId, allInvestors, assigned, onChanged, onError 
   return (
     <div className="flex flex-wrap items-center gap-2">
       <select value={investorId} onChange={(e) => setInvestorId(e.target.value)}
-        className="min-w-56 flex-1 border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-2 text-sm sm:flex-none">
+        className="min-w-56 flex-1 border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-2 text-sm sm:flex-none rounded-md">
         <option value="">Añadir inversor al proyecto…</option>
         {options.map((i) => (
           <option key={i.id} value={i.id}>
@@ -688,12 +1080,12 @@ function AssignInvestor({ projectId, allInvestors, assigned, onChanged, onError 
       </select>
       <select value={level} onChange={(e) => setLevel(e.target.value as 'full' | 'generic')}
         title={ACCESS_LEVEL_HINTS[level]}
-        className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-2 text-sm">
+        className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-2 text-sm rounded-md">
         <option value="full">Acceso completo — todos los documentos</option>
         <option value="generic">Acceso limitado — solo documentos generales</option>
       </select>
       <button onClick={grant} disabled={!investorId || busy}
-        className="bg-[#1c3742] px-4 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40">
+        className="bg-[#1c3742] px-4 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40 rounded-md">
         {busy ? 'Asignando…' : 'Dar acceso'}
       </button>
     </div>
@@ -752,7 +1144,7 @@ function UploadPanel({ projectId, categories, investors, onUploaded }: {
 
   const check = 'flex items-center gap-2 text-xs text-[#1c3742]/70';
   return (
-    <section className="border border-[#1c3742]/10 bg-white p-5 shadow-sm">
+    <section className="border border-[#1c3742]/10 bg-white p-5 rounded-lg">
       <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#1c3742]/50">Subir documentos</h2>
       <div className="flex flex-wrap items-center gap-3">
         <input
@@ -761,16 +1153,16 @@ function UploadPanel({ projectId, categories, investors, onUploaded }: {
           multiple
           accept=".pdf,.docx,.xlsx,.pptx,.csv,.png,.jpg,.jpeg,.webp"
           onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
-          className="text-xs file:mr-3 file:border-0 file:bg-[#1c3742] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[#e6e2d7]"
+          className="text-xs file:mr-3 file:rounded-md file:border-0 file:bg-[#1c3742] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[#e6e2d7]"
         />
         <select value={meta.categoryId} onChange={(e) => setMeta({ ...meta, categoryId: e.target.value })}
-          className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1.5 text-xs">
+          className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1.5 text-xs rounded-md">
           <option value="">Categoría…</option>
           {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
         <select value={meta.confidentiality} onChange={(e) => setMeta({ ...meta, confidentiality: e.target.value, requiresNda: e.target.value === 'sensitive' })}
           title="Confidencial: solo lo ven los inversores con acceso completo. General: lo ven todos."
-          className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1.5 text-xs">
+          className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1.5 text-xs rounded-md">
           <option value="sensitive">Confidencial — solo acceso completo</option>
           <option value="generic">General — visible para todos</option>
         </select>
@@ -784,12 +1176,12 @@ function UploadPanel({ projectId, categories, investors, onUploaded }: {
       </div>
       {meta.restrict && (
         investors.length === 0 ? (
-          <p className="mt-2 border border-[#c08552]/40 bg-[#c08552]/10 p-3 text-xs text-[#8a5a33]">
+          <p className="mt-2 border border-[#c08552]/40 bg-[#c08552]/10 p-3 text-xs text-[#8a5a33] rounded-md">
             Este proyecto aún no tiene inversores asignados: primero dé acceso a algún inversor
             (panel «Inversores con acceso») y luego podrá restringir documentos a personas concretas.
           </p>
         ) : (
-          <div className="mt-2 flex flex-wrap gap-3 bg-[#faf9f5] p-3">
+          <div className="mt-2 flex flex-wrap gap-3 bg-[#faf9f5] p-3 rounded-md">
             {investors.map((i) => (
               <label key={i.investorId} className={check}>
                 <input
@@ -814,7 +1206,7 @@ function UploadPanel({ projectId, categories, investors, onUploaded }: {
       )}
       {result && <p className="mt-2 text-xs font-medium text-[#8a5a33]">{result}</p>}
       <button onClick={upload} disabled={busy || files.length === 0}
-        className="mt-3 bg-[#1c3742] px-4 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40">
+        className="mt-3 bg-[#1c3742] px-4 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40 rounded-md">
         {busy ? 'Subiendo…' : 'Subir'}
       </button>
     </section>

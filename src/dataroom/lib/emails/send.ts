@@ -26,6 +26,11 @@ export async function sendTransactionalEmail(input: {
     documentTitles?: string[];
     actionUrl?: string;
     expiresHours?: number;
+    reason?: string;
+    investorEmail?: string;
+    documentTitle?: string;
+    reviewRole?: string;
+    reviewDecision?: string;
   };
 }): Promise<{ ok: boolean; error?: string }> {
   const { subject, html } = renderEmail(input.template, input.locale, input.params);

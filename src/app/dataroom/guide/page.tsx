@@ -5,13 +5,13 @@ export const metadata = { title: 'Guía — Portal de inversores' };
 
 function Card({ title, intro, steps }: { title: string; intro?: string; steps: (string | React.ReactNode)[] }) {
   return (
-    <section className="border border-[#1c3742]/10 bg-white p-5 shadow-sm">
+    <section className="border border-[#1c3742]/10 bg-white p-5 rounded-lg">
       <h2 className="font-playfair text-lg text-[#1c3742]">{title}</h2>
       {intro && <p className="mt-1 text-sm text-[#1c3742]/70">{intro}</p>}
       <ul className="mt-3 space-y-2">
         {steps.map((s, i) => (
           <li key={i} className="flex gap-3 text-sm text-[#1c3742]/80">
-            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center bg-[#1c3742]/5 text-[11px] font-bold text-[#c08552]">{i + 1}</span>
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center bg-[#1c3742]/5 text-[11px] font-bold text-[#c08552] rounded-full">{i + 1}</span>
             <span>{s}</span>
           </li>
         ))}
@@ -32,7 +32,17 @@ export default function InvestorGuide() {
       </div>
 
       <Card
-        title="1. Su página de inicio"
+        title="1. Activar su cuenta y verificar su identidad (KYC)"
+        intro="Se entra solo por invitación. Al activarse, verificamos su identidad una vez."
+        steps={[
+          <>Abra el <strong>email de invitación</strong> de Althara y pulse «Activar mi cuenta»: cree su contraseña y complete sus datos.</>,
+          <>En el mismo paso rellena su <strong>verificación de identidad (KYC)</strong>: tipo y número de documento, país de residencia, teléfono y perfil inversor. Sus datos se guardan <strong>cifrados</strong>.</>,
+          <>Su cuenta queda <strong>«Pendiente de validación»</strong> hasta que Althara la revise. Le avisaremos por email cuando esté activa. Si se rechaza, verá el <strong>motivo</strong> y podrá corregir y reenviar.</>,
+        ]}
+      />
+
+      <Card
+        title="2. Su página de inicio"
         intro="Al entrar verá sus proyectos, invitaciones pendientes, notificaciones y sus accesos recientes."
         steps={[
           <>En <strong>Inicio</strong> aparecen las tarjetas de los proyectos a los que tiene acceso.</>,
@@ -42,7 +52,7 @@ export default function InvestorGuide() {
       />
 
       <Card
-        title="2. Invitaciones a proyectos"
+        title="3. Invitaciones a proyectos"
         intro="Cuando Althara le da acceso a un proyecto, primero recibe una invitación."
         steps={[
           <>Verá un aviso <strong>«Invitaciones pendientes»</strong> arriba en Inicio.</>,
@@ -52,17 +62,18 @@ export default function InvestorGuide() {
       />
 
       <Card
-        title="3. La biblioteca de documentos"
+        title="4. La biblioteca de documentos"
         intro="Dentro de cada proyecto, los documentos se organizan en carpetas, como en SharePoint."
         steps={[
           <>Pulse una <strong>carpeta</strong> para entrar; use la ruta de arriba (Documentos › Carpeta) para volver.</>,
           <>Cambie entre vista de <strong>lista</strong> y <strong>cuadrícula</strong> con los botones de la derecha.</>,
           <>Use el <strong>buscador</strong> (arriba del todo o el de la biblioteca) para encontrar un archivo por su nombre.</>,
+          <>Algún documento puede aparecer como <strong>«En revisión»</strong>: aún no está disponible porque Althara lo está validando internamente. Aparecerá en cuanto esté aprobado.</>,
         ]}
       />
 
       <Card
-        title="4. Ver y descargar archivos"
+        title="5. Ver y descargar archivos"
         intro="Puede consultar los documentos sin descargarlos."
         steps={[
           <>Pulse el <strong>nombre del archivo</strong> (o «Vista previa» en el menú ⋮) para verlo dentro del portal: PDF, Word, Excel e imágenes.</>,
@@ -72,7 +83,7 @@ export default function InvestorGuide() {
       />
 
       <Card
-        title="5. El acuerdo de confidencialidad (NDA)"
+        title="6. El acuerdo de confidencialidad (NDA)"
         intro="Parte de la documentación es confidencial y requiere firmar el NDA una sola vez."
         steps={[
           <>Si un proyecto tiene documentos bloqueados, verá el aviso <strong>«Documentación confidencial bloqueada»</strong>.</>,
@@ -82,7 +93,7 @@ export default function InvestorGuide() {
       />
 
       <Card
-        title="6. Su perfil"
+        title="7. Su perfil"
         intro="Mantenga sus datos al día."
         steps={[
           <>Entre en <Link href="/dataroom/profile" className="text-[#c08552] underline">Mi perfil</Link> desde el menú lateral o desde Inicio.</>,
@@ -92,7 +103,7 @@ export default function InvestorGuide() {
       />
 
       <Card
-        title="7. Seguridad y confidencialidad"
+        title="8. Seguridad y confidencialidad"
         steps={[
           'Todo el contenido es confidencial y de acceso restringido.',
           'Cada vista y cada descarga quedan registradas.',

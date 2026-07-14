@@ -27,10 +27,15 @@ export const investorStatusEnum = dataroom.enum('investor_status', [
   'invitation_expired',
   'invitation_revoked',
   'registration_started',
+  'pending_validation',
+  'rejected',
   'active',
   'suspended',
   'disabled',
 ]);
+
+/** Estado de un visado (abogado / fiscal) sobre un documento. */
+export const reviewStatusEnum = dataroom.enum('review_status', ['pending', 'approved', 'rejected']);
 
 export const investorTypeEnum = dataroom.enum('investor_type', [
   'individual',
@@ -102,6 +107,7 @@ export const investors = dataroom.table(
     investorType: investorTypeEnum('investor_type'),
     language: text('language').notNull().default('es'),
     status: investorStatusEnum('status').notNull().default('draft'),
+    rejectionReason: text('rejection_reason'),
     privacyAcceptedAt: timestamp('privacy_accepted_at', { withTimezone: true }),
     termsAcceptedAt: timestamp('terms_accepted_at', { withTimezone: true }),
     termsVersion: text('terms_version'),
@@ -119,6 +125,28 @@ export const investors = dataroom.table(
     uniqueIndex('uq_investors_clerk_user').on(t.clerkUserId),
     index('ix_investors_tenant_status').on(t.tenant, t.status),
   ],
+);
+
+/**
+ * KYC del inversor. Réplica de InvestorKycBase del backend: los campos
+ * sensibles (nº documento, teléfono, perfil) viajan cifrados en encryptedPayload;
+ * documentType y residenceCountry quedan en claro (operativos). Una fila por inversor.
+ */
+export const investorKyc = dataroom.table(
+  'investor_kyc',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    tenant: text('tenant').notNull(),
+    investorId: uuid('investor_id')
+      .notNull()
+      .references(() => investors.id),
+    documentType: text('document_type').notNull(),
+    residenceCountry: text('residence_country').notNull(),
+    encryptedPayload: text('encrypted_payload').notNull(),
+    submittedAt: timestamp('submitted_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex('uq_investor_kyc_investor').on(t.investorId)],
 );
 
 export const invitations = dataroom.table(
@@ -210,6 +238,10 @@ export const documentCategories = dataroom.table(
     name: text('name').notNull(),
     slug: text('slug').notNull(),
     sortOrder: integer('sort_order').notNull().default(0),
+    // Nivel de acceso (spec ALT-RM): 1 = bienvenida/resumen (visible tras
+    // identidad verificada, solo vista + watermark); 2 = documentación completa
+    // (requiere NDA firmado). Por defecto 2.
+    level: integer('level').notNull().default(2),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex('uq_categories_project_slug').on(t.projectId, t.slug)],
@@ -227,6 +259,16 @@ export const documents = dataroom.table(
     title: text('title').notNull(),
     description: text('description'),
     confidentiality: confidentialityEnum('confidentiality').notNull().default('sensitive'),
+    // Doble visado (spec ALT-RM): el documento no está disponible hasta que el
+    // abogado (legal) y el fiscal (tax) lo aprueban. Nueva versión → reinicia ambos.
+    legalStatus: reviewStatusEnum('legal_status').notNull().default('pending'),
+    legalReason: text('legal_reason'),
+    legalReviewedBy: text('legal_reviewed_by'),
+    legalReviewedAt: timestamp('legal_reviewed_at', { withTimezone: true }),
+    taxStatus: reviewStatusEnum('tax_status').notNull().default('pending'),
+    taxReason: text('tax_reason'),
+    taxReviewedBy: text('tax_reviewed_by'),
+    taxReviewedAt: timestamp('tax_reviewed_at', { withTimezone: true }),
     downloadable: boolean('downloadable').notNull().default(true),
     requiresNda: boolean('requires_nda').notNull().default(true),
     status: documentStatusEnum('status').notNull().default('draft'),

@@ -44,7 +44,7 @@ export default function AdminNda() {
   if (!data) return <Spinner label="Cargando NDA…" />;
 
   const active = data.versions.find((v) => v.active);
-  const section = 'border border-[#1c3742]/10 bg-white p-5 shadow-sm';
+  const section = 'border border-[#1c3742]/10 bg-white p-5 rounded-lg';
 
   return (
     <div className="space-y-6">
@@ -64,14 +64,14 @@ export default function AdminNda() {
           </h2>
           {!editing && (
             <button onClick={() => setEditing(true)}
-              className="bg-[#1c3742] px-4 py-2 text-sm font-semibold text-[#e6e2d7]">
+              className="bg-[#1c3742] px-4 py-2 text-sm font-semibold text-[#e6e2d7] rounded-md">
               {active ? 'Editar y publicar nueva versión' : 'Crear el NDA'}
             </button>
           )}
         </div>
 
         {!active && !editing && (
-          <p className="mt-3 border border-[#c08552]/40 bg-[#c08552]/10 p-3 text-xs text-[#8a5a33]">
+          <p className="mt-3 border border-[#c08552]/40 bg-[#c08552]/10 p-3 text-xs text-[#8a5a33] rounded-md">
             Mientras no exista un NDA publicado, los inversores no podrán desbloquear documentación confidencial.
           </p>
         )}
@@ -79,24 +79,24 @@ export default function AdminNda() {
         {editing ? (
           <div className="mt-4 space-y-3">
             <input value={title} onChange={(e) => setTitle(e.target.value)}
-              className="w-full border border-[#1c3742]/25 bg-[#faf9f5] px-3 py-2 text-sm" />
+              className="w-full border border-[#1c3742]/25 bg-[#faf9f5] px-3 py-2 text-sm rounded-md" />
             <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={16}
               placeholder="Texto completo del acuerdo (mínimo 50 caracteres)…"
-              className="w-full border border-[#1c3742]/25 bg-[#faf9f5] px-3 py-2 text-xs leading-relaxed" />
+              className="w-full border border-[#1c3742]/25 bg-[#faf9f5] px-3 py-2 text-xs leading-relaxed rounded-md" />
             <p className="text-xs text-[#8a5a33]">
               Al publicar, la versión anterior queda inactiva. Según la política de cada proyecto,
               los inversores pueden tener que firmar de nuevo.
             </p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setEditing(false)} className="border border-[#1c3742]/30 px-4 py-2 text-sm">Cancelar</button>
+              <button onClick={() => setEditing(false)} className="border border-[#1c3742]/30 px-4 py-2 text-sm rounded-md">Cancelar</button>
               <button onClick={publish} disabled={busy || body.trim().length < 50 || title.trim().length < 2}
-                className="bg-[#1c3742] px-5 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40">
+                className="bg-[#1c3742] px-5 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40 rounded-md">
                 {busy ? 'Publicando…' : 'Publicar versión'}
               </button>
             </div>
           </div>
         ) : active ? (
-          <pre className="mt-4 max-h-72 overflow-y-auto whitespace-pre-wrap bg-[#faf9f5] p-4 font-montserrat text-xs leading-relaxed text-[#1c3742]/80">
+          <pre className="mt-4 max-h-72 overflow-y-auto whitespace-pre-wrap bg-[#faf9f5] p-4 font-montserrat text-xs leading-relaxed text-[#1c3742]/80 rounded-md">
             {active.bodyText}
           </pre>
         ) : null}
@@ -111,7 +111,7 @@ export default function AdminNda() {
         ) : (
           <ul className="max-h-72 space-y-1 overflow-auto pr-1 text-sm">
             {data.signatures.map((s) => (
-              <li key={s.id} className="flex items-center justify-between bg-[#faf9f5] px-3 py-2">
+              <li key={s.id} className="flex items-center justify-between bg-[#faf9f5] px-3 py-2 rounded-md">
                 <span>{s.signerFullName} <span className="text-xs text-[#1c3742]/40">· {s.email} · v{s.version} · {formatDate(s.signedAt)}</span></span>
                 <Badge value={s.status} />
               </li>
@@ -124,7 +124,7 @@ export default function AdminNda() {
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#1c3742]/50">Historial de versiones</h2>
         <ul className="space-y-1 text-sm">
           {data.versions.map((v) => (
-            <li key={v.id} className="flex items-center justify-between bg-[#faf9f5] px-3 py-2">
+            <li key={v.id} className="flex items-center justify-between bg-[#faf9f5] px-3 py-2 rounded-md">
               <span className="text-xs">v{v.version} — {v.title} · {formatDate(v.createdAt)}</span>
               {v.active && <Badge value="active" />}
             </li>

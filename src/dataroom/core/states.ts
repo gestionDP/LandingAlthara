@@ -9,6 +9,8 @@ export type InvestorStatus =
   | 'invitation_expired'
   | 'invitation_revoked'
   | 'registration_started'
+  | 'pending_validation'
+  | 'rejected'
   | 'active'
   | 'suspended'
   | 'disabled';
@@ -43,7 +45,9 @@ const INVESTOR_TRANSITIONS: Record<InvestorStatus, InvestorStatus[]> = {
   invited: ['invitation_expired', 'invitation_revoked', 'registration_started', 'invited', 'disabled'],
   invitation_expired: ['invited', 'disabled'],
   invitation_revoked: ['invited', 'disabled'],
-  registration_started: ['active', 'invited', 'disabled'],
+  registration_started: ['pending_validation', 'active', 'invited', 'disabled'],
+  pending_validation: ['active', 'rejected', 'disabled'],
+  rejected: ['pending_validation', 'disabled'],
   active: ['suspended', 'disabled'],
   suspended: ['active', 'disabled'],
   disabled: ['invited'], // re-enable requires a fresh invitation

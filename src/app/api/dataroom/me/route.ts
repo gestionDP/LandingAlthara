@@ -2,7 +2,8 @@
 import { z } from 'zod';
 import { and, desc, eq, isNull } from 'drizzle-orm';
 import { auth, clerkClient } from '@clerk/nextjs/server';
-import { requireInvestor, requireAdmin, errorResponse, AuthzError } from '@/dataroom/lib/authz';
+import { requireInvestor, requireLinkedInvestor, requireAdmin, requireReviewer, errorResponse, AuthzError } from '@/dataroom/lib/authz';
+import { getKycStatus } from '@/dataroom/services/kyc';
 import { listAuthorizedProjects } from '@/dataroom/services/projects';
 import { db, schema } from '@/dataroom/db/client';
 import { DATAROOM_TENANT } from '@/dataroom/config';
@@ -20,6 +21,12 @@ export async function GET() {
         try {
           await requireAdmin();
           return Response.json({ admin: true });
+        } catch { /* sigue */ }
+
+        // ¿Es revisor (abogado/fiscal)? → a su portal de visado.
+        try {
+          await requireReviewer();
+          return Response.json({ reviewer: true });
         } catch { /* sigue */ }
 
         // ¿Existe una ficha de inversor con el MISMO email pero sin vincular?
@@ -50,6 +57,13 @@ export async function GET() {
           }
         }
         throw err;
+      }
+      // Inversor vinculado pero pendiente de validación o rechazado (KYC):
+      // el front muestra la pantalla de KYC / estado.
+      if (err instanceof AuthzError && (err.code === 'account_pending_validation' || err.code === 'account_rejected')) {
+        const inv = await requireLinkedInvestor();
+        const k = await getKycStatus(inv);
+        return Response.json({ kyc: { state: inv.status, submitted: k.submitted, rejectionReason: k.rejectionReason } });
       }
       throw err;
     }
