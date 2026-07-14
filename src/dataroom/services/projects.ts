@@ -10,6 +10,8 @@ import { deriveNdaState, type NdaState, type ProjectStatus } from '../core/state
 import { writeAudit, type AuditActor } from '../lib/audit';
 import { sendTransactionalEmail } from '../lib/emails/send';
 import { AuthzError, type Investor } from '../lib/authz';
+import { DEFAULT_PROJECT_FOLDERS } from '../core/standard-folders.ts';
+export { DEFAULT_PROJECT_FOLDERS } from '../core/standard-folders.ts';
 
 const T = DATAROOM_TENANT;
 
@@ -55,27 +57,34 @@ export async function createProject(
     createdBy: actor.id ?? null,
   }).returning();
 
-  // Estructura de carpetas por defecto (spec ALT-RM): 0-1 = Nivel 1 (bienvenida
-  // y resumen, solo vista tras verificar identidad); 2-8 = Nivel 2 (requiere NDA).
-  const defaults: { name: string; level: number }[] = [
-    { name: '0. Bienvenida', level: 1 },
-    { name: '1. Resumen de la operación', level: 1 },
-    { name: '2. Información corporativa', level: 2 },
-    { name: '3. Información financiera', level: 2 },
-    { name: '4. Información legal', level: 2 },
-    { name: '5. Fiscal', level: 2 },
-    { name: '6. Due diligence', level: 2 },
-    { name: '7. Garantías y contratos', level: 2 },
-    { name: '8. Anexos', level: 2 },
-  ];
+  // Estructura de carpetas estándar por defecto.
   await db().insert(schema.documentCategories).values(
-    defaults.map((c, i) => ({
+    DEFAULT_PROJECT_FOLDERS.map((c, i) => ({
       tenant: T, projectId: project.id, name: c.name, slug: slugify(c.name), sortOrder: i, level: c.level,
     })),
   );
 
   await writeAudit({ tenant: T, actor, action: 'project.created', entityType: 'project', entityId: project.id });
   return project;
+}
+
+/** Crea las carpetas estándar que falten en un proyecto (idempotente). */
+export async function ensureStandardFolders(projectId: string, actor: AuditActor) {
+  const existing = await db().select({ name: schema.documentCategories.name })
+    .from(schema.documentCategories)
+    .where(and(eq(schema.documentCategories.tenant, T), eq(schema.documentCategories.projectId, projectId)));
+  const have = new Set(existing.map((c) => c.name.trim().toLowerCase()));
+  const missing = DEFAULT_PROJECT_FOLDERS
+    .map((c, i) => ({ ...c, sortOrder: i }))
+    .filter((c) => !have.has(c.name.trim().toLowerCase()));
+  if (missing.length === 0) return { created: 0 };
+  await db().insert(schema.documentCategories).values(
+    missing.map((c) => ({
+      tenant: T, projectId, name: c.name, slug: slugify(c.name), sortOrder: c.sortOrder, level: c.level,
+    })),
+  );
+  await writeAudit({ tenant: T, actor, action: 'project.updated', entityType: 'project', entityId: projectId, metadata: { restoredFolders: missing.map((m) => m.name) } });
+  return { created: missing.length };
 }
 
 export async function updateProject(

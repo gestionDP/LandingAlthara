@@ -15,6 +15,7 @@ import {
   KebabMenu, DocViewer, VisadoProgress, VisadoInline, type MenuItem,
 } from '../../../components/ui';
 import { useDataroomSearch, useToast } from '../../../DataroomShell';
+import { FOLDER_CONTENTS } from '@/dataroom/core/standard-folders';
 
 interface Detail {
   project: {
@@ -54,6 +55,8 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [dragOver, setDragOver] = useState(false);
   const [bulkBusy, setBulkBusy] = useState(false);
+  const [newFolder, setNewFolder] = useState<{ name: string; level: 1 | 2 } | null>(null);
+  const [folderBusy, setFolderBusy] = useState(false);
   const toast = useToast();
 
   const load = useCallback(async () => {
@@ -76,16 +79,26 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
     const cats = data?.categories ?? [];
     const q = (docSearch.trim() || globalSearch.trim()).toLowerCase();
     const searching = q.length > 0;
-    const catsWithDocs = cats
-      .filter((c) => allDocs.some((d) => d.categoryId === c.id))
-      .map((c) => ({ id: c.id, name: c.name, level: c.level, count: allDocs.filter((d) => d.categoryId === c.id).length }));
+    // Todas las carpetas (incluidas las vacías) con su progreso frente al
+    // contenido esperado del árbol estándar.
+    const allFolders = cats.map((c) => {
+      const count = allDocs.filter((d) => d.categoryId === c.id).length;
+      const expected = FOLDER_CONTENTS[c.name]?.length ?? null;
+      return { id: c.id, name: c.name, level: c.level, count, expected };
+    });
     const currentName = docFolder ? (cats.find((c) => c.id === docFolder)?.name ?? null) : null;
 
-    let folders: { id: string; name: string; count: number; level: number }[] = [];
+    // Progreso global del data room (solo carpetas estándar con contenido esperado).
+    const standard = allFolders.filter((f) => f.expected != null);
+    const expectedTotal = standard.reduce((s, f) => s + (f.expected ?? 0), 0);
+    const uploadedTotal = standard.reduce((s, f) => s + Math.min(f.count, f.expected ?? 0), 0);
+    const overall = expectedTotal > 0 ? Math.round((uploadedTotal / expectedTotal) * 100) : 0;
+
+    let folders: { id: string; name: string; count: number; level: number; expected: number | null }[] = [];
     let rawDocs = allDocs;
     if (searching) rawDocs = allDocs.filter((d) => d.title.toLowerCase().includes(q));
     else if (docFolder) rawDocs = allDocs.filter((d) => d.categoryId === docFolder);
-    else { folders = catsWithDocs; rawDocs = allDocs.filter((d) => !d.categoryId); }
+    else { folders = allFolders; rawDocs = allDocs.filter((d) => !d.categoryId); }
 
     const docs = [...rawDocs].sort((a, b) => {
       const av = sort.key === 'name' ? a.title.toLowerCase() : sort.key === 'status' ? a.status : a.updatedAt;
@@ -93,7 +106,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
       const cmp = av < bv ? -1 : av > bv ? 1 : 0;
       return sort.dir === 'asc' ? cmp : -cmp;
     });
-    return { folders, docs, currentName: searching ? null : currentName };
+    return { folders, docs, currentName: searching ? null : currentName, overall, expectedTotal, uploadedTotal };
   }, [data, docSearch, globalSearch, docFolder, sort]);
 
   async function patch(body: Record<string, unknown>, okMsg = 'Guardado.') {
@@ -171,13 +184,28 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
     toast(`${ok} de ${ids.length} documento(s) ${kind === 'delete' ? 'eliminados' : 'archivados'}.`, ok === ids.length ? 'ok' : 'error');
   }
 
-  async function createFolder() {
-    const name = window.prompt('Nombre de la nueva carpeta:');
-    if (!name || !name.trim()) return;
-    // Aceptar = Nivel 1 (bienvenida, solo vista); Cancelar = Nivel 2 (confidencial, NDA).
-    const level = window.confirm('¿Carpeta de NIVEL 1 (bienvenida/resumen, visible tras verificar identidad, solo vista)?\n\nAceptar = Nivel 1 · Cancelar = Nivel 2 (confidencial, requiere NDA)') ? 1 : 2;
-    const res = await fetchJson(`/api/dataroom/admin/projects/${id}/categories`, { method: 'POST', body: JSON.stringify({ name: name.trim(), level }) });
-    if (res.ok) { toast(`Carpeta creada (Nivel ${level}).`); load(); } else toast('No se pudo crear la carpeta.', 'error');
+  async function submitCreateFolder() {
+    if (!newFolder || !newFolder.name.trim()) return;
+    setFolderBusy(true);
+    const res = await fetchJson(`/api/dataroom/admin/projects/${id}/categories`, {
+      method: 'POST', body: JSON.stringify({ name: newFolder.name.trim(), level: newFolder.level }),
+    });
+    setFolderBusy(false);
+    if (res.ok) { toast(`Carpeta creada (Nivel ${newFolder.level}).`); setNewFolder(null); load(); }
+    else toast('No se pudo crear la carpeta.', 'error');
+  }
+
+  async function restoreStandardFolders() {
+    setFolderBusy(true);
+    const res = await fetchJson<{ created: number }>(`/api/dataroom/admin/projects/${id}/categories`, {
+      method: 'POST', body: JSON.stringify({ restoreStandard: true }),
+    });
+    setFolderBusy(false);
+    if (res.ok) {
+      const n = res.data?.created ?? 0;
+      toast(n > 0 ? `Estructura estándar restaurada (${n} carpeta${n > 1 ? 's' : ''}).` : 'La estructura estándar ya estaba completa.');
+      load();
+    } else toast('No se pudo restaurar la estructura.', 'error');
   }
 
   async function setFolderLevel(catId: string, level: number) {
@@ -205,6 +233,10 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
 
   async function uploadDropped(files: File[]) {
     if (files.length === 0) return;
+    if (!docFolder) {
+      toast('Abra primero una carpeta y suelte los archivos dentro (así quedan ordenados).', 'error');
+      return;
+    }
     setBulkBusy(true);
     const form = new FormData();
     for (const f of files) form.append('files', f);
@@ -443,7 +475,8 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
       {/* Documentos: subida + biblioteca */}
       {tab === 'docs' && (
       <div className="space-y-5">
-      <UploadPanel projectId={id} categories={data.categories} investors={activeInvestors} onUploaded={load} />
+      <UploadPanel projectId={id} categories={data.categories} investors={activeInvestors}
+        currentFolderId={docFolder} currentFolderName={docNav.currentName} onUploaded={load} />
 
       {/* Biblioteca de documentos — estilo SharePoint (carpetas navegables) */}
       <section
@@ -476,7 +509,12 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
             </div>
             <div className="flex items-center gap-2">
               {data.documents.length > 0 && <LibrarySearch value={docSearch} onChange={setDocSearch} />}
-              <button onClick={createFolder} className="whitespace-nowrap border border-[#1c3742]/25 px-3 py-2 text-xs font-medium hover:bg-[#1c3742]/5 rounded-md">
+              <button onClick={restoreStandardFolders} disabled={folderBusy}
+                title="Crea las carpetas estándar (0. Bienvenida … 8. Anexos) que falten en este proyecto."
+                className="whitespace-nowrap border border-[#1c3742]/25 px-3 py-2 text-xs font-medium hover:bg-[#1c3742]/5 rounded-md disabled:opacity-40">
+                Restaurar estándar
+              </button>
+              <button onClick={() => setNewFolder({ name: '', level: 2 })} className="whitespace-nowrap border border-[#1c3742]/25 px-3 py-2 text-xs font-medium hover:bg-[#1c3742]/5 rounded-md">
                 + Carpeta
               </button>
               <ViewToggle view={docView} onChange={setDocView} />
@@ -484,19 +522,52 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
           </div>
         )}
 
-        {data.documents.length === 0 ? (
-          <p className="p-4 text-sm text-[#1c3742]/50">Todavía no hay documentos. Súbalos con el panel de arriba.</p>
+        {/* Progreso global del data room (en la raíz) */}
+        {!docNav.currentName && !docSearch && docNav.expectedTotal > 0 && (
+          <div className="border-b border-[#1c3742]/10 px-4 py-3">
+            <div className="mb-1 flex items-center justify-between text-[11px] text-[#1c3742]/60">
+              <span>Completitud del data room (según el árbol estándar)</span>
+              <span className="font-medium text-[#1c3742]">{docNav.overall}% · {docNav.uploadedTotal}/{docNav.expectedTotal} elementos</span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-[#1c3742]/10">
+              <div className="h-full rounded-full bg-[#c08552] transition-all" style={{ width: `${docNav.overall}%` }} />
+            </div>
+          </div>
+        )}
+        {/* Contenido esperado de la carpeta abierta (guía del spec) */}
+        {docNav.currentName && FOLDER_CONTENTS[docNav.currentName] && (
+          <div className="border-b border-[#1c3742]/10 bg-[#faf9f5] px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-[#1c3742]/55">Contenido esperado en esta carpeta</p>
+            <ul className="mt-1.5 grid gap-1 sm:grid-cols-2">
+              {FOLDER_CONTENTS[docNav.currentName].map((item, i) => (
+                <li key={i} className="flex items-start gap-1.5 text-xs text-[#1c3742]/70">
+                  <span className="mt-0.5 text-[#c08552]">•</span>{item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {data.categories.length === 0 && data.documents.length === 0 ? (
+          <p className="p-4 text-sm text-[#1c3742]/50">Todavía no hay carpetas ni documentos. Use «Restaurar estándar» para crear el árbol.</p>
         ) : docNav.folders.length === 0 && docNav.docs.length === 0 ? (
-          <p className="p-4 text-sm text-[#1c3742]/50">{docSearch ? 'Sin resultados para la búsqueda.' : 'Esta carpeta está vacía.'}</p>
+          <p className="p-4 text-sm text-[#1c3742]/50">{docSearch ? 'Sin resultados para la búsqueda.' : 'Esta carpeta está vacía. Súbale documentos con el panel de arriba.'}</p>
         ) : docView === 'grid' ? (
           <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 lg:grid-cols-4">
             {docNav.folders.map((f) => (
               <div key={f.id} className="flex items-center gap-2 border border-[#1c3742]/12 bg-white p-3 transition-colors hover:bg-[#1c3742]/[0.03] rounded-lg">
                 <button type="button" onClick={() => setDocFolder(f.id)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
                   <FolderIconFilled className="h-10 w-10 shrink-0" />
-                  <span className="min-w-0">
+                  <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium text-[#1c3742]">{f.name}</span>
-                    <span className="block text-[11px] text-[#1c3742]/45">{f.count} elemento(s) · Nivel {f.level}</span>
+                    <span className="block text-[11px] text-[#1c3742]/45">
+                      {f.count}{f.expected != null ? `/${f.expected}` : ''} elemento(s) · Nivel {f.level}
+                    </span>
+                    {f.expected != null && (
+                      <span className="mt-1 block h-1 w-full overflow-hidden rounded-full bg-[#1c3742]/10">
+                        <span className="block h-full rounded-full bg-[#c08552]" style={{ width: `${Math.min(100, Math.round((f.count / Math.max(f.expected, 1)) * 100))}%` }} />
+                      </span>
+                    )}
                   </span>
                 </button>
                 <KebabMenu items={[
@@ -538,7 +609,12 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
                       <div className="flex items-center gap-3">
                         <FolderIconFilled className="h-8 w-8 shrink-0" />
                         <span className="truncate font-medium text-[#1c3742] hover:underline">{f.name}</span>
-                        <span className="text-xs text-[#1c3742]/40">{f.count}</span>
+                        <span className="text-xs text-[#1c3742]/40">{f.count}{f.expected != null ? `/${f.expected}` : ''}</span>
+                        {f.expected != null && (
+                          <span className="hidden h-1.5 w-20 overflow-hidden rounded-full bg-[#1c3742]/10 sm:block">
+                            <span className="block h-full rounded-full bg-[#c08552]" style={{ width: `${Math.min(100, Math.round((f.count / Math.max(f.expected, 1)) * 100))}%` }} />
+                          </span>
+                        )}
                         <span className="text-[10px] uppercase tracking-wider text-[#c08552]">Nivel {f.level}</span>
                       </div>
                     </td>
@@ -605,6 +681,54 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
       )}
       {detailsDoc && (
         <DetailsPanel doc={detailsDoc} onClose={() => setDetailsDoc(null)} onChanged={load} />
+      )}
+      {newFolder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#102027]/50 p-4" onClick={() => setNewFolder(null)}>
+          <div className="w-full max-w-md border border-[#1c3742]/20 bg-white rounded-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b border-[#1c3742]/15 px-5 py-4">
+              <h2 className="font-playfair text-lg leading-tight">Nueva carpeta</h2>
+              <button onClick={() => setNewFolder(null)} aria-label="Cerrar" className="text-[#1c3742]/60 hover:text-[#1c3742]">✕</button>
+            </div>
+            <div className="space-y-4 p-5">
+              <p className="rounded-md border border-[#1c3742]/10 bg-[#faf9f5] px-3 py-2 text-xs text-[#1c3742]/65">
+                El <strong>árbol estándar</strong> (0 · Bienvenida … 8 · Q&amp;A) se crea solo; no hace falta
+                escribirlo. Si falta alguna, use <strong>«Restaurar estándar»</strong>. Cree una carpeta aquí
+                solo para <strong>subcarpetas o extras</strong> (p. ej. dentro de «4 · Colateral», una por
+                proyecto: Cala Gamba, Manacor, Sa Pobla, Sant Ignasi).
+              </p>
+              <div>
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-[#1c3742]/60">Nombre de la carpeta</label>
+                <input
+                  autoFocus
+                  value={newFolder.name}
+                  onChange={(e) => setNewFolder({ ...newFolder, name: e.target.value })}
+                  onKeyDown={(e) => { if (e.key === 'Enter') submitCreateFolder(); }}
+                  placeholder="Ej.: 9. Otros"
+                  className="w-full rounded-md border border-[#1c3742]/25 bg-white px-3 py-2 text-sm focus:border-[#1c3742]/50 focus:outline-none"
+                />
+              </div>
+              <div>
+                <span className="mb-1 block text-xs font-medium uppercase tracking-wider text-[#1c3742]/60">Nivel de acceso</span>
+                <div className="space-y-2">
+                  <label className="flex cursor-pointer items-start gap-2 rounded-md border border-[#1c3742]/15 p-3 text-sm">
+                    <input type="radio" name="level" checked={newFolder.level === 1} onChange={() => setNewFolder({ ...newFolder, level: 1 })} className="mt-0.5" />
+                    <span><strong>Nivel 1</strong> — Bienvenida / resumen. Visible tras verificar identidad, <strong>sin</strong> NDA, solo lectura.</span>
+                  </label>
+                  <label className="flex cursor-pointer items-start gap-2 rounded-md border border-[#1c3742]/15 p-3 text-sm">
+                    <input type="radio" name="level" checked={newFolder.level === 2} onChange={() => setNewFolder({ ...newFolder, level: 2 })} className="mt-0.5" />
+                    <span><strong>Nivel 2</strong> — Confidencial. <strong>Requiere NDA</strong> firmado para verse.</span>
+                  </label>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-1">
+                <button onClick={() => setNewFolder(null)} disabled={folderBusy} className="rounded-md border border-[#1c3742]/25 px-4 py-2 text-xs font-medium text-[#1c3742] hover:bg-[#1c3742]/5 disabled:opacity-40">Cancelar</button>
+                <button onClick={submitCreateFolder} disabled={folderBusy || !newFolder.name.trim()} className="rounded-md bg-[#1c3742] px-4 py-2 text-xs font-semibold text-[#e6e2d7] hover:bg-[#c08552] disabled:opacity-40">
+                  {folderBusy ? 'Creando…' : 'Crear carpeta'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
       {movingDoc && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#102027]/50 p-4" onClick={() => setMovingDoc(null)}>
@@ -1092,10 +1216,12 @@ function AssignInvestor({ projectId, allInvestors, assigned, onChanged, onError 
   );
 }
 
-function UploadPanel({ projectId, categories, investors, onUploaded }: {
+function UploadPanel({ projectId, categories, investors, currentFolderId, currentFolderName, onUploaded }: {
   projectId: string;
   categories: { id: string; name: string }[];
   investors: Detail['investors'];
+  currentFolderId: string | null;
+  currentFolderName: string | null;
   onUploaded: () => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -1104,12 +1230,20 @@ function UploadPanel({ projectId, categories, investors, onUploaded }: {
     categoryId: '', confidentiality: 'sensitive', downloadable: true, requiresNda: true,
     publish: true, notify: false, restrict: false,
   });
+  // El destino sigue a la carpeta que el admin tiene abierta abajo (como en Drive).
+  useEffect(() => {
+    if (currentFolderId) setMeta((m) => ({ ...m, categoryId: currentFolderId }));
+  }, [currentFolderId]);
   const [selectedInvestors, setSelectedInvestors] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<string | null>(null);
 
   async function upload() {
     if (files.length === 0) return;
+    if (!meta.categoryId) {
+      setResult('Elija una carpeta antes de subir (así la documentación queda ordenada).');
+      return;
+    }
     setBusy(true);
     setResult(null);
     const form = new FormData();
@@ -1145,7 +1279,16 @@ function UploadPanel({ projectId, categories, investors, onUploaded }: {
   const check = 'flex items-center gap-2 text-xs text-[#1c3742]/70';
   return (
     <section className="border border-[#1c3742]/10 bg-white p-5 rounded-lg">
-      <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#1c3742]/50">Subir documentos</h2>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1c3742]/50">Subir documentos</h2>
+        {currentFolderName ? (
+          <span className="rounded-full border border-[#1c3742]/15 bg-[#1c3742]/5 px-2.5 py-0.5 text-[11px] text-[#1c3742]/70">
+            Subiendo a: <strong>{currentFolderName}</strong>
+          </span>
+        ) : (
+          <span className="text-[11px] text-[#c08552]">Entre en una carpeta (abajo) o elija una para fijar el destino.</span>
+        )}
+      </div>
       <div className="flex flex-wrap items-center gap-3">
         <input
           ref={fileRef}
@@ -1156,8 +1299,9 @@ function UploadPanel({ projectId, categories, investors, onUploaded }: {
           className="text-xs file:mr-3 file:rounded-md file:border-0 file:bg-[#1c3742] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[#e6e2d7]"
         />
         <select value={meta.categoryId} onChange={(e) => setMeta({ ...meta, categoryId: e.target.value })}
-          className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1.5 text-xs rounded-md">
-          <option value="">Categoría…</option>
+          title="Carpeta donde se guardará el documento. Es obligatorio para mantener el orden."
+          className={`border bg-[#faf9f5] px-2 py-1.5 text-xs rounded-md ${meta.categoryId ? 'border-[#1c3742]/25' : 'border-[#c08552]/60'}`}>
+          <option value="">Elegir carpeta… *</option>
           {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
         <select value={meta.confidentiality} onChange={(e) => setMeta({ ...meta, confidentiality: e.target.value, requiresNda: e.target.value === 'sensitive' })}
@@ -1219,7 +1363,8 @@ function UploadPanel({ projectId, categories, investors, onUploaded }: {
         </p>
       )}
       {result && <p className="mt-2 text-xs font-medium text-[#8a5a33]">{result}</p>}
-      <button onClick={upload} disabled={busy || files.length === 0}
+      <button onClick={upload} disabled={busy || files.length === 0 || !meta.categoryId}
+        title={!meta.categoryId ? 'Elija una carpeta primero' : undefined}
         className="mt-3 bg-[#1c3742] px-4 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40 rounded-md">
         {busy ? 'Subiendo…' : 'Subir'}
       </button>
