@@ -15,14 +15,16 @@
     "microcopy": {
       "private": "Canal privado",
       "curated": "Acceso curado"
-    }
+    },
+    "portal": "Portal de inversores"
   },
   "hero": {
     "title": "Operamos en la capa no visible",
     "subtitle": "Inteligencia privada para operadores",
     "ctaPrimary": "Solicitar acceso",
     "ctaSecondary": "Ver cómo trabajamos",
-    "microcopy": "Solo invitación · Cupos limitados"
+    "microcopy": "Solo invitación · Cupos limitados",
+    "ctaPortal": "Portal de inversores"
   },
   "editorialCollage": {
     "label": "FRAGMENTOS SELECCIONADOS",
@@ -31,14 +33,46 @@
       "line2": "El valor está debajo: contexto, timing y ejecución"
     },
     "tiles": [
-      { "alt": "Fragmento 1", "phrase": "Leemos señales", "tag": "SEÑAL" },
-      { "alt": "Fragmento 2", "phrase": "Diseñamos rutas privadas", "tag": "RUTA" },
-      { "alt": "Fragmento 3", "phrase": "Protegemos la ventaja", "tag": "VENTAJA" },
-      { "alt": "Fragmento 4", "phrase": "La privacidad es operativa", "tag": "PRIVACIDAD" },
-      { "alt": "Fragmento 5", "phrase": "De insight a acción", "tag": "EJECUCIÓN" },
-      { "alt": "Fragmento 6", "phrase": "Timing > narrativa", "tag": "TIMING" },
-      { "alt": "Fragmento 7", "phrase": "Filtramos ruido · Conservamos patrones", "tag": "FILTRO" },
-      { "alt": "Fragmento 8", "phrase": "Lo importante no se anuncia", "tag": "DISCRECIÓN" }
+      {
+        "alt": "Fragmento 1",
+        "phrase": "Leemos señales",
+        "tag": "SEÑAL"
+      },
+      {
+        "alt": "Fragmento 2",
+        "phrase": "Diseñamos rutas privadas",
+        "tag": "RUTA"
+      },
+      {
+        "alt": "Fragmento 3",
+        "phrase": "Protegemos la ventaja",
+        "tag": "VENTAJA"
+      },
+      {
+        "alt": "Fragmento 4",
+        "phrase": "La privacidad es operativa",
+        "tag": "PRIVACIDAD"
+      },
+      {
+        "alt": "Fragmento 5",
+        "phrase": "De insight a acción",
+        "tag": "EJECUCIÓN"
+      },
+      {
+        "alt": "Fragmento 6",
+        "phrase": "Timing > narrativa",
+        "tag": "TIMING"
+      },
+      {
+        "alt": "Fragmento 7",
+        "phrase": "Filtramos ruido · Conservamos patrones",
+        "tag": "FILTRO"
+      },
+      {
+        "alt": "Fragmento 8",
+        "phrase": "Lo importante no se anuncia",
+        "tag": "DISCRECIÓN"
+      }
     ]
   },
   "cursor": {
@@ -78,10 +112,22 @@
   },
   "trackRecord": {
     "label": "TRACK RECORD (SELECCIÓN)",
-    "metric1": { "value": "50+", "label": "Mercados analizados" },
-    "metric2": { "value": "200+", "label": "Señales monitorizadas" },
-    "metric3": { "value": "150+", "label": "Dossiers y briefings" },
-    "metric4": { "value": "30+", "label": "Operadores apoyados" },
+    "metric1": {
+      "value": "50+",
+      "label": "Mercados analizados"
+    },
+    "metric2": {
+      "value": "200+",
+      "label": "Señales monitorizadas"
+    },
+    "metric3": {
+      "value": "150+",
+      "label": "Dossiers y briefings"
+    },
+    "metric4": {
+      "value": "30+",
+      "label": "Operadores apoyados"
+    },
     "footnote": "No publicamos lo que protegemos"
   },
   "manifesto": {
@@ -200,7 +246,8 @@
       "line2": "Cupo limitado · Canal privado"
     },
     "cta": "Solicitar acceso",
-    "microcopy": "Sin spam · Sin lista pública · Sin ruido"
+    "microcopy": "Sin spam · Sin lista pública · Sin ruido",
+    "portal": "¿Ya es inversor? Acceda a su portal privado"
   },
   "footer": {
     "mantra": "Lo grande no se anuncia · Se coordina",
@@ -208,7 +255,8 @@
       "title": "Enlaces rápidos",
       "system": "Sistema",
       "process": "Proceso",
-      "access": "Acceso"
+      "access": "Acceso",
+      "portal": "Portal de inversores"
     },
     "contact": {
       "title": "Contacto",
@@ -230,7 +278,9 @@
       "message": "Mensaje",
       "userType": "Tipo de usuario",
       "submit": "Enviar solicitud",
-      "submitting": "Enviando..."
+      "submitting": "Enviando...",
+      "investorType": "TIPO DE INVERSIÓN",
+      "investorTypePlaceholder": "Seleccione su perfil…"
     },
     "messages": {
       "success": "Perfecto. Te contactaremos en privado.",
@@ -242,5 +292,165 @@
     "getStarted": "Comenzar",
     "contactUs": "Contáctanos",
     "readMore": "Leer más"
+  },
+  "landing": {
+    "nav": {
+      "thesis": "Tesis",
+      "layers": "Qué hacemos",
+      "method": "Método",
+      "portal": "Portal",
+      "portalCta": "Portal de inversores",
+      "access": "Solicitar acceso"
+    },
+    "hero": {
+      "wordmarkSub": "Inversión inmobiliaria off-market",
+      "tagline": "El mejor inmueble no está en los portales.",
+      "sub": "Acceso privado, análisis verificado y confidencialidad total.",
+      "cta1": "Solicitar acceso",
+      "cta2": "Portal de inversores",
+      "stats": [
+        {
+          "k": "Línea de negocio · últimos 24 meses",
+          "v": "+20M€"
+        },
+        {
+          "k": "Activos en gestión de proyecto",
+          "v": "108"
+        },
+        {
+          "k": "ROI anualizado medio por operación",
+          "v": "35%"
+        }
+      ]
+    },
+    "marquee": {
+      "w1": "OFF-MARKET",
+      "w2": "CONFIDENCIAL",
+      "w3": "SEÑALES",
+      "w4": "DATA ROOM",
+      "w5": "INVERSIÓN"
+    },
+    "thesis": {
+      "label": "La tesis",
+      "line1": "Lo bueno no se anuncia",
+      "line2": "se comparte",
+      "line3": "en privado",
+      "p1": "Las operaciones con más recorrido cambian de manos antes de llegar a ningún portal.",
+      "p2": "Nuestro trabajo es que usted esté en esa conversación.",
+      "quote": "Discreción no es opacidad. Es método."
+    },
+    "layers": {
+      "title": "Qué hacemos",
+      "intro": "Cuatro pasos entre una señal y una firma.",
+      "items": [
+        {
+          "title": "Señales",
+          "text": "Deuda, sucesiones y carteras que exigen silencio. Detectamos la oportunidad en origen."
+        },
+        {
+          "title": "Análisis",
+          "text": "Catastro, mercado y comparables reales. Un dossier verificable."
+        },
+        {
+          "title": "Acceso",
+          "text": "Cada activo, solo ante los mandatos que encajan."
+        },
+        {
+          "title": "Cierre",
+          "text": "NDA, due diligence y firma. Le acompañamos hasta el final."
+        }
+      ]
+    },
+    "method": {
+      "title": "Método",
+      "intro": "Lento de anunciar. Rápido de ejecutar.",
+      "steps": [
+        {
+          "title": "Originación",
+          "text": "La señal llega por red propia, nunca por un portal."
+        },
+        {
+          "title": "Verificación",
+          "text": "Titularidad, cargas y estado real, contrastados con fuentes oficiales."
+        },
+        {
+          "title": "Valoración",
+          "text": "El precio se defiende con datos de transacción, no con adjetivos."
+        },
+        {
+          "title": "Matching",
+          "text": "Menos ojos sobre el activo, más probabilidad de cierre."
+        },
+        {
+          "title": "Ejecución",
+          "text": "Data room, NDA y firma. Todo trazado."
+        }
+      ],
+      "cta": "Solicitar acceso"
+    },
+    "portal": {
+      "label": "Portal privado",
+      "title1": "Su data room",
+      "title2": "de inversión",
+      "intro": "Cada proyecto tiene su biblioteca de documentos verificados, protegida por NDA y con trazabilidad completa.",
+      "features": [
+        {
+          "title": "Solo por invitación",
+          "text": "Cada cuenta la abre Althara. Sin registro público."
+        },
+        {
+          "title": "NDA digital",
+          "text": "Una firma desbloquea la documentación confidencial."
+        },
+        {
+          "title": "Documentos protegidos",
+          "text": "Enlaces temporales y marca de agua personal en cada descarga."
+        },
+        {
+          "title": "Todo trazado",
+          "text": "Cada vista y descarga queda registrada."
+        }
+      ],
+      "cta": "Entrar al portal",
+      "note": "¿Sin invitación? Solicite acceso y evaluaremos su mandato.",
+      "cardLabel": "Proyecto confidencial",
+      "cardTitle": "Dossier · Due diligence · NDA"
+    },
+    "finalCta": {
+      "label": "Acceso",
+      "line1": "Hablemos",
+      "line2": "en privado",
+      "sub": "Cuéntenos su mandato. Si hay encaje, le abrimos la puerta.",
+      "cta1": "Solicitar acceso",
+      "cta2": "Ya soy inversor"
+    },
+    "footer": {
+      "mantra": "El mercado visible es la punta del iceberg.",
+      "thesis": "Tesis",
+      "layers": "Qué hacemos",
+      "method": "Método",
+      "portal": "Portal de inversores",
+      "rights": "Todos los derechos reservados.",
+      "confidential": "Canal privado · Solo invitación"
+    },
+    "divider": {
+      "line1": "La privacidad es operativa",
+      "line2": "Del contexto a la ejecución"
+    },
+    "segments": {
+      "label": "Entornos seleccionados",
+      "title": "Con quién trabajamos",
+      "intro": "Seis perfiles de inversión con los que trabajamos. Elija el suyo y cuéntenos su mandato.",
+      "cta": "Solicitar acceso",
+      "footnote": "Los nombres se comparten en privado.",
+      "items": [
+        "Grupos de hospitality",
+        "Operadores inmobiliarios",
+        "Marcas de consumo",
+        "Inversión privada",
+        "Redes de agencias",
+        "Family offices"
+      ]
+    }
   }
 }

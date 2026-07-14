@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import ContactModal from './ContactModal';
 import { useState } from 'react';
@@ -101,7 +102,7 @@ export default function FinalCta() {
               viewport={viewport}
               variants={itemReveal}
               transition={transition}
-              className="flex justify-center lg:justify-start"
+              className="flex flex-col items-center gap-6 lg:items-start"
             >
               <motion.div
                 whileHover={!prefersReducedMotion ? { scale: 1.02 } : undefined}
@@ -115,6 +116,14 @@ export default function FinalCta() {
                   {t('cta')}
                 </Button>
               </motion.div>
+
+              <Link
+                href="/dataroom"
+                className="group inline-flex items-center gap-2 text-sm font-light tracking-editorial text-[#e6e2d7]/60 transition-colors duration-200 hover:text-[#e6e2d7]"
+              >
+                {t('portal')}
+                <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+              </Link>
             </motion.div>
           </div>
         </div>

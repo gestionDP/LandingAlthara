@@ -32,7 +32,7 @@ export default function LanguageSwitcher({
           size="sm"
           className={`h-auto p-2 bg-transparent hover:bg-transparent text-xs font-medium transition-colors ${
             isScrolled
-              ? "text-[#e6e2d7] hover:text-[#e6e2d7]/80"
+              ? "text-[#1c3742] hover:text-[#1c3742]/80"
               : "text-[#e6e2d7] hover:text-[#e6e2d7]/80"
           }`}
         >

@@ -93,6 +93,13 @@ export default function Navbar() {
 
               <LanguageSwitcher isScrolled={isScrolled} />
 
+              <Link
+                href="/dataroom"
+                className="text-sm font-light tracking-editorial text-[#e6e2d7]/70 transition-colors duration-200 hover:text-[#e6e2d7]"
+              >
+                {t('portal')}
+              </Link>
+
               <Button
                 onClick={openModal}
                 className="h-10 px-6 font-light tracking-editorial text-sm bg-transparent text-[#e6e2d7] border border-[#e6e2d7]/30 hover:bg-[#e6e2d7]/10 hover:border-[#e6e2d7]/50 transition-all duration-200"
@@ -150,6 +157,23 @@ export default function Navbar() {
                   >
                     {t('requestAccess')}
                   </Button>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: durations.overlay,
+                    delay: (navLinks.length + 0.5) * 0.08,
+                  }}
+                >
+                  <Link
+                    href="/dataroom"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-sm font-light tracking-editorial text-[#e6e2d7]/80 underline underline-offset-8 decoration-[#e6e2d7]/30 hover:text-[#e6e2d7]"
+                  >
+                    {t('portal')}
+                  </Link>
                 </motion.div>
 
                 <motion.div

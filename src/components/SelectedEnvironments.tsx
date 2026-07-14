@@ -301,7 +301,7 @@ export default function SelectedEnvironments() {
 
                     <div className="pointer-events-none absolute top-3 right-3 sm:top-4 sm:right-4">
                       <motion.div
-                        className="h-2 w-2 rounded-full bg-white"
+                        className="h-2 w-2 bg-white"
                         animate={{ opacity: isActive ? 0.7 : 0.2 }}
                         transition={{ duration: T.dot, ease: EASE_OUT }}
                       />

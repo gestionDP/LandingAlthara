@@ -16,14 +16,26 @@ const inputClass =
 interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Tipo de inversión preseleccionado (al venir de una tarjeta de segmento) */
+  initialType?: string;
 }
 
-export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
+/** Las 6 opciones de tipo de inversión (mismas que la sección de segmentos). */
+export const INVESTOR_TYPES = [0, 1, 2, 3, 4, 5] as const;
+
+export default function ContactModal({ isOpen, onClose, initialType }: ContactModalProps) {
   const t = useTranslations('contactModal');
+  const tSeg = useTranslations('landing.segments');
   const [formData, setFormData] = useState<ContactFormData>({
     email: '',
     phone: '',
+    investorType: initialType ?? '',
   });
+
+  // Si abren el modal desde otra tarjeta, refrescar la preselección.
+  useEffect(() => {
+    if (isOpen) setFormData((f) => ({ ...f, investorType: initialType ?? f.investorType ?? '' }));
+  }, [isOpen, initialType]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [isMobile, setIsMobile] = useState(false);
@@ -42,7 +54,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     const result = await contactService.submitContactForm(formData);
     if (result.success) {
       setSubmitStatus('success');
-      setFormData({ email: '', phone: '' });
+      setFormData({ email: '', phone: '', investorType: '' });
       setTimeout(() => {
         onClose();
         setSubmitStatus('idle');
@@ -92,6 +104,28 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
           />
         </div>
 
+        <div className="space-y-1">
+          <p className="text-xs tracking-[0.28em] text-[#e6e2d7]/50 font-light">
+            {t('form.investorType')}
+          </p>
+          <select
+            name="investorType"
+            value={formData.investorType ?? ''}
+            onChange={handleChange}
+            required
+            className={`${inputClass} appearance-none bg-[#102027] [&>option]:bg-[#102027]`}
+          >
+            <option value="" disabled>
+              {t('form.investorTypePlaceholder')}
+            </option>
+            {INVESTOR_TYPES.map((i) => (
+              <option key={i} value={tSeg(`items.${i}`)}>
+                {tSeg(`items.${i}`)}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <AnimatePresence mode="wait">
           {submitStatus === 'success' && (
             <motion.div
@@ -123,7 +157,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-12 rounded-none font-light tracking-editorial text-sm bg-[#e6e2d7] text-[#0a0a0a] hover:bg-[#e6e2d7]/90 border-0 transition-colors"
+            className="w-full h-12 rounded-none font-light tracking-editorial text-sm bg-[#e6e2d7] text-[#102027] hover:bg-[#e6e2d7]/90 border-0 transition-colors"
           >
             {isSubmitting ? t('form.submitting') : t('form.submit')}
           </Button>
@@ -135,7 +169,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   if (isMobile) {
     return (
       <BottomSheet open={isOpen} onOpenChange={onClose}>
-        <BottomSheetContent className="bg-[#0a0a0a] border-[#e6e2d7]/10 pb-10 pt-8 px-6">
+        <BottomSheetContent className="bg-[#102027] border-[#e6e2d7]/10 pb-10 pt-8 px-6">
           <p className="text-xs tracking-extreme-editorial text-[#e6e2d7]/60 font-light mb-6">
             SOLICITUD
           </p>
@@ -148,7 +182,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-4xl w-full max-h-[90vh] overflow-hidden p-0 gap-0 border border-[#e6e2d7]/15 bg-[#0a0a0a] [&>button]:text-[#e6e2d7] [&>button]:opacity-70 [&>button]:hover:opacity-100 [&>button]:ring-offset-[#0a0a0a] [&>button]:focus-visible:ring-[#e6e2d7]/40"
+        className="max-w-4xl w-full max-h-[90vh] overflow-hidden p-0 gap-0 border border-[#e6e2d7]/15 bg-[#102027] [&>button]:text-[#e6e2d7] [&>button]:opacity-70 [&>button]:hover:opacity-100 [&>button]:ring-offset-[#102027] [&>button]:focus-visible:ring-[#e6e2d7]/40"
         aria-describedby={undefined}
       >
         <DialogTitle className="sr-only">{t('title')}</DialogTitle>
@@ -162,7 +196,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
               className="object-cover"
               sizes="(min-width: 1024px) 50vw, 100vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/90 via-[#0a0a0a]/40 to-[#0a0a0a]/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#102027]/90 via-[#102027]/40 to-[#102027]/20" />
             <div className="absolute inset-0 flex items-end p-8 lg:p-10">
               <div className="space-y-3">
               
@@ -177,7 +211,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
           </div>
 
           {/* Panel derecho: formulario */}
-          <div className="flex flex-col justify-center p-8 lg:p-10 lg:pl-12 bg-[#0a0a0a] border-t lg:border-t-0 lg:border-l border-[#e6e2d7]/10">
+          <div className="flex flex-col justify-center p-8 lg:p-10 lg:pl-12 bg-[#102027] border-t lg:border-t-0 lg:border-l border-[#e6e2d7]/10">
           
             <FormContent showLogo />
           </div>

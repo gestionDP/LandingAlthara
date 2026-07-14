@@ -1,11 +1,28 @@
 @import 'tailwindcss';
 
-* {
-  cursor: auto;
+/* Cursor de puntero en elementos interactivos (botones, enlaces, selects…). */
+button:not(:disabled),
+[role='button'],
+a[href],
+summary,
+select,
+.cursor-pointer {
+  cursor: pointer;
 }
 
-body {
-  cursor: auto;
+/* Neutraliza el amarillo del autocompletado de Chrome/WebKit en los inputs.
+   El truco de la transición larguísima impide que el navegador pinte su fondo
+   amarillo; el texto conserva el color heredado del contenedor. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: currentColor;
+  caret-color: currentColor;
+  transition:
+    background-color 600000s 0s,
+    color 600000s 0s;
 }
 
 @theme {
@@ -36,7 +53,96 @@ body {
   --color-input: #d9dad7;
   --color-ring: #1c3742;
 
-  --radius: 0.5rem;
+  --color-althara-bronze: #c08552;
+
+  --radius: 0;
+}
+
+/* ============ Landing 2.0 — sistema editorial (estilo Swiss Brut) ============ */
+
+.container-site {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1440px;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 768px) {
+  .container-site {
+    padding-inline: 2.5rem;
+  }
+}
+
+/* Tipografía de Althara: Montserrat medium, no black; tamaños originales */
+.display-xl {
+  font-family: var(--font-montserrat), sans-serif;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.label-mono {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+}
+
+/* Textos fantasma del marquee (sobre #1c3742) */
+.ghost-solid {
+  color: rgba(230, 226, 215, 0.22);
+}
+.ghost-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(230, 226, 215, 0.5);
+}
+
+/* Subrayado animado */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Marquees */
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes marquee-x-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+.animate-marquee {
+  animation: marquee-x 42s linear infinite;
+}
+.animate-marquee-reverse {
+  animation: marquee-x-reverse 46s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-marquee-reverse {
+    animation: none;
+  }
+}
+
+::selection {
+  background: #c08552;
+  color: #102027;
 }
 
 @layer base {
@@ -45,26 +151,30 @@ body {
   }
 
   body {
-    background-color: #0a0a0a;
-    color: #e6e2d7;
+    /* Landing clara: crema Althara de fondo, azul tinta como texto */
+    background-color: #f4f2ec;
+    color: #1c3742;
     font-family: var(--font-montserrat), sans-serif;
     font-feature-settings: 'rlig' 1, 'calt' 1;
   }
 
+  /* FIX: overflow-x hidden crea un scroll container y ROMPE position:sticky
+     (el solapamiento del método). clip corta el desborde sin romper sticky. */
   html {
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   body {
-    overflow: hidden;
+    overflow-x: clip;
   }
 
   * {
     max-width: 100%;
   }
 
+  /* clip, no hidden: hidden rompía el sticky de las filas del método */
   section {
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   img {
@@ -391,10 +501,10 @@ body {
     var(--color-althara-secondary)
   );
   padding: 1px;
-  border-radius: 0.5rem;
+  border-radius: 0;
 }
 
 .gradient-border > * {
   background: hsl(var(--background));
-  border-radius: calc(0.5rem - 1px);
+  border-radius: 0;
 }

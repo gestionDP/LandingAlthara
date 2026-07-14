@@ -319,14 +319,14 @@ export default function MethodPhases() {
                               {isActive ? (
                                 <motion.div
                                   layoutId="activeDot"
-                                  className="h-2 w-2 rounded-full bg-[#e6e2d7]/55"
+                                  className="h-2 w-2 bg-[#e6e2d7]/55"
                                   transition={{
                                     duration: 0.45,
                                     ease: EASE_OUT,
                                   }}
                                 />
                               ) : (
-                                <div className="h-2 w-2 rounded-full bg-[#e6e2d7]/15" />
+                                <div className="h-2 w-2 bg-[#e6e2d7]/15" />
                               )}
                             </div>
                           </div>
@@ -366,7 +366,7 @@ export default function MethodPhases() {
                   <div className="relative h-full border border-[#e6e2d7]/12 bg-[#0f0f0f]/30 backdrop-blur-md md:backdrop-blur-xl overflow-hidden">
                     <div className="pointer-events-none absolute inset-0">
                       <motion.div
-                        className="absolute -top-24 left-1/2 h-[240px] md:h-[260px] w-[560px] md:w-[720px] -translate-x-1/2 rounded-full bg-[#e6e2d7]/[0.05] blur-3xl"
+                        className="absolute -top-24 left-1/2 h-[240px] md:h-[260px] w-[560px] md:w-[720px] -translate-x-1/2 bg-[#e6e2d7]/[0.05] blur-3xl"
                         animate={
                           prefersReducedMotion ? {} : { opacity: [0.6, 1, 0.6] }
                         }

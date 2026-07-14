@@ -107,7 +107,7 @@ function BottomSheetContent({
           className={cn(
             "fixed bottom-0 left-0 right-0 z-50 grid w-full transform-gpu bg-althara-dark-blue",
             "max-h-[90vh] overflow-y-auto",
-            "rounded-t-[20px] border-t border-gray-200",
+            "border-t border-gray-200",
             "transition-transform duration-200 ease-out",
             className
           )}
@@ -121,7 +121,7 @@ function BottomSheetContent({
           </DialogPrimitive.Title>
 
           <div className="flex justify-center py-3">
-            <div className="h-1 w-12 rounded-full bg-gray-600" />
+            <div className="h-1 w-12 bg-gray-600" />
           </div>
 
           <div className="px-4 pb-6">{children}</div>

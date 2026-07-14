@@ -63,19 +63,19 @@ export default function PositionSection() {
             {pillars.map((pillar, idx) => (
               <StaggerItem key={pillar.key} variant="slideUp">
                 <motion.div
-                  className="relative h-full min-h-[280px] md:min-h-[320px] overflow-hidden border border-[#e6e2d7]/10"
-                  whileHover={{ y: -2 }}
-                  transition={{ duration: 0.2, ease: EASE }}
+                  className="group relative h-full min-h-[280px] md:min-h-[320px] overflow-hidden border border-[#e6e2d7]/10 transition-colors duration-500 hover:border-[#e6e2d7]/35"
+                  whileHover={{ y: -6 }}
+                  transition={{ duration: 0.35, ease: EASE }}
                 >
                   <div className="absolute inset-0">
                     <Image
                       src={PILLAR_IMAGES[idx]}
                       alt=""
                       fill
-                      className="object-cover"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
                       sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                     />
-                    <div className="absolute inset-0 bg-[#0a0a0a]/75" />
+                    <div className="absolute inset-0 bg-[#0a0a0a]/75 transition-colors duration-500 group-hover:bg-[#0a0a0a]/60" />
                   </div>
                   <div className="relative z-10 h-full flex flex-col justify-end p-6 md:p-7">
                     <h3 className="text-xl md:text-2xl font-medium font-montserrat text-[#e6e2d7] mb-4">
