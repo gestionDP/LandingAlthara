@@ -36,8 +36,8 @@ export default function Thesis() {
         <div ref={imgRef} className="relative h-[46vh] overflow-hidden md:col-span-7 md:h-[64vh]">
           <motion.div className="absolute inset-[-10%_0]" style={reduce ? {} : { y: yImg }}>
             <Image
-              src="/jpg/34.png"
-              alt="Butaca de cuero con luz natural"
+              src="/png/home.png"
+              alt="Interior residencial con luz natural"
               fill
               sizes="(min-width: 768px) 58vw, 100vw"
               className="object-cover"
@@ -47,15 +47,15 @@ export default function Thesis() {
 
         <div className="flex flex-col justify-between gap-8 md:col-span-5">
           <Reveal delay={0.1}>
-            <p className="text-lg leading-relaxed text-[#1c3742]/80 md:text-xl">{t('p1')}</p>
+            <p className="text-xl font-medium leading-relaxed text-[#1c3742]/80 md:text-2xl">{t('p1')}</p>
           </Reveal>
           <Reveal delay={0.2}>
-            <p className="text-lg leading-relaxed text-[#1c3742]/60 md:text-xl">{t('p2')}</p>
+            <p className="text-base leading-relaxed text-[#1c3742]/50 md:text-lg">{t('p2')}</p>
           </Reveal>
           <Reveal delay={0.25} className="relative hidden h-48 overflow-hidden md:block lg:h-60">
             <Image
-              src="/jpg/35.png"
-              alt="Puerta clásica de madera"
+              src="/png/home2.png"
+              alt="Detalle arquitectónico de una vivienda"
               fill
               sizes="(min-width: 768px) 40vw, 100vw"
               className="object-cover transition-transform duration-700 hover:scale-[1.04]"

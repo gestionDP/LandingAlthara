@@ -63,13 +63,13 @@ export function EmptyState({ title, subtitle, icon }: { title: string; subtitle?
 
 /* Paleta Althara: los estados "pendiente" usan el bronce de marca, nunca amarillo. */
 const BADGE_STYLES: Record<string, string> = {
-  active: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-  signed: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-  published: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-  invited: 'bg-[#c08552]/15 text-[#8a5a33] border-[#c08552]/40',
-  pending_signature: 'bg-[#c08552]/15 text-[#8a5a33] border-[#c08552]/40',
-  required: 'bg-[#c08552]/15 text-[#8a5a33] border-[#c08552]/40',
-  registration_started: 'bg-[#c08552]/15 text-[#8a5a33] border-[#c08552]/40',
+  active: 'bg-[#1c3742] text-[#e6e2d7] border-[#1c3742]',
+  signed: 'bg-[#1c3742] text-[#e6e2d7] border-[#1c3742]',
+  published: 'bg-[#1c3742] text-[#e6e2d7] border-[#1c3742]',
+  invited: 'bg-[#1c3742]/5 text-[#c08552] border-[#c08552]/45',
+  pending_signature: 'bg-[#1c3742]/5 text-[#c08552] border-[#c08552]/45',
+  required: 'bg-[#1c3742]/5 text-[#c08552] border-[#c08552]/45',
+  registration_started: 'bg-[#1c3742]/5 text-[#c08552] border-[#c08552]/45',
   draft: 'bg-[#1c3742]/5 text-[#1c3742]/70 border-[#1c3742]/15',
   not_required: 'bg-[#1c3742]/5 text-[#1c3742]/70 border-[#1c3742]/15',
   suspended: 'bg-red-100 text-red-800 border-red-300',
@@ -160,8 +160,8 @@ export function FileIcon({ mimeType }: { mimeType?: string | null }) {
   const m = mimeType ?? '';
   const [label, bg, color] =
     m.includes('pdf') ? ['PDF', 'bg-red-50', 'text-red-700'] :
-    m.includes('spreadsheet') || m.includes('csv') ? ['XLS', 'bg-emerald-50', 'text-emerald-700'] :
-    m.includes('presentation') ? ['PPT', 'bg-[#c08552]/10', 'text-[#8a5a33]'] :
+    m.includes('spreadsheet') || m.includes('csv') ? ['XLS', 'bg-[#1c3742]/8', 'text-[#1c3742]'] :
+    m.includes('presentation') ? ['PPT', 'bg-[#1c3742]/5', 'text-[#c08552]'] :
     m.includes('word') ? ['DOC', 'bg-blue-50', 'text-blue-700'] :
     m.startsWith('image/') ? ['IMG', 'bg-purple-50', 'text-purple-700'] :
     ['FILE', 'bg-[#1c3742]/5', 'text-[#1c3742]/70'];

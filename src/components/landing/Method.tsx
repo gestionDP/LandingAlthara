@@ -46,7 +46,7 @@ export default function Method() {
             ))}
           </div>
 
-          <Reveal className="mt-14 flex justify-center md:mt-16">
+          <Reveal className="mt-6 flex justify-center md:mt-8">
             <button
               onClick={() => setModal(true)}
               className="label-mono bg-[#e6e2d7] px-8 py-4 text-[#102027] transition-colors duration-300 hover:bg-[#c08552] hover:text-[#e6e2d7]"

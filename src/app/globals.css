@@ -8,6 +8,21 @@ body {
   cursor: auto;
 }
 
+/* Neutraliza el amarillo del autocompletado de Chrome/WebKit en los inputs.
+   El truco de la transición larguísima impide que el navegador pinte su fondo
+   amarillo; el texto conserva el color heredado del contenedor. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: currentColor;
+  caret-color: currentColor;
+  transition:
+    background-color 600000s 0s,
+    color 600000s 0s;
+}
+
 @theme {
   --color-althara-black: #1c3742;
   --color-althara-dark-blue: #102027;

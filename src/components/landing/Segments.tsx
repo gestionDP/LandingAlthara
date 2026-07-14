@@ -1,16 +1,15 @@
 'use client';
 
 /**
- * Entornos seleccionados: 6 tarjetas de segmento (como la sección original).
- * En B/N; la activa (hover/scroll) recupera el color. Al hacer clic se abre
- * el formulario de solicitud con ese tipo de inversión ya preseleccionado.
+ * Entornos seleccionados: carrusel infinito de 6 tarjetas con autoplay.
+ * Usa translateX para movimiento continuo, pausa al hover.
  */
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import ContactModal from '../ContactModal';
-import { Reveal, EASE } from './motion';
+import { Reveal } from './motion';
 
 const CARDS = [
   { i: 0, img: '/jpg/29.jpeg' },
@@ -26,6 +25,41 @@ export default function Segments() {
   const reduce = useReducedMotion();
   const [active, setActive] = useState<number | null>(null);
   const [modalType, setModalType] = useState<string | null>(null);
+
+  const innerRef = useRef<HTMLDivElement>(null);
+  const isPaused = useRef(false);
+  const offset = useRef(0);
+  const speed = 0.5; // px per frame
+
+  useEffect(() => {
+    if (reduce) return;
+    const inner = innerRef.current;
+    if (!inner) return;
+
+    let raf: number;
+    // Width of one full set of cards (half the total rendered content)
+    const getHalf = () => inner.scrollWidth / 2;
+
+    const step = () => {
+      if (!isPaused.current) {
+        offset.current += speed;
+        const half = getHalf();
+        if (offset.current >= half) {
+          offset.current -= half;
+        }
+        inner.style.transform = `translateX(-${offset.current}px)`;
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [reduce]);
+
+  const pause = useCallback(() => { isPaused.current = true; }, []);
+  const resume = useCallback(() => { isPaused.current = false; }, []);
+
+  // Duplicate cards for seamless loop
+  const allCards = [...CARDS, ...CARDS];
 
   return (
     <>
@@ -47,51 +81,49 @@ export default function Segments() {
           </div>
         </div>
 
-        {/* Tira de tarjetas a sangre completa */}
-        <div className="mt-12 grid grid-cols-2 gap-1 md:grid-cols-3 lg:grid-cols-6">
-          {CARDS.map((c, idx) => {
-            const isActive = active === idx;
-            return (
-              <motion.button
-                key={c.i}
-                type="button"
-                onClick={() => setModalType(t(`items.${c.i}`))}
-                onMouseEnter={() => setActive(idx)}
-                onMouseLeave={() => setActive(null)}
-                initial={reduce ? {} : { opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.7, delay: 0.06 * idx, ease: EASE }}
-                className="group relative aspect-[3/4] overflow-hidden text-left"
-                aria-label={t(`items.${c.i}`)}
-              >
-                <Image
-                  src={c.img}
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 17vw, (min-width: 768px) 33vw, 50vw"
-                  className={`object-cover transition-all duration-700 ease-out group-hover:scale-[1.05] ${
-                    isActive ? 'grayscale-0' : 'grayscale'
-                  }`}
-                />
-                <div className={`absolute inset-0 transition-colors duration-500 ${isActive ? 'bg-[#102027]/10' : 'bg-[#102027]/35'}`} />
-                <div className="absolute inset-x-0 bottom-0 p-4 md:p-5">
-                  <p className={`text-base font-medium leading-snug transition-colors duration-300 md:text-lg ${isActive ? 'text-white' : 'text-[#e6e2d7]/85'}`}>
-                    {t(`items.${c.i}`)}
-                  </p>
-                  <p className={`mt-1 text-[11px] uppercase tracking-[0.18em] transition-opacity duration-300 ${isActive ? 'text-[#c08552] opacity-100' : 'opacity-0'}`}>
-                    {t('cta')} →
-                  </p>
-                </div>
-              </motion.button>
-            );
-          })}
-        </div>
-
-        <div className="container-site">
-          <Reveal delay={0.15}>
-            <p className="mt-6 text-xs text-[#1c3742]/45">{t('footnote')}</p>
-          </Reveal>
+        {/* Carrusel horizontal infinito */}
+        <div
+          className="mt-12 overflow-hidden"
+          onMouseEnter={pause}
+          onMouseLeave={resume}
+          onTouchStart={pause}
+          onTouchEnd={resume}
+        >
+          <div ref={innerRef} className="flex gap-3 will-change-transform">
+            {allCards.map((c, idx) => {
+              const isActive = active === idx;
+              return (
+                <button
+                  key={`${c.i}-${idx}`}
+                  type="button"
+                  onClick={() => setModalType(t(`items.${c.i}`))}
+                  onMouseEnter={() => setActive(idx)}
+                  onMouseLeave={() => setActive(null)}
+                  className="group relative aspect-[4/5] w-[240px] shrink-0 overflow-hidden text-left md:w-[280px]"
+                  aria-label={t(`items.${c.i}`)}
+                >
+                  <Image
+                    src={c.img}
+                    alt=""
+                    fill
+                    sizes="280px"
+                    className={`object-cover transition-all duration-700 ease-out group-hover:scale-[1.05] ${
+                      isActive ? 'grayscale-0' : 'grayscale'
+                    }`}
+                  />
+                  <div className={`absolute inset-0 transition-colors duration-500 ${isActive ? 'bg-[#102027]/10' : 'bg-[#102027]/35'}`} />
+                  <div className="absolute inset-x-0 bottom-0 p-4 md:p-5">
+                    <p className={`text-base font-medium leading-snug transition-colors duration-300 md:text-lg ${isActive ? 'text-white' : 'text-[#e6e2d7]/85'}`}>
+                      {t(`items.${c.i}`)}
+                    </p>
+                    <p className={`mt-1 text-[11px] uppercase tracking-[0.18em] transition-colors duration-300 ${isActive ? 'text-[#c08552]' : 'text-[#e6e2d7]/70'}`}>
+                      {t('cta')} →
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </section>
 

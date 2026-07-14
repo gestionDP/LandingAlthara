@@ -101,7 +101,7 @@ export default function AdminAudit() {
                   <td className="px-3 py-2 text-[#1c3742]/60">
                     {r.entityType}{r.entityId ? ` · ${r.entityId.slice(0, 8)}` : ''}
                   </td>
-                  <td className={`px-3 py-2 font-medium ${r.result === 'success' ? 'text-emerald-700' : 'text-red-700'}`}>{r.result === 'success' ? 'Correcto' : r.result === 'denied' ? 'Denegado' : 'Error'}</td>
+                  <td className={`px-3 py-2 font-medium ${r.result === 'success' ? 'text-[#1c3742]' : 'text-red-700'}`}>{r.result === 'success' ? 'Correcto' : r.result === 'denied' ? 'Denegado' : 'Error'}</td>
                   <td className="px-3 py-2 text-[#1c3742]/50">{r.ip ?? '—'}</td>
                 </tr>
               ))}

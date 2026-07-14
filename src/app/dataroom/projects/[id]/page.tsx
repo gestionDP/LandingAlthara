@@ -215,7 +215,7 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
                         )}
                       </div>
                       {doc.isNew && (
-                        <span className="bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800">Nuevo</span>
+                        <span className="bg-[#1c3742] px-2 py-0.5 text-[10px] font-semibold text-[#e6e2d7]">Nuevo</span>
                       )}
                     </div>
                   </td>

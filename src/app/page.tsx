@@ -7,6 +7,7 @@ import Marquee from '@/components/landing/Marquee';
 import Thesis from '@/components/landing/Thesis';
 import Layers from '@/components/landing/Layers';
 import Method from '@/components/landing/Method';
+import Divider from '@/components/landing/Divider';
 import Segments from '@/components/landing/Segments';
 import Portal from '@/components/landing/Portal';
 import FinalCta from '@/components/landing/FinalCta';
@@ -18,10 +19,11 @@ export default function Home() {
     <div className="relative overflow-x-clip bg-[#f4f2ec]">
       <Nav />
       <Hero />
-      <Marquee />
       <Thesis />
+      <Marquee />
       <Layers />
       <Method />
+      <Divider />
       <Segments />
       <Portal />
       <FinalCta />

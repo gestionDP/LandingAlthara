@@ -99,11 +99,11 @@ export default function DataroomHome() {
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center bg-[#c08552]/15 text-[10px] font-bold uppercase tracking-wide text-[#8a5a33]" aria-hidden>DIR</span>
+                    <span className="flex h-10 w-10 items-center justify-center bg-[#1c3742]/5 text-[10px] font-bold uppercase tracking-wide text-[#c08552]" aria-hidden>DIR</span>
                     <h3 className="font-playfair text-lg leading-snug">{p.name}</h3>
                   </div>
                   {p.newDocumentCount > 0 && (
-                    <span className="bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800">
+                    <span className="bg-[#1c3742] px-2 py-0.5 text-[10px] font-semibold text-[#e6e2d7]">
                       {p.newDocumentCount} nuevo{p.newDocumentCount > 1 ? 's' : ''}
                     </span>
                   )}

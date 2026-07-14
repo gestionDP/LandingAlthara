@@ -305,7 +305,7 @@
     "hero": {
       "wordmarkSub": "Off-market real estate investment",
       "tagline": "The best assets never reach the portals.",
-      "sub": "Private access to opportunities in the Balearics, with verified analysis and full confidentiality.",
+      "sub": "Private access, verified analysis and full confidentiality.",
       "cta1": "Request access",
       "cta2": "Investor portal",
       "stats": [
@@ -433,9 +433,13 @@
       "rights": "All rights reserved.",
       "confidential": "Private channel · Invitation only"
     },
+    "divider": {
+      "line1": "Privacy is operational",
+      "line2": "From context to execution"
+    },
     "segments": {
       "label": "Selected environments",
-      "title": "Where we operate",
+      "title": "Who we work with",
       "intro": "Six investment profiles we work with. Pick yours and tell us your mandate.",
       "cta": "Request access",
       "footnote": "Names are shared in private.",

@@ -305,7 +305,7 @@
     "hero": {
       "wordmarkSub": "Inversión inmobiliaria off-market",
       "tagline": "El mejor inmueble no está en los portales.",
-      "sub": "Acceso privado a oportunidades en Baleares, con análisis verificado y confidencialidad total.",
+      "sub": "Acceso privado, análisis verificado y confidencialidad total.",
       "cta1": "Solicitar acceso",
       "cta2": "Portal de inversores",
       "stats": [
@@ -433,9 +433,13 @@
       "rights": "Todos los derechos reservados.",
       "confidential": "Canal privado · Solo invitación"
     },
+    "divider": {
+      "line1": "La privacidad es operativa",
+      "line2": "Del contexto a la ejecución"
+    },
     "segments": {
       "label": "Entornos seleccionados",
-      "title": "Dónde operamos",
+      "title": "Con quién trabajamos",
       "intro": "Seis perfiles de inversión con los que trabajamos. Elija el suyo y cuéntenos su mandato.",
       "cta": "Solicitar acceso",
       "footnote": "Los nombres se comparten en privado.",

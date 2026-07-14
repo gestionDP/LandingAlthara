@@ -137,11 +137,11 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
           </p>
           <ol className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map((s, i) => (
-              <li key={i} className={`flex items-center gap-3 border p-3 text-sm ${s.done ? 'border-emerald-300 bg-emerald-50' : 'border-[#1c3742]/15 bg-white'}`}>
-                <span className={`flex h-6 w-6 shrink-0 items-center justify-center text-xs font-bold ${s.done ? 'bg-emerald-600 text-white' : 'bg-[#1c3742]/10 text-[#1c3742]'}`}>
+              <li key={i} className={`flex items-center gap-3 border p-3 text-sm ${s.done ? 'border-[#1c3742]/30 bg-[#1c3742]/5' : 'border-[#1c3742]/15 bg-white'}`}>
+                <span className={`flex h-6 w-6 shrink-0 items-center justify-center text-xs font-bold ${s.done ? 'bg-[#1c3742] text-[#e6e2d7]' : 'bg-[#1c3742]/10 text-[#1c3742]'}`}>
                   {s.done ? '✓' : i + 1}
                 </span>
-                <span className={s.done ? 'text-emerald-800' : 'text-[#1c3742]'}>{s.label}</span>
+                <span className={s.done ? 'text-[#1c3742] font-medium' : 'text-[#1c3742]'}>{s.label}</span>
                 {!s.done && s.action && (
                   <button onClick={s.action} className="ml-auto shrink-0 bg-[#1c3742] px-2.5 py-1 text-[11px] font-semibold text-[#e6e2d7]">
                     {s.cta}
