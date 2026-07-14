@@ -1006,9 +1006,9 @@ function ShareDialog({ doc, investors, onClose }: {
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
           <p className="mb-4 text-xs text-[#1c3742]/60">
-            Elige quién puede ver este archivo. <strong>Automático</strong> sigue el nivel de acceso del
-            inversor; <strong>Ver</strong> lo comparte siempre; <strong>Bloquear</strong> se lo oculta aunque
-            tenga acceso completo.
+            Elige quién puede ver este archivo. <strong>Según su acceso</strong> sigue el nivel del
+            inversor; <strong>Compartido</strong> se lo compartes siempre; <strong>Oculto</strong> se lo
+            escondes aunque vea toda la documentación.
           </p>
           {loading ? (
             <Spinner label="Cargando permisos…" />
@@ -1034,9 +1034,9 @@ function ShareDialog({ doc, investors, onClose }: {
                       </p>
                     </div>
                     <div className="flex shrink-0 border border-[#1c3742]/20 rounded-md overflow-hidden" aria-busy={savingId === i.investorId}>
-                      <button className={seg(current === 'allow')} onClick={() => setEffect(i.investorId, 'allow')}>Ver</button>
-                      <button className={`${seg(!current)} border-x border-[#1c3742]/15`} onClick={() => setEffect(i.investorId, 'clear')}>Auto</button>
-                      <button className={seg(current === 'deny')} onClick={() => setEffect(i.investorId, 'deny')}>Bloquear</button>
+                      <button className={seg(current === 'allow')} onClick={() => setEffect(i.investorId, 'allow')}>Compartido</button>
+                      <button className={`${seg(!current)} border-x border-[#1c3742]/15`} onClick={() => setEffect(i.investorId, 'clear')}>Según su acceso</button>
+                      <button className={seg(current === 'deny')} onClick={() => setEffect(i.investorId, 'deny')}>Oculto</button>
                     </div>
                   </li>
                 );
@@ -1206,8 +1206,8 @@ function AssignInvestor({ projectId, allInvestors, assigned, onChanged, onError 
       <select value={level} onChange={(e) => setLevel(e.target.value as 'full' | 'generic')}
         title={ACCESS_LEVEL_HINTS[level]}
         className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-2 text-sm rounded-md">
-        <option value="full">Acceso completo — todos los documentos</option>
-        <option value="generic">Acceso limitado — solo documentos generales</option>
+        <option value="full">Ve toda la documentación</option>
+        <option value="generic">Solo lo que yo le comparta</option>
       </select>
       <button onClick={grant} disabled={!investorId || busy}
         className="bg-[#1c3742] px-4 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40 rounded-md">
@@ -1323,39 +1323,28 @@ function UploadPanel({ projectId, categories, investors, currentFolderId, curren
           <option value="">Elegir carpeta… *</option>
           {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
-        <select value={meta.confidentiality} onChange={(e) => setMeta({ ...meta, confidentiality: e.target.value, requiresNda: e.target.value === 'sensitive' })}
-          title="Confidencial: solo lo ven los inversores con acceso completo. General: lo ven todos."
-          className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1.5 text-xs rounded-md">
-          <option value="sensitive">Confidencial — solo acceso completo</option>
-          <option value="generic">General — visible para todos</option>
-        </select>
-      </div>
-      <div className="mt-3 flex flex-wrap gap-4">
-        <label className={check} title="Obliga al inversor a firmar el acuerdo de confidencialidad antes de poder abrir este documento."><input type="checkbox" checked={meta.requiresNda} onChange={(e) => setMeta({ ...meta, requiresNda: e.target.checked })} />Requiere NDA</label>
-        <label className={check} title="Permite que el inversor descargue el archivo. Si lo desmarca, solo podrá verlo en pantalla (con marca de agua)."><input type="checkbox" checked={meta.downloadable} onChange={(e) => setMeta({ ...meta, downloadable: e.target.checked })} />Descargable</label>
-        <label className={check} title="Deja el documento listo. Aun así no lo verá el inversor hasta que abogado y fiscal den su visado."><input type="checkbox" checked={meta.publish} onChange={(e) => setMeta({ ...meta, publish: e.target.checked })} />Publicar ya</label>
-        <label className={check} title="Envía un único email a los inversores avisando de la documentación nueva (cuando esté disponible)."><input type="checkbox" checked={meta.notify} onChange={(e) => setMeta({ ...meta, notify: e.target.checked })} />Notificar a inversores (email agrupado)</label>
-        <label className={check} title="En vez de seguir el acceso del proyecto, comparte este documento solo con los inversores que elija."><input type="checkbox" checked={meta.restrict} onChange={(e) => setMeta({ ...meta, restrict: e.target.checked })} />Solo inversores concretos</label>
       </div>
 
-      {/* Ayuda: qué significa cada opción */}
-      <details className="mt-3 rounded-md border border-[#1c3742]/10 bg-[#faf9f5] px-3 py-2 text-xs text-[#1c3742]/70">
-        <summary className="cursor-pointer font-medium text-[#1c3742]/80">¿Qué significa cada opción?</summary>
-        <ul className="mt-2 space-y-1.5">
-          <li><strong>Categoría</strong>: la carpeta donde se guarda el documento.</li>
-          <li><strong>Confidencial / General</strong>: «Confidencial» solo lo ven los inversores con acceso completo; «General» lo ven todos los que tienen acceso al proyecto.</li>
-          <li><strong>Requiere NDA</strong>: el inversor debe firmar el acuerdo de confidencialidad antes de abrirlo.</li>
-          <li><strong>Descargable</strong>: si se desmarca, el inversor solo puede verlo en pantalla (no descargar).</li>
-          <li><strong>Publicar ya</strong>: deja el documento listo, pero <strong>no lo verá el inversor hasta que abogado y fiscal lo aprueben</strong> (doble visado).</li>
-          <li><strong>Notificar a inversores</strong>: manda un solo email avisando de documentación nueva.</li>
-          <li><strong>Solo inversores concretos</strong>: comparte el documento únicamente con las personas que marque.</li>
-        </ul>
-      </details>
+      {/* Solo 2 decisiones reales: ¿se descarga? y ¿para quién? La confidencialidad
+          y el NDA los define el NIVEL de la carpeta, no el admin. */}
+      <div className="mt-3 flex flex-wrap gap-4">
+        <label className={check} title="Si lo desmarca, el inversor solo podrá verlo en pantalla (con marca de agua), no descargarlo."><input type="checkbox" checked={meta.downloadable} onChange={(e) => setMeta({ ...meta, downloadable: e.target.checked })} />Se puede descargar</label>
+        <label className={check} title="Deja el documento listo. Aun así no lo verá el inversor hasta que abogado y fiscal lo aprueben."><input type="checkbox" checked={meta.publish} onChange={(e) => setMeta({ ...meta, publish: e.target.checked })} />Publicar ya</label>
+        <label className={check} title="Envía un único email a los inversores avisando de la documentación nueva."><input type="checkbox" checked={meta.notify} onChange={(e) => setMeta({ ...meta, notify: e.target.checked })} />Avisar por email</label>
+      </div>
+
+      <div className="mt-3">
+        <span className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-[#1c3742]/55">¿Para quién?</span>
+        <div className="flex flex-wrap gap-4">
+          <label className={check}><input type="radio" name="audience" checked={!meta.restrict} onChange={() => setMeta({ ...meta, restrict: false })} />Todos los inversores con acceso al proyecto</label>
+          <label className={check}><input type="radio" name="audience" checked={meta.restrict} onChange={() => setMeta({ ...meta, restrict: true })} />Solo estos inversores…</label>
+        </div>
+      </div>
       {meta.restrict && (
         investors.length === 0 ? (
           <p className="mt-2 border border-[#c08552]/40 bg-[#c08552]/10 p-3 text-xs text-[#8a5a33] rounded-md">
             Este proyecto aún no tiene inversores asignados: primero dé acceso a algún inversor
-            (panel «Inversores con acceso») y luego podrá restringir documentos a personas concretas.
+            (panel «Inversores con acceso») y luego podrá compartir documentos con personas concretas.
           </p>
         ) : (
           <div className="mt-2 flex flex-wrap gap-3 bg-[#faf9f5] p-3 rounded-md">
@@ -1375,6 +1364,19 @@ function UploadPanel({ projectId, categories, investors, currentFolderId, curren
             ))}
           </div>
         )
+      )}
+
+      {/* Resumen en cristiano de lo que va a pasar */}
+      {targetCat && (
+        <p className="mt-3 rounded-md border border-[#1c3742]/10 bg-[#faf9f5] px-3 py-2 text-xs text-[#1c3742]/75">
+          Irá a <strong>«{targetCat.name}»</strong>.{' '}
+          {targetCat.level === 1
+            ? 'Nivel 1: visible tras verificar identidad, sin NDA.'
+            : 'Nivel 2: confidencial, requiere NDA firmado.'}{' '}
+          {meta.downloadable ? 'Se puede descargar.' : 'Solo visualización (con marca de agua).'}{' '}
+          {meta.restrict ? 'Visible solo para los inversores que elijas.' : 'Visible para todos los inversores con acceso al proyecto.'}{' '}
+          No aparecerá para el inversor hasta que <strong>abogado y fiscal</strong> lo aprueben.
+        </p>
       )}
       {files.length > 0 && (
         <p className="mt-2 text-xs text-[#1c3742]/60">

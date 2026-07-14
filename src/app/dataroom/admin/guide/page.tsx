@@ -65,7 +65,7 @@ export default function AdminGuide() {
         title="4. Subir y publicar documentos"
         intro="En la pestaña Documentos del proyecto."
         steps={[
-          <>Elija la <strong>carpeta</strong>, suba archivos (o arrástrelos) y marque <strong>Confidencial</strong> (solo acceso completo) o <strong>General</strong>, y si <strong>requiere NDA</strong>.</>,
+          <>Elija la <strong>carpeta</strong> (o entre en ella abajo) y suba los archivos ahí. La <strong>confidencialidad y el NDA los define el nivel de la carpeta</strong> — usted no los toca. Solo decide dos cosas: <strong>si se puede descargar</strong> y <strong>para quién</strong> (todos los inversores con acceso, o solo algunos). Una frase le resume qué va a pasar antes de subir.</>,
           <>«Publicar ya» deja el documento listo; «Notificar» avisa por email a los inversores (un solo correo agrupado).</>,
           <>Con el menú <strong>⋮</strong> de cada archivo: Vista previa, Descargar, Compartir, Nueva versión, Archivar o Eliminar.</>,
           <><strong>Importante:</strong> todo documento subido queda <strong>«En revisión»</strong> e invisible para el inversor hasta pasar el <strong>doble visado</strong> (ver punto 5).</>,
@@ -87,9 +87,9 @@ export default function AdminGuide() {
         title="6. Dar acceso: completo o por archivo"
         intro="Controla qué ve cada inversor."
         steps={[
-          <><strong>Acceso completo</strong>: el inversor ve todos los documentos del proyecto.</>,
-          <><strong>Acceso limitado</strong>: solo ve los archivos que le comparta expresamente.</>,
-          <>Por archivo, el botón <strong>Compartir</strong> abre un panel con tres estados por inversor: <strong>Ver</strong> (compartir), <strong>Auto</strong> (según su nivel) o <strong>Bloquear</strong> (ocultar aunque tenga acceso completo).</>,
+          <>Al invitar al inversor elige: <strong>«Ve toda la documentación»</strong> (ve todo por defecto) o <strong>«Solo lo que yo le comparta»</strong> (no ve nada hasta que le comparta archivos).</>,
+          <>Por archivo, el botón <strong>Compartir</strong> abre un panel con tres estados por inversor: <strong>Compartido</strong> (se lo comparte siempre), <strong>Según su acceso</strong> (sigue su nivel) u <strong>Oculto</strong> (se lo esconde aunque vea toda la documentación).</>,
+          <>Recuerde: aunque el acceso lo permita, los documentos confidenciales requieren <strong>NDA firmado</strong> y todos pasan por el <strong>doble visado</strong> antes de verse.</>,
         ]}
       />
 

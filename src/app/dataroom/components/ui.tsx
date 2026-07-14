@@ -196,16 +196,16 @@ export function FileIcon({ mimeType, fileName }: { mimeType?: string | null; fil
  * (Distinto de la confidencialidad del documento — ver STATUS_LABELS.)
  */
 export const ACCESS_LEVEL_LABELS: Record<string, string> = {
-  full: 'Acceso completo',
-  generic: 'Acceso limitado',
+  full: 'Ve toda la documentación',
+  generic: 'Solo lo compartido',
 };
 export function accessLevelLabel(level: string): string {
   return ACCESS_LEVEL_LABELS[level] ?? level;
 }
 /** Descripción larga del nivel de acceso, para tooltips/ayudas. */
 export const ACCESS_LEVEL_HINTS: Record<string, string> = {
-  full: 'Ve todos los documentos: generales y confidenciales.',
-  generic: 'Ve solo los documentos marcados como generales.',
+  full: 'Ve toda la documentación del proyecto por defecto (salvo lo que le bloquees).',
+  generic: 'No ve nada por defecto: solo los documentos que le compartas expresamente.',
 };
 
 /* ------------------------- Biblioteca (SharePoint) ------------------------ */
