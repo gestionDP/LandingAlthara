@@ -17,10 +17,12 @@ const ADMIN_NAV = [
   { href: '/dataroom/admin/investors', label: 'Inversores' },
   { href: '/dataroom/admin/nda', label: 'NDA' },
   { href: '/dataroom/admin/audit', label: 'Auditoría' },
+  { href: '/dataroom/admin/guide', label: 'Guía' },
 ];
 const INVESTOR_NAV = [
   { href: '/dataroom', label: 'Inicio' },
   { href: '/dataroom/profile', label: 'Mi perfil' },
+  { href: '/dataroom/guide', label: 'Guía' },
 ];
 
 /** Contexto del buscador de la barra superior. */
