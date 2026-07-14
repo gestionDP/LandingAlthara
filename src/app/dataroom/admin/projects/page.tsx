@@ -48,7 +48,7 @@ export default function AdminProjects() {
           )}
         </div>
         <button onClick={() => setShowCreate(true)}
-          className="bg-[#1c3742] px-4 py-2 text-sm font-semibold text-[#e6e2d7]">
+          className="bg-[#1c3742] px-4 py-2 text-sm font-semibold text-[#e6e2d7] rounded-md">
           + Nuevo proyecto
         </button>
       </div>
@@ -60,7 +60,7 @@ export default function AdminProjects() {
         <EmptyState title="Sin resultados" subtitle="Ningún proyecto coincide con la búsqueda del portal." />
       )}
       {filtered && filtered.length > 0 && (
-        <div className="overflow-x-auto border border-[#1c3742]/10 bg-white shadow-sm">
+        <div className="overflow-x-auto border border-[#1c3742]/10 bg-white rounded-lg">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[#1c3742]/15 text-left text-[11px] uppercase tracking-wider text-[#1c3742]/50">
@@ -126,10 +126,10 @@ function CreateProjectModal({ onClose, onCreated }: { onClose: () => void; onCre
     else setError('No se ha podido crear el proyecto.');
   }
 
-  const input = 'w-full border border-[#1c3742]/25 bg-[#faf9f5] px-3 py-2 text-sm focus:outline-none';
+  const input = 'w-full border border-[#1c3742]/25 bg-[#faf9f5] px-3 py-2 text-sm focus:outline-none rounded-md';
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#102027]/50 p-4" role="dialog" aria-modal="true">
-      <form onSubmit={submit} className="w-full max-w-md space-y-3 border border-[#1c3742]/20 bg-white p-6">
+      <form onSubmit={submit} className="w-full max-w-md space-y-3 border border-[#1c3742]/20 bg-white p-6 rounded-lg">
         <h2 className="font-playfair text-lg">Nuevo proyecto</h2>
         <input required placeholder="Nombre *" className={input} value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })} />
@@ -157,9 +157,9 @@ function CreateProjectModal({ onClose, onCreated }: { onClose: () => void; onCre
         )}
         {error && <p className="text-sm text-red-700">{error}</p>}
         <div className="flex justify-end gap-3 pt-2">
-          <button type="button" onClick={onClose} className="border border-[#1c3742]/30 px-4 py-2 text-sm">Cancelar</button>
+          <button type="button" onClick={onClose} className="border border-[#1c3742]/30 px-4 py-2 text-sm rounded-md">Cancelar</button>
           <button type="submit" disabled={busy}
-            className="bg-[#1c3742] px-5 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40">
+            className="bg-[#1c3742] px-5 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40 rounded-md">
             {busy ? 'Creando…' : 'Crear proyecto'}
           </button>
         </div>

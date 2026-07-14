@@ -14,6 +14,7 @@ import { canWatermark, watermarkPdf } from '../lib/watermark';
 import { writeAudit, type AuditActor, type RequestMeta } from '../lib/audit';
 import { AuthzError, type Investor } from '../lib/authz';
 import { ndaStateFor } from './projects';
+import { isReviewApproved, resetReviews } from './reviews';
 
 const T = DATAROOM_TENANT;
 
@@ -164,12 +165,70 @@ export async function addVersion(
   }
 
   if (versionNumber > 1) {
+    // Nueva versión → se reinicia el doble visado (abogado + fiscal).
+    await resetReviews(document.id);
     await writeAudit({
       tenant: T, actor, action: 'document.versioned', entityType: 'document', entityId: document.id,
       metadata: { versionNumber },
     });
   }
   return { ...version, storagePath };
+}
+
+/** Mueve el documento a otra carpeta (categoryId null = raíz). */
+export async function moveDocument(documentId: string, categoryId: string | null, actor: AuditActor) {
+  const [document] = await db().select().from(schema.documents)
+    .where(and(eq(schema.documents.id, documentId), eq(schema.documents.tenant, T))).limit(1);
+  if (!document) throw new AuthzError(404, 'document_not_found');
+  await db().update(schema.documents)
+    .set({ categoryId, updatedAt: new Date() })
+    .where(eq(schema.documents.id, documentId));
+  await writeAudit({
+    tenant: T, actor, action: 'document.renamed', entityType: 'document', entityId: documentId,
+    metadata: { movedToCategory: categoryId },
+  });
+  return { ok: true };
+}
+
+export async function renameDocument(documentId: string, title: string, actor: AuditActor) {
+  const [document] = await db().select().from(schema.documents)
+    .where(and(eq(schema.documents.id, documentId), eq(schema.documents.tenant, T))).limit(1);
+  if (!document) throw new AuthzError(404, 'document_not_found');
+  await db().update(schema.documents)
+    .set({ title, updatedAt: new Date() })
+    .where(eq(schema.documents.id, documentId));
+  await writeAudit({
+    tenant: T, actor, action: 'document.renamed', entityType: 'document', entityId: documentId,
+    metadata: { title },
+  });
+  return { ok: true };
+}
+
+/** Restaura una versión anterior como la actual (la actual pasa a superseded). */
+export async function restoreVersion(documentId: string, versionId: string, actor: AuditActor) {
+  const [document] = await db().select().from(schema.documents)
+    .where(and(eq(schema.documents.id, documentId), eq(schema.documents.tenant, T))).limit(1);
+  if (!document) throw new AuthzError(404, 'document_not_found');
+  const [target] = await db().select().from(schema.documentVersions)
+    .where(and(eq(schema.documentVersions.id, versionId), eq(schema.documentVersions.documentId, documentId))).limit(1);
+  if (!target) throw new AuthzError(404, 'version_not_found');
+  if (document.currentVersionId === versionId) return { ok: true };
+
+  if (document.currentVersionId) {
+    await db().update(schema.documentVersions).set({ status: 'superseded' })
+      .where(eq(schema.documentVersions.id, document.currentVersionId));
+  }
+  await db().update(schema.documentVersions).set({ status: 'published' })
+    .where(eq(schema.documentVersions.id, versionId));
+  await db().update(schema.documents)
+    .set({ currentVersionId: versionId, status: 'published', updatedAt: new Date() })
+    .where(eq(schema.documents.id, documentId));
+
+  await writeAudit({
+    tenant: T, actor, action: 'document.versioned', entityType: 'document', entityId: documentId,
+    metadata: { restoredToVersion: target.versionNumber },
+  });
+  return { ok: true };
 }
 
 export async function setDocumentStatus(
@@ -264,36 +323,51 @@ async function loadAccessContext(investor: Investor, documentId: string) {
 
   const ndaState = await ndaStateFor(investor, project);
 
+  // El nivel de la carpeta manda (igual que en el índice): Nivel 1 = solo vista
+  // sin NDA; Nivel 2 = requiere NDA.
+  let folderLevel = 2;
+  if (document.categoryId) {
+    const [cat] = await db().select({ level: schema.documentCategories.level })
+      .from(schema.documentCategories)
+      .where(eq(schema.documentCategories.id, document.categoryId)).limit(1);
+    folderLevel = cat?.level ?? 2;
+  }
+  const docInput = folderLevel === 1
+    ? { status: document.status, confidentiality: 'generic' as const, downloadable: false, requiresNda: false }
+    : { status: document.status, confidentiality: 'sensitive' as const, downloadable: document.downloadable, requiresNda: true };
+
   const decision = computeDocumentAccess({
     sameTenant: investor.tenant === document.tenant && document.tenant === T,
     investorStatus: investor.status,
     projectStatus: project.status,
     assignment: assignment ? { status: assignment.status, accessLevel: assignment.accessLevel } : null,
-    document: {
-      status: document.status,
-      confidentiality: document.confidentiality,
-      downloadable: document.downloadable,
-      requiresNda: document.requiresNda,
-    },
+    document: docInput,
     permission: permission ? { effect: permission.effect, canDownload: permission.canDownload } : null,
     ndaState,
   });
+
+  // Sin doble visado (abogado + fiscal) no hay acceso, aunque el resto permita.
+  if (!isReviewApproved(document)) {
+    return { document, project, decision: { canView: false, canDownload: false, reason: 'document_unavailable' as const } };
+  }
 
   return { document, project, decision };
 }
 
 /** Documents of a project as seen by one investor (locked docs included as placeholders). */
 export async function listAuthorizedDocuments(investor: Investor, projectId: string) {
-  const docs = await db()
+  // Publicados + borradores: el índice se muestra COMPLETO (semáforo), aunque
+  // los borradores solo aparezcan como "en revisión" sin acceso.
+  const allDocs = await db()
     .select()
     .from(schema.documents)
     .where(and(
       eq(schema.documents.projectId, projectId),
       eq(schema.documents.tenant, T),
-      eq(schema.documents.status, 'published'),
+      inArray(schema.documents.status, ['published', 'draft']),
       isNull(schema.documents.deletedAt),
     ));
-  if (docs.length === 0) return [];
+  if (allDocs.length === 0) return [];
 
   const [project] = await db().select().from(schema.projects)
     .where(eq(schema.projects.id, projectId)).limit(1);
@@ -304,13 +378,16 @@ export async function listAuthorizedDocuments(investor: Investor, projectId: str
     eq(schema.projectAccess.projectId, projectId),
   )).limit(1);
 
-  const perms = await db().select().from(schema.documentPermissions).where(and(
-    inArray(schema.documentPermissions.documentId, docs.map((d) => d.id)),
-    eq(schema.documentPermissions.investorId, investor.id),
-  ));
+  const publishedIds = allDocs.filter((d) => d.status === 'published').map((d) => d.id);
+  const perms = publishedIds.length
+    ? await db().select().from(schema.documentPermissions).where(and(
+        inArray(schema.documentPermissions.documentId, publishedIds),
+        eq(schema.documentPermissions.investorId, investor.id),
+      ))
+    : [];
   const permMap = new Map(perms.map((p) => [p.documentId, p]));
 
-  const versionIds = docs.map((d) => d.currentVersionId).filter((v): v is string => !!v);
+  const versionIds = allDocs.map((d) => d.currentVersionId).filter((v): v is string => !!v);
   const versions = versionIds.length
     ? await db().select().from(schema.documentVersions)
         .where(inArray(schema.documentVersions.id, versionIds))
@@ -324,45 +401,62 @@ export async function listAuthorizedDocuments(investor: Investor, projectId: str
   const ndaState = await ndaStateFor(investor, project);
 
   const result = [];
-  for (const doc of docs) {
+  for (const doc of allDocs) {
+    const cat = doc.categoryId ? catMap.get(doc.categoryId) : undefined;
+    const folderLevel = cat?.level ?? 2;
+    const base = {
+      id: doc.id,
+      title: doc.title,
+      description: doc.description,
+      category: cat?.name ?? null,
+      categorySlug: cat?.slug ?? null,
+      confidentiality: doc.confidentiality,
+      folderLevel,
+    };
+
+    // Borrador o pendiente de doble visado → placeholder "en revisión"
+    // (visible en el índice, sin acceso hasta que abogado + fiscal aprueben).
+    if (doc.status === 'draft' || !isReviewApproved(doc)) {
+      result.push({
+        ...base, updatedAt: doc.updatedAt, isNew: false,
+        indexState: 'en_revision' as const, locked: true as const, lockReason: 'in_review', canDownload: false,
+      });
+      continue;
+    }
+
     const perm = permMap.get(doc.id);
+    // El NIVEL de la carpeta manda: Nivel 1 = solo vista, sin NDA; Nivel 2 = requiere NDA.
+    const docInput = folderLevel === 1
+      ? { status: doc.status, confidentiality: 'generic' as const, downloadable: false, requiresNda: false }
+      : { status: doc.status, confidentiality: 'sensitive' as const, downloadable: doc.downloadable, requiresNda: true };
     const decision: AccessDecision = computeDocumentAccess({
       sameTenant: investor.tenant === doc.tenant && doc.tenant === T,
       investorStatus: investor.status,
       projectStatus: project.status,
       assignment: assignment ? { status: assignment.status, accessLevel: assignment.accessLevel } : null,
-      document: {
-        status: doc.status, confidentiality: doc.confidentiality,
-        downloadable: doc.downloadable, requiresNda: doc.requiresNda,
-      },
+      document: docInput,
       permission: perm ? { effect: perm.effect, canDownload: perm.canDownload } : null,
       ndaState,
     });
 
-    // Explicitly denied documents are invisible (not even a locked placeholder).
     if (decision.reason === 'explicit_deny' || decision.reason === 'not_assigned' ||
         decision.reason === 'assignment_inactive' || decision.reason === 'tenant_mismatch') continue;
 
     const version = doc.currentVersionId ? versionMap.get(doc.currentVersionId) : undefined;
     result.push({
-      id: doc.id,
-      title: doc.title,
-      description: doc.description,
-      category: doc.categoryId ? catMap.get(doc.categoryId)?.name ?? null : null,
-      categorySlug: doc.categoryId ? catMap.get(doc.categoryId)?.slug ?? null : null,
-      confidentiality: doc.confidentiality,
+      ...base,
       updatedAt: doc.updatedAt,
       isNew: doc.updatedAt > new Date(Date.now() - 7 * 24 * 3600_000),
-      // Metadata of locked sensitive docs is minimal on purpose.
       ...(decision.canView
         ? {
+            indexState: 'disponible' as const,
             locked: false as const,
             canDownload: decision.canDownload,
             mimeType: version?.mimeType ?? null,
             sizeBytes: version?.sizeBytes ?? null,
             versionNumber: version?.versionNumber ?? null,
           }
-        : { locked: true as const, lockReason: decision.reason, canDownload: false }),
+        : { indexState: 'pendiente' as const, locked: true as const, lockReason: decision.reason, canDownload: false }),
     });
   }
   return result;
@@ -419,10 +513,9 @@ export async function serveDocument(
   const ext = version.storagePath.split('.').pop() ?? 'bin';
   const fileName = safeDownloadName(document.title, ext);
 
-  const shouldWatermark =
-    kind === 'download' &&
-    document.confidentiality === 'sensitive' &&
-    canWatermark(version.mimeType, version.sizeBytes);
+  // Watermark dinámico (email + timestamp) en TODA visualización y descarga de
+  // PDFs (spec ALT-RM). Antes solo en descarga de confidenciales.
+  const shouldWatermark = canWatermark(version.mimeType, version.sizeBytes);
 
   if (shouldWatermark) {
     const original = await downloadObject(version.storagePath);

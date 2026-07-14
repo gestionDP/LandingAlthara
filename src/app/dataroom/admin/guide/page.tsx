@@ -5,13 +5,13 @@ export const metadata = { title: 'Guía — Backoffice' };
 
 function Card({ title, intro, steps }: { title: string; intro?: string; steps: (string | React.ReactNode)[] }) {
   return (
-    <section className="border border-[#1c3742]/10 bg-white p-5 shadow-sm">
+    <section className="border border-[#1c3742]/10 bg-white p-5 rounded-lg">
       <h2 className="font-playfair text-lg text-[#1c3742]">{title}</h2>
       {intro && <p className="mt-1 text-sm text-[#1c3742]/70">{intro}</p>}
       <ul className="mt-3 space-y-2">
         {steps.map((s, i) => (
           <li key={i} className="flex gap-3 text-sm text-[#1c3742]/80">
-            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center bg-[#1c3742]/5 text-[11px] font-bold text-[#c08552]">{i + 1}</span>
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center bg-[#1c3742]/5 text-[11px] font-bold text-[#c08552] rounded-full">{i + 1}</span>
             <span>{s}</span>
           </li>
         ))}
@@ -26,8 +26,8 @@ export default function AdminGuide() {
       <div>
         <h1 className="font-playfair text-3xl">Guía del backoffice</h1>
         <p className="mt-2 text-sm text-[#1c3742]/70">
-          Cómo gestionar inversores, proyectos, documentos y el NDA del portal. El orden natural es:
-          crear el inversor → crear el proyecto → subir documentos → dar acceso → activar.
+          Cómo gestionar inversores, proyectos, documentos, el doble visado y el NDA del portal. El orden natural es:
+          crear el inversor → validar su KYC → crear el proyecto → subir documentos → pasar el doble visado (abogado + fiscal) → dar acceso → activar.
         </p>
       </div>
 
@@ -42,28 +42,49 @@ export default function AdminGuide() {
       />
 
       <Card
-        title="2. Proyectos"
-        intro="Cada proyecto es un data room con su documentación."
+        title="2. Validar la identidad (KYC)"
+        intro="Antes de acceder, cada inversor completa una verificación de identidad que usted aprueba."
         steps={[
-          <>En <Link href="/dataroom/admin/projects" className="text-[#c08552] underline">Proyectos</Link> pulse <strong>«+ Nuevo proyecto»</strong>.</>,
-          <>Dentro del proyecto tiene pestañas: <strong>Documentos</strong>, <strong>Inversores</strong>, <strong>NDA</strong> y <strong>Actividad</strong>.</>,
-          <>El banner de <strong>puesta en marcha</strong> le indica lo que falta; el inversor solo ve el proyecto cuando está <strong>Activo</strong>, con inversores asignados y documentos publicados.</>,
+          <>Al activar su cuenta, el inversor rellena su <strong>KYC</strong> (tipo y número de documento, país, teléfono, perfil inversor). Sus datos se guardan <strong>cifrados</strong>.</>,
+          <>Recibirá un email de aviso. En la ficha del inversor (<Link href="/dataroom/admin/investors" className="text-[#c08552] underline">Inversores</Link> → abrir) verá la sección <strong>KYC</strong> con los datos descifrados.</>,
+          <>Pulse <strong>Validar</strong> para activar su acceso, o <strong>Rechazar</strong> indicando el motivo (el inversor lo verá y podrá corregir y reenviar). Hasta validarlo, su estado es <strong>Pendiente de validación</strong>.</>,
         ]}
       />
 
       <Card
-        title="3. Subir y publicar documentos"
+        title="3. Proyectos y estructura de carpetas"
+        intro="Cada proyecto es un data room con su documentación, ya organizado al crearlo."
+        steps={[
+          <>En <Link href="/dataroom/admin/projects" className="text-[#c08552] underline">Proyectos</Link> pulse <strong>«+ Nuevo proyecto»</strong>. Se crea con una <strong>estructura de carpetas por defecto</strong> (0. Bienvenida, 1. Resumen, 2. Corporativa, 3. Financiera, 4. Legal, 5. Fiscal, 6. Due diligence, 7. Garantías, 8. Anexos).</>,
+          <>Cada carpeta tiene un <strong>nivel</strong>: <strong>Nivel 1</strong> (bienvenida/resumen, visible tras verificar identidad, solo lectura) o <strong>Nivel 2</strong> (confidencial, requiere NDA). Puede crear más carpetas con <strong>«+ Carpeta»</strong> y cambiar su nivel.</>,
+          <>Pestañas del proyecto: <strong>Documentos</strong>, <strong>Inversores</strong>, <strong>NDA</strong> y <strong>Actividad</strong>. El banner de <strong>puesta en marcha</strong> indica lo que falta; el inversor solo ve el proyecto cuando está <strong>Activo</strong>, con inversores asignados y documentos publicados.</>,
+        ]}
+      />
+
+      <Card
+        title="4. Subir y publicar documentos"
         intro="En la pestaña Documentos del proyecto."
         steps={[
-          <>Suba archivos con el panel superior. Marque <strong>Confidencial</strong> (solo acceso completo) o <strong>General</strong>, y si <strong>requiere NDA</strong>.</>,
-          <>«Publicar ya» deja el documento visible; «Notificar» avisa por email a los inversores (un solo correo agrupado).</>,
+          <>Elija la <strong>carpeta</strong>, suba archivos (o arrástrelos) y marque <strong>Confidencial</strong> (solo acceso completo) o <strong>General</strong>, y si <strong>requiere NDA</strong>.</>,
+          <>«Publicar ya» deja el documento listo; «Notificar» avisa por email a los inversores (un solo correo agrupado).</>,
           <>Con el menú <strong>⋮</strong> de cada archivo: Vista previa, Descargar, Compartir, Nueva versión, Archivar o Eliminar.</>,
-          'Los documentos se organizan en carpetas (categorías) para navegarlos como en SharePoint.',
+          <><strong>Importante:</strong> todo documento subido queda <strong>«En revisión»</strong> e invisible para el inversor hasta pasar el <strong>doble visado</strong> (ver punto 5).</>,
         ]}
       />
 
       <Card
-        title="4. Dar acceso: completo o por archivo"
+        title="5. Doble visado (abogado + fiscal)"
+        intro="Ningún documento llega al inversor sin la aprobación del abogado y del fiscal."
+        steps={[
+          <>Al subir o versionar un documento, entra en la cola de los revisores <strong>Abogado</strong> y <strong>Fiscal</strong>. En la lista y en el panel de detalles verá una <strong>barra de progreso</strong> con el estado de cada visado.</>,
+          <>Cuando <strong>ambos aprueban</strong>, el documento pasa a <strong>«Disponible para inversores»</strong>. Si uno rechaza, verá el <strong>motivo</strong> en el panel de detalles del documento.</>,
+          <>Para <strong>corregir un rechazo</strong>: suba una <strong>nueva versión</strong> del documento con el menú ⋮. Esto reinicia ambos visados y vuelve a pedir revisión al abogado y al fiscal.</>,
+          <>Recibirá un <strong>email</strong> cada vez que un revisor apruebe o rechace. Los revisores se dan de alta manualmente (cuentas de abogado y fiscal).</>,
+        ]}
+      />
+
+      <Card
+        title="6. Dar acceso: completo o por archivo"
         intro="Controla qué ve cada inversor."
         steps={[
           <><strong>Acceso completo</strong>: el inversor ve todos los documentos del proyecto.</>,
@@ -73,7 +94,7 @@ export default function AdminGuide() {
       />
 
       <Card
-        title="5. Invitaciones a proyectos"
+        title="7. Invitaciones a proyectos"
         intro="Asignar un inversor a un proyecto le envía una invitación que él acepta."
         steps={[
           <>En la pestaña <strong>Inversores</strong> del proyecto, elija el inversor y su nivel de acceso, y pulse dar acceso.</>,
@@ -83,7 +104,7 @@ export default function AdminGuide() {
       />
 
       <Card
-        title="6. NDA del portal"
+        title="8. NDA del portal"
         intro="Un único acuerdo de confidencialidad para todos los proyectos."
         steps={[
           <>Redacte y publique el NDA en <Link href="/dataroom/admin/nda" className="text-[#c08552] underline">NDA</Link>.</>,
@@ -93,10 +114,10 @@ export default function AdminGuide() {
       />
 
       <Card
-        title="7. Auditoría"
+        title="9. Auditoría"
         intro="Trazabilidad completa."
         steps={[
-          <>En <Link href="/dataroom/admin/audit" className="text-[#c08552] underline">Auditoría</Link> ve cada acción: accesos, vistas, descargas, firmas, cambios de permisos, etc.</>,
+          <>En <Link href="/dataroom/admin/audit" className="text-[#c08552] underline">Auditoría</Link> ve cada acción: accesos, vistas, descargas, firmas, visados (aprobados/rechazados), cambios de permisos, etc.</>,
           'Cada vista y descarga de documento queda registrada con fecha, actor y resultado.',
         ]}
       />

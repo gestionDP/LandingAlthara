@@ -13,12 +13,18 @@ export type AuditAction =
   | 'investor.deleted'
   | 'project.deleted'
   | 'document.deleted'
+  | 'document.renamed'
+  | 'review.approved'
+  | 'review.rejected'
   | 'invitation.sent'
   | 'invitation.resent'
   | 'invitation.revoked'
   | 'invitation.validated'
   | 'invitation.validation_failed'
   | 'registration.completed'
+  | 'kyc.submitted'
+  | 'kyc.validated'
+  | 'kyc.rejected'
   | 'auth.login'
   | 'auth.denied'
   | 'project.created'
@@ -43,7 +49,7 @@ export type AuditAction =
   | 'notification.sent';
 
 export interface AuditActor {
-  type: 'admin' | 'investor' | 'system';
+  type: 'admin' | 'investor' | 'system' | 'reviewer';
   id?: string | null;
   email?: string | null;
 }

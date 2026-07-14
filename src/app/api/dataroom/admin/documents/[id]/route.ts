@@ -2,7 +2,7 @@
 import { z } from 'zod';
 import { and, desc, eq } from 'drizzle-orm';
 import { requireAdmin, errorResponse, AuthzError } from '@/dataroom/lib/authz';
-import { addVersion, setDocumentStatus, setDocumentPermission, softDeleteDocument } from '@/dataroom/services/documents';
+import { addVersion, setDocumentStatus, setDocumentPermission, softDeleteDocument, renameDocument, restoreVersion, moveDocument } from '@/dataroom/services/documents';
 import { notifyNewDocuments } from '@/dataroom/services/notifications';
 import { db, schema } from '@/dataroom/db/client';
 import { DATAROOM_TENANT, MAX_UPLOAD_BYTES } from '@/dataroom/config';
@@ -46,7 +46,10 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
 }
 
 const PatchBody = z.object({
-  action: z.enum(['publish', 'archive', 'revoke', 'set_permission', 'notify']),
+  action: z.enum(['publish', 'archive', 'revoke', 'set_permission', 'notify', 'rename', 'restore_version', 'move']),
+  title: z.string().trim().min(1).max(300).optional(),
+  versionId: z.string().uuid().optional(),
+  categoryId: z.string().uuid().nullable().optional(),
   permission: z.object({
     investorId: z.string().uuid(),
     effect: z.enum(['allow', 'deny', 'clear']),
@@ -62,9 +65,17 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
     if (!parsed.success) return Response.json({ error: 'invalid_request' }, { status: 400 });
 
     const actor = { type: 'admin' as const, id: admin.userId, email: admin.email };
-    const { action, permission } = parsed.data;
+    const { action, permission, title, versionId, categoryId } = parsed.data;
 
-    if (action === 'set_permission') {
+    if (action === 'rename') {
+      if (!title) return Response.json({ error: 'invalid_request' }, { status: 400 });
+      await renameDocument(id, title, actor);
+    } else if (action === 'move') {
+      await moveDocument(id, categoryId ?? null, actor);
+    } else if (action === 'restore_version') {
+      if (!versionId) return Response.json({ error: 'invalid_request' }, { status: 400 });
+      await restoreVersion(id, versionId, actor);
+    } else if (action === 'set_permission') {
       if (!permission) return Response.json({ error: 'invalid_request' }, { status: 400 });
       await setDocumentPermission({ documentId: id, ...permission }, actor);
     } else if (action === 'notify') {

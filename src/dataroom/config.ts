@@ -35,5 +35,7 @@ export const env = {
   resendApiKey: () => requiredEnv('RESEND_API_KEY'),
   resendFrom: () => process.env.RESEND_FROM_EMAIL ?? 'noreply@crm.althara.es',
   resendFromName: () => process.env.RESEND_FROM_NAME ?? 'Althara',
+  /** Buzón real del administrador para avisos internos (KYC, visados). */
+  adminEmail: () => process.env.DATAROOM_ADMIN_EMAIL ?? process.env.ADMIN_EMAIL ?? process.env.RESEND_FROM_EMAIL ?? 'info@gestiondelpapeleo.com',
   appBaseUrl: () => process.env.NEXT_PUBLIC_APP_URL ?? 'https://althara.es',
 };

@@ -33,16 +33,33 @@ export default function AdminInvestorDetail({ params }: { params: Promise<{ id: 
   const [msg, setMsg] = useState<string | null>(null);
   const [grantProject, setGrantProject] = useState('');
   const [grantLevel, setGrantLevel] = useState<'full' | 'generic'>('full');
+  const [kyc, setKyc] = useState<{ documentType: string; residenceCountry: string; submittedAt: string; documentNumber: string | null; phone: string | null; investorProfile: Record<string, unknown> | null } | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
 
   const load = useCallback(async () => {
-    const [d, p] = await Promise.all([
+    const [d, p, k] = await Promise.all([
       fetchJson<Detail>(`/api/dataroom/admin/investors/${id}`),
       fetchJson<{ projects: ProjectOption[] }>(`/api/dataroom/admin/projects`),
+      fetchJson<{ kyc: typeof kyc }>(`/api/dataroom/admin/investors/${id}/kyc`),
     ]);
     if (d.ok && d.data) setData(d.data);
     else setError(d.error ?? 'error');
     if (p.ok && p.data) setProjects(p.data.projects);
+    if (k.ok) setKyc(k.data?.kyc ?? null);
   }, [id]);
+
+  async function decideKyc(decision: 'validate' | 'reject') {
+    if (decision === 'reject' && rejectReason.trim().length < 3) { setMsg('Indique un motivo de rechazo (mín. 3 caracteres).'); return; }
+    setBusy('kyc');
+    setMsg(null);
+    const res = await fetchJson(`/api/dataroom/admin/investors/${id}/kyc`, {
+      method: 'POST',
+      body: JSON.stringify({ decision, reason: decision === 'reject' ? rejectReason.trim() : undefined }),
+    });
+    setBusy(null);
+    if (res.ok) { setMsg(decision === 'validate' ? 'Identidad validada.' : 'KYC rechazado.'); setRejectReason(''); load(); }
+    else setMsg(`Error: ${res.error}`);
+  }
 
   useEffect(() => { load(); }, [load]);
 
@@ -90,9 +107,9 @@ export default function AdminInvestorDetail({ params }: { params: Promise<{ id: 
   if (!data) return <Spinner label="Cargando ficha…" />;
 
   const inv = data.investor;
-  const section = 'border border-[#1c3742]/15 bg-white p-5';
+  const section = 'border border-[#1c3742]/15 bg-white p-5 rounded-lg';
   const h = 'mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#1c3742]/50';
-  const btn = 'border border-[#1c3742]/30 px-3 py-1.5 text-xs hover:bg-[#1c3742]/5 disabled:opacity-40';
+  const btn = 'border border-[#1c3742]/30 px-3 py-1.5 text-xs hover:bg-[#1c3742]/5 disabled:opacity-40 rounded-md';
 
   return (
     <div className="space-y-6">
@@ -126,13 +143,55 @@ export default function AdminInvestorDetail({ params }: { params: Promise<{ id: 
           </button>
         )}
         <button
-          className="ml-auto border border-red-300 px-3 py-1.5 text-xs text-red-700 hover:bg-red-50 disabled:opacity-40"
+          className="ml-auto border border-red-300 px-3 py-1.5 text-xs text-red-700 hover:bg-red-50 disabled:opacity-40 rounded-md"
           disabled={!!busy}
           onClick={deleteInvestor}
         >
           Eliminar inversor
         </button>
       </div>
+
+      {/* KYC — verificación de identidad */}
+      <section className={`${section} ${inv.status === 'pending_validation' ? 'border-[#c08552]/50 bg-[#c08552]/[0.05]' : ''}`}>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className={`${h} mb-0`}>Verificación de identidad (KYC)</h2>
+          <Badge value={inv.status} />
+        </div>
+        {!kyc ? (
+          <p className="text-sm text-[#1c3742]/50">El inversor aún no ha enviado sus datos de KYC.</p>
+        ) : (
+          <>
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+              <dt className="text-[#1c3742]/50">Tipo documento</dt><dd className="uppercase">{kyc.documentType}</dd>
+              <dt className="text-[#1c3742]/50">Nº documento</dt><dd>{kyc.documentNumber ?? '—'}</dd>
+              <dt className="text-[#1c3742]/50">País residencia</dt><dd>{kyc.residenceCountry}</dd>
+              <dt className="text-[#1c3742]/50">Teléfono</dt><dd>{kyc.phone ?? '—'}</dd>
+              <dt className="text-[#1c3742]/50">Perfil</dt>
+              <dd>{kyc.investorProfile ? Object.entries(kyc.investorProfile).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join(' · ') || '—' : '—'}</dd>
+              <dt className="text-[#1c3742]/50">Enviado</dt><dd>{formatDate(kyc.submittedAt)}</dd>
+            </dl>
+            {inv.status === 'rejected' && (
+              <p className="mt-3 text-xs text-red-700">Rechazado. Motivo guardado; el inversor puede corregir y reenviar.</p>
+            )}
+          </>
+        )}
+        {inv.status === 'pending_validation' && (
+          <div className="mt-4 flex flex-col gap-2 border-t border-[#1c3742]/10 pt-4 sm:flex-row sm:items-center">
+            <button disabled={busy === 'kyc'} onClick={() => decideKyc('validate')}
+              className="bg-[#1c3742] px-5 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40 rounded-md">
+              Validar identidad → activar
+            </button>
+            <div className="flex flex-1 gap-2">
+              <input value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} placeholder="Motivo de rechazo"
+                className="flex-1 border border-[#1c3742]/25 bg-white px-3 py-2 text-sm focus:outline-none rounded-md" />
+              <button disabled={busy === 'kyc'} onClick={() => decideKyc('reject')}
+                className="border border-red-300 px-4 py-2 text-sm text-red-700 hover:bg-red-50 disabled:opacity-40 rounded-md">
+                Rechazar
+              </button>
+            </div>
+          </div>
+        )}
+      </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className={section}>
@@ -149,7 +208,7 @@ export default function AdminInvestorDetail({ params }: { params: Promise<{ id: 
             <dt className="text-[#1c3742]/50">Términos</dt><dd>{inv.termsVersion ?? '—'}</dd>
           </dl>
           {inv.internalNotes && (
-            <p className="mt-3 bg-[#faf9f5] p-3 text-xs text-[#1c3742]/70">{inv.internalNotes}</p>
+            <p className="mt-3 bg-[#faf9f5] p-3 text-xs text-[#1c3742]/70 rounded-md">{inv.internalNotes}</p>
           )}
         </section>
 
@@ -157,14 +216,14 @@ export default function AdminInvestorDetail({ params }: { params: Promise<{ id: 
           <h2 className={h}>Proyectos asignados</h2>
           <div className="mb-3 flex gap-2">
             <select value={grantProject} onChange={(e) => setGrantProject(e.target.value)}
-              className="flex-1 border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1.5 text-xs">
+              className="flex-1 border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1.5 text-xs rounded-md">
               <option value="">Asignar proyecto…</option>
               {projects
                 .filter((p) => !data.assignments.some((a) => a.access.projectId === p.id && a.access.status === 'active'))
                 .map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
             <select value={grantLevel} onChange={(e) => setGrantLevel(e.target.value as 'full' | 'generic')}
-              className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1.5 text-xs">
+              className="border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1.5 text-xs rounded-md">
               <option value="full">Acceso completo</option>
               <option value="generic">Solo genérico</option>
             </select>
@@ -175,7 +234,7 @@ export default function AdminInvestorDetail({ params }: { params: Promise<{ id: 
           ) : (
             <ul className="space-y-2">
               {data.assignments.map((a) => (
-                <li key={a.access.projectId} className="flex items-center justify-between gap-2 bg-[#faf9f5] px-3 py-2 text-sm">
+                <li key={a.access.projectId} className="flex items-center justify-between gap-2 bg-[#faf9f5] px-3 py-2 text-sm rounded-md">
                   <div>
                     <Link href={`/dataroom/admin/projects/${a.access.projectId}`} className="hover:underline">{a.projectName}</Link>
                     <span className="ml-2 text-xs text-[#1c3742]/40">{STATUS_LABELS[a.access.accessLevel] ?? a.access.accessLevel} · desde {formatDate(a.access.grantedAt)}</span>
@@ -198,7 +257,7 @@ export default function AdminInvestorDetail({ params }: { params: Promise<{ id: 
           {data.invitations.length === 0 ? <p className="text-sm text-[#1c3742]/50">Sin invitaciones.</p> : (
             <ul className="space-y-1 text-sm">
               {data.invitations.map((i) => (
-                <li key={i.id} className="flex items-center justify-between bg-[#faf9f5] px-3 py-2">
+                <li key={i.id} className="flex items-center justify-between bg-[#faf9f5] px-3 py-2 rounded-md">
                   <span className="text-xs text-[#1c3742]/60">Creada {formatDate(i.createdAt)} · caduca {formatDate(i.expiresAt)}</span>
                   <Badge value={i.status} />
                 </li>
@@ -212,7 +271,7 @@ export default function AdminInvestorDetail({ params }: { params: Promise<{ id: 
           {data.signatures.length === 0 ? <p className="text-sm text-[#1c3742]/50">Sin firmas registradas.</p> : (
             <ul className="space-y-1 text-sm">
               {data.signatures.map((s) => (
-                <li key={s.id} className="flex items-center justify-between bg-[#faf9f5] px-3 py-2">
+                <li key={s.id} className="flex items-center justify-between bg-[#faf9f5] px-3 py-2 rounded-md">
                   <span className="text-xs text-[#1c3742]/60">{s.signerFullName} · {formatDate(s.signedAt)}</span>
                   <div className="flex items-center gap-2">
                     <Badge value={s.status} />

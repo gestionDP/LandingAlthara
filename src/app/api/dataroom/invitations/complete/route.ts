@@ -19,6 +19,16 @@ const Body = z.object({
   acceptPrivacy: z.literal(true),
   acceptTerms: z.literal(true),
   language: z.enum(['es', 'en']).optional(),
+  kyc: z.object({
+    documentType: z.enum(['dni', 'nie', 'passport', 'other']),
+    documentNumber: z.string().trim().min(3).max(60),
+    residenceCountry: z.string().trim().length(2),
+    investorProfile: z.object({
+      investorType: z.string().optional(),
+      ticketRange: z.string().optional(),
+      experience: z.string().optional(),
+    }).passthrough(),
+  }),
 });
 
 export async function POST(req: Request) {

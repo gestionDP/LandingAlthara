@@ -15,7 +15,11 @@ export type EmailTemplate =
   | 'project_granted'
   | 'project_revoked'
   | 'password_reset'
-  | 'account_suspended';
+  | 'account_suspended'
+  | 'kyc_validated'
+  | 'kyc_rejected'
+  | 'kyc_submitted_admin'
+  | 'document_reviewed_admin';
 
 export type EmailLocale = 'es' | 'en';
 
@@ -31,6 +35,14 @@ interface TemplateParams {
   documentTitles?: string[];
   actionUrl?: string;
   expiresHours?: number;
+  /** Motivo del rechazo de KYC (kyc_rejected). */
+  reason?: string;
+  /** Email del inversor, para avisos internos al admin (kyc_submitted_admin). */
+  investorEmail?: string;
+  /** Visado de documentos (document_reviewed_admin). */
+  documentTitle?: string;
+  reviewRole?: string;
+  reviewDecision?: string;
 }
 
 const BRAND = {
@@ -133,6 +145,28 @@ const es: Dict = {
     title: 'Cuenta suspendida',
     body: `Hola${p.investorName ? ` ${p.investorName}` : ''},<br/><br/>Su acceso al portal de inversores ha sido suspendido temporalmente. Para más información, contacte con su gestor en Althara.`,
   }),
+  kyc_validated: (p) => ({
+    subject: 'Su identidad ha sido verificada',
+    title: 'Verificación completada',
+    body: `Hola${p.investorName ? ` ${p.investorName}` : ''},<br/><br/>Hemos verificado correctamente su identidad. Su acceso al portal de inversores de Althara ya está activo y puede consultar los proyectos que le han sido asignados.`,
+    cta: 'Ir a mi portal',
+  }),
+  kyc_rejected: (p) => ({
+    subject: 'No hemos podido verificar su identidad',
+    title: 'Verificación no completada',
+    body: `Hola${p.investorName ? ` ${p.investorName}` : ''},<br/><br/>No hemos podido verificar su identidad.<br/><br/>Motivo: <strong>${p.reason ?? 'No especificado'}</strong><br/><br/>Le invitamos a corregir los datos indicados y reenviar su verificación desde el portal. Si tiene dudas, contacte con su gestor en Althara.`,
+    cta: 'Revisar mi verificación',
+  }),
+  kyc_submitted_admin: (p) => ({
+    subject: 'Nuevo KYC pendiente de validación',
+    title: 'Un inversor ha enviado su KYC',
+    body: `El inversor <strong>${p.investorEmail ?? 'desconocido'}</strong> ha enviado su verificación de identidad (KYC) y está pendiente de validación en el panel de administración.`,
+  }),
+  document_reviewed_admin: (p) => ({
+    subject: `Visado ${p.reviewDecision ?? ''} — ${p.documentTitle ?? 'documento'}`,
+    title: `Un revisor ha ${p.reviewDecision ?? 'revisado'} un documento`,
+    body: `El revisor de <strong>${p.reviewRole ?? ''}</strong> ha <strong>${p.reviewDecision ?? 'revisado'}</strong> el documento <strong>${p.documentTitle ?? ''}</strong>.${p.reason ? `<br/><br/>Motivo: <strong>${p.reason}</strong>` : ''}<br/><br/>Consulte el estado del doble visado en el panel de administración.`,
+  }),
 };
 
 const en: Dict = {
@@ -199,6 +233,28 @@ const en: Dict = {
     subject: 'Your account has been temporarily suspended',
     title: 'Account suspended',
     body: `Hello${p.investorName ? ` ${p.investorName}` : ''},<br/><br/>Your access to the investor portal has been temporarily suspended. For more information, contact your Althara manager.`,
+  }),
+  kyc_validated: (p) => ({
+    subject: 'Your identity has been verified',
+    title: 'Verification complete',
+    body: `Hello${p.investorName ? ` ${p.investorName}` : ''},<br/><br/>We have successfully verified your identity. Your access to the Althara investor portal is now active and you can review the projects assigned to you.`,
+    cta: 'Go to my portal',
+  }),
+  kyc_rejected: (p) => ({
+    subject: 'We could not verify your identity',
+    title: 'Verification not completed',
+    body: `Hello${p.investorName ? ` ${p.investorName}` : ''},<br/><br/>We were unable to verify your identity.<br/><br/>Reason: <strong>${p.reason ?? 'Not specified'}</strong><br/><br/>Please correct the details above and resubmit your verification from the portal. If you have any questions, contact your Althara manager.`,
+    cta: 'Review my verification',
+  }),
+  kyc_submitted_admin: (p) => ({
+    subject: 'New KYC pending validation',
+    title: 'An investor has submitted their KYC',
+    body: `Investor <strong>${p.investorEmail ?? 'unknown'}</strong> has submitted their identity verification (KYC) and it is pending validation in the admin panel.`,
+  }),
+  document_reviewed_admin: (p) => ({
+    subject: `Review ${p.reviewDecision ?? ''} — ${p.documentTitle ?? 'document'}`,
+    title: `A reviewer has ${p.reviewDecision ?? 'reviewed'} a document`,
+    body: `The <strong>${p.reviewRole ?? ''}</strong> reviewer has <strong>${p.reviewDecision ?? 'reviewed'}</strong> the document <strong>${p.documentTitle ?? ''}</strong>.${p.reason ? `<br/><br/>Reason: <strong>${p.reason}</strong>` : ''}<br/><br/>Check the dual-review status in the admin panel.`,
   }),
 };
 

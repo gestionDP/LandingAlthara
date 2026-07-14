@@ -38,12 +38,12 @@ export function Spinner({ label }: { label?: string }) {
 
 export function ErrorBox({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
-    <div className="border border-red-300 bg-red-50 p-6 text-center">
+    <div className="border border-red-300 bg-red-50 p-6 text-center rounded-lg">
       <p className="text-sm text-red-800">{message}</p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="mt-3 border border-red-300 px-4 py-1.5 text-xs text-red-700 hover:bg-red-100"
+          className="mt-3 border border-red-300 px-4 py-1.5 text-xs text-red-700 hover:bg-red-100 rounded-md"
         >
           Reintentar
         </button>
@@ -54,7 +54,7 @@ export function ErrorBox({ message, onRetry }: { message: string; onRetry?: () =
 
 export function EmptyState({ title, subtitle, icon }: { title: string; subtitle?: string; icon?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 border border-dashed border-[#1c3742]/20 bg-white/60 py-16 text-center">
+    <div className="flex flex-col items-center justify-center gap-2 border border-dashed border-[#1c3742]/20 bg-white/60 py-16 text-center rounded-lg">
       {icon}
       <p className="font-medium text-[#1c3742]">{title}</p>
       {subtitle && <p className="max-w-md text-sm text-[#1c3742]/55">{subtitle}</p>}
@@ -68,6 +68,8 @@ const BADGE_STYLES: Record<string, string> = {
   signed: 'bg-[#1c3742] text-[#e6e2d7] border-[#1c3742]',
   published: 'bg-[#1c3742] text-[#e6e2d7] border-[#1c3742]',
   pending: 'bg-[#1c3742]/5 text-[#c08552] border-[#c08552]/45',
+  pending_validation: 'bg-[#1c3742]/5 text-[#c08552] border-[#c08552]/45',
+  rejected: 'bg-red-100 text-red-800 border-red-300',
   invited: 'bg-[#1c3742]/5 text-[#c08552] border-[#c08552]/45',
   pending_signature: 'bg-[#1c3742]/5 text-[#c08552] border-[#c08552]/45',
   required: 'bg-[#1c3742]/5 text-[#c08552] border-[#c08552]/45',
@@ -84,6 +86,7 @@ const BADGE_STYLES: Record<string, string> = {
 /** Etiquetas en español para TODOS los valores internos (nunca mostrar variables). */
 export const STATUS_LABELS: Record<string, string> = {
   active: 'Activo', invited: 'Invitado', draft: 'Borrador', suspended: 'Suspendido',
+  pending_validation: 'Pendiente validación', rejected: 'Rechazado',
   disabled: 'Desactivado', revoked: 'Revocado', expired: 'Caducado', archived: 'Archivado',
   published: 'Publicado', signed: 'NDA firmado', pending_signature: 'NDA pendiente',
   required: 'NDA requerido', not_required: 'Sin NDA', invitation_expired: 'Invitación caducada',
@@ -107,6 +110,9 @@ export const ACTION_LABELS: Record<string, string> = {
   'invitation.validated': 'Invitación validada',
   'invitation.validation_failed': 'Validación de invitación fallida',
   'registration.completed': 'Registro completado',
+  'kyc.submitted': 'KYC enviado',
+  'kyc.validated': 'KYC validado',
+  'kyc.rejected': 'KYC rechazado',
   'auth.login': 'Inicio de sesión',
   'auth.denied': 'Acceso denegado',
   'project.created': 'Proyecto creado',
@@ -124,6 +130,9 @@ export const ACTION_LABELS: Record<string, string> = {
   'document.versioned': 'Documento versionado',
   'document.archived': 'Documento archivado',
   'document.deleted': 'Documento eliminado',
+  'document.renamed': 'Documento renombrado',
+  'review.approved': 'Visado aprobado',
+  'review.rejected': 'Visado rechazado',
   'document.viewed': 'Documento visualizado',
   'document.downloaded': 'Documento descargado',
   'document.access_denied': 'Acceso a documento denegado',
@@ -140,7 +149,7 @@ export function actionLabel(action: string): string {
 export function Badge({ value }: { value: string }) {
   return (
     <span
-      className={`inline-flex items-center border px-2.5 py-0.5 text-[11px] font-medium ${BADGE_STYLES[value] ?? 'bg-[#1c3742]/5 text-[#1c3742]/70 border-[#1c3742]/15'}`}
+      className={`inline-flex items-center border px-2.5 py-0.5 text-[11px] font-medium rounded-full ${BADGE_STYLES[value] ?? 'bg-[#1c3742]/5 text-[#1c3742]/70 border-[#1c3742]/15'}`}
     >
       {BADGE_LABELS_ES[value] ?? value}
     </span>
@@ -176,7 +185,7 @@ export function FileIcon({ mimeType, fileName }: { mimeType?: string | null; fil
     is(m.startsWith('image/'), ['png', 'jpg', 'jpeg', 'webp', 'gif']) ? ['IMG', 'bg-purple-50', 'text-purple-700'] :
     ['FILE', 'bg-[#1c3742]/5', 'text-[#1c3742]/70'];
   return (
-    <span className={`flex h-9 w-9 shrink-0 items-center justify-center ${bg} ${color} text-[10px] font-bold uppercase tracking-wide`} aria-hidden>
+    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${bg} ${color} text-[10px] font-bold uppercase tracking-wide`} aria-hidden>
       {label}
     </span>
   );
@@ -223,7 +232,7 @@ export function FolderChip({ active, onClick, label, count }: { active: boolean;
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition ${
+      className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition ${
         active ? 'bg-[#1c3742] text-[#e6e2d7]' : 'text-[#1c3742]/75 hover:bg-[#1c3742]/[0.06]'
       }`}
     >
@@ -239,7 +248,7 @@ export function ViewToggle({ view, onChange }: { view: 'list' | 'grid'; onChange
   const cls = (active: boolean) =>
     `flex h-8 w-8 items-center justify-center border border-[#1c3742]/20 ${active ? 'bg-[#1c3742] text-[#e6e2d7]' : 'text-[#1c3742]/60 hover:bg-[#1c3742]/[0.06]'}`;
   return (
-    <div className="flex shrink-0">
+    <div className="flex shrink-0 overflow-hidden rounded-md">
       <button type="button" aria-label="Vista de lista" onClick={() => onChange('list')} className={cls(view === 'list')}>
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden><rect x="3" y="5" width="18" height="2" /><rect x="3" y="11" width="18" height="2" /><rect x="3" y="17" width="18" height="2" /></svg>
       </button>
@@ -326,7 +335,7 @@ export function KebabMenu({ items, label = 'Más acciones' }: { items: MenuItem[
           ref={menuRef}
           role="menu"
           style={{ position: 'fixed', top: pos.top, left: pos.left, width }}
-          className="z-[60] border border-[#1c3742]/15 bg-white py-1 shadow-xl"
+          className="z-[60] border border-[#1c3742]/15 bg-white py-1 rounded-lg"
         >
           {items.map((it, i) => (
             <button
@@ -421,7 +430,7 @@ export function DocViewer({ title, src, mimeType, fileName, onClose, onDownload 
         <p className="truncate text-sm font-medium">{title}</p>
         <div className="flex items-center gap-2">
           {onDownload && (
-            <button onClick={onDownload} className="border border-[#e6e2d7]/40 px-3 py-1.5 text-xs transition-colors hover:bg-white/10">Descargar</button>
+            <button onClick={onDownload} className="border border-[#e6e2d7]/40 px-3 py-1.5 text-xs transition-colors hover:bg-white/10 rounded-md">Descargar</button>
           )}
           <button onClick={onClose} aria-label="Cerrar" className="flex h-8 w-8 items-center justify-center rounded-full text-lg transition-colors hover:bg-white/10">✕</button>
         </div>
@@ -430,19 +439,19 @@ export function DocViewer({ title, src, mimeType, fileName, onClose, onDownload 
         {isImage ? (
           <div className="flex h-full items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={src} alt={title} className="max-h-full max-w-full object-contain" />
+            <img src={src} alt={title} className="max-h-full max-w-full rounded-lg object-contain" />
           </div>
         ) : isPdf ? (
-          <iframe src={src} title={title} className="h-full w-full border-0 bg-white" />
+          <iframe src={src} title={title} className="h-full w-full rounded-lg border-0 bg-white" />
         ) : state === 'loading' ? (
           <div className="flex h-full items-center justify-center"><Spinner label="Preparando la vista previa…" /></div>
         ) : state === 'ready' && isDocx ? (
           <div
-            className="mx-auto max-w-3xl bg-white p-8 text-sm leading-relaxed text-[#1c3742] shadow-xl [&_a]:text-[#c08552] [&_h1]:mb-2 [&_h1]:mt-4 [&_h1]:text-xl [&_h1]:font-bold [&_h2]:mb-2 [&_h2]:mt-4 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:mt-3 [&_h3]:font-semibold [&_img]:my-2 [&_img]:max-w-full [&_li]:my-1 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_table]:my-3 [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-[#1c3742]/15 [&_td]:px-2 [&_td]:py-1 [&_th]:border [&_th]:border-[#1c3742]/15 [&_th]:bg-[#1c3742]/5 [&_th]:px-2 [&_th]:py-1 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6"
+            className="mx-auto max-w-3xl bg-white p-8 text-sm leading-relaxed text-[#1c3742] rounded-lg [&_a]:text-[#c08552] [&_h1]:mb-2 [&_h1]:mt-4 [&_h1]:text-xl [&_h1]:font-bold [&_h2]:mb-2 [&_h2]:mt-4 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:mt-3 [&_h3]:font-semibold [&_img]:my-2 [&_img]:max-w-full [&_li]:my-1 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_table]:my-3 [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-[#1c3742]/15 [&_td]:px-2 [&_td]:py-1 [&_th]:border [&_th]:border-[#1c3742]/15 [&_th]:bg-[#1c3742]/5 [&_th]:px-2 [&_th]:py-1 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6"
             dangerouslySetInnerHTML={{ __html: html }}
           />
         ) : state === 'ready' && isSheet && rows ? (
-          <div className="mx-auto max-w-5xl overflow-auto bg-white p-2 shadow-xl">
+          <div className="mx-auto max-w-5xl overflow-auto bg-white p-2 rounded-lg">
             <table className="w-full border-collapse text-xs">
               <tbody>
                 {rows.map((r, i) => (
@@ -457,7 +466,7 @@ export function DocViewer({ title, src, mimeType, fileName, onClose, onDownload 
           <div className="flex h-full flex-col items-center justify-center gap-3 text-[#e6e2d7]/85">
             <p className="text-sm">La vista previa de este tipo de archivo no está disponible aquí.</p>
             {onDownload && (
-              <button onClick={onDownload} className="bg-[#e6e2d7] px-4 py-2 text-sm font-semibold text-[#102027]">Descargar para verlo</button>
+              <button onClick={onDownload} className="bg-[#e6e2d7] px-4 py-2 text-sm font-semibold text-[#102027] rounded-md">Descargar para verlo</button>
             )}
           </div>
         )}
@@ -477,8 +486,71 @@ export function LibrarySearch({ value, onChange, placeholder = 'Buscar en esta b
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full border border-[#1c3742]/20 bg-white py-2 pl-9 pr-3 text-sm placeholder:text-[#1c3742]/35 focus:border-[#1c3742]/50 focus:outline-none"
+        className="w-full border border-[#1c3742]/20 bg-white py-2 pl-9 pr-3 text-sm placeholder:text-[#1c3742]/35 focus:border-[#1c3742]/50 focus:outline-none rounded-md"
       />
     </div>
+  );
+}
+
+/* --------------------------- Doble visado (visual) ------------------------ */
+
+export type VisadoStatus = 'pending' | 'approved' | 'rejected';
+
+const VISADO_META: Record<VisadoStatus, { label: string; icon: string; fill: string; text: string; dot: string }> = {
+  approved: { label: 'Aprobado', icon: '✓', fill: 'bg-[#2e9e5a]', text: 'text-[#2e9e5a]', dot: 'bg-[#2e9e5a]' },
+  rejected: { label: 'Rechazado', icon: '✗', fill: 'bg-red-600', text: 'text-red-600', dot: 'bg-red-600' },
+  pending: { label: 'Pendiente', icon: '⏳', fill: 'bg-[#c08552]', text: 'text-[#c08552]', dot: 'bg-[#c08552]' },
+};
+
+/** Frase-resumen del estado combinado del doble visado. */
+export function visadoCaption(legal: VisadoStatus, tax: VisadoStatus): { text: string; tone: 'ok' | 'bad' | 'wait' } {
+  if (legal === 'approved' && tax === 'approved') return { text: 'Disponible para inversores', tone: 'ok' };
+  if (legal === 'rejected' || tax === 'rejected') return { text: 'Rechazado — requiere corrección', tone: 'bad' };
+  if (legal === 'approved') return { text: 'Aprobado por abogado · Pendiente de fiscal', tone: 'wait' };
+  if (tax === 'approved') return { text: 'Aprobado por fiscal · Pendiente de abogado', tone: 'wait' };
+  return { text: 'Pendiente de abogado y fiscal', tone: 'wait' };
+}
+
+/**
+ * Barra de progreso del doble visado: dos tramos (Abogado, Fiscal), cada uno
+ * coloreado por su estado, con una frase-resumen debajo. Reutilizada en el
+ * portal del revisor y en el panel de administración.
+ */
+export function VisadoProgress({
+  legalStatus, taxStatus, compact = false,
+}: { legalStatus: string; taxStatus: string; compact?: boolean }) {
+  const legal = (['pending', 'approved', 'rejected'].includes(legalStatus) ? legalStatus : 'pending') as VisadoStatus;
+  const tax = (['pending', 'approved', 'rejected'].includes(taxStatus) ? taxStatus : 'pending') as VisadoStatus;
+  const cap = visadoCaption(legal, tax);
+  const capColor = cap.tone === 'ok' ? 'text-[#2e9e5a]' : cap.tone === 'bad' ? 'text-red-600' : 'text-[#c08552]';
+  const seg = (role: 'Abogado' | 'Fiscal', s: VisadoStatus) => (
+    <div className="flex-1">
+      <div className={`h-1.5 w-full rounded-full ${s === 'pending' ? 'bg-[#c08552]/25' : VISADO_META[s].fill}`} />
+      {!compact && (
+        <div className="mt-1 flex items-center gap-1">
+          <span className={`text-[11px] ${VISADO_META[s].text}`}>{VISADO_META[s].icon}</span>
+          <span className="text-[11px] text-[#1c3742]/70">{role}</span>
+          <span className={`text-[11px] ${VISADO_META[s].text}`}>· {VISADO_META[s].label}</span>
+        </div>
+      )}
+    </div>
+  );
+  return (
+    <div>
+      <div className="flex items-center gap-1.5">{seg('Abogado', legal)}{seg('Fiscal', tax)}</div>
+      <p className={`mt-1 text-[11px] font-medium ${capColor}`}>{cap.text}</p>
+    </div>
+  );
+}
+
+/** Indicador compacto en línea (para filas densas): Abogado ✓ · Fiscal ⏳. */
+export function VisadoInline({ legalStatus, taxStatus }: { legalStatus: string; taxStatus: string }) {
+  const norm = (v: string): VisadoStatus => (['pending', 'approved', 'rejected'].includes(v) ? v : 'pending') as VisadoStatus;
+  const l = norm(legalStatus); const t = norm(taxStatus);
+  return (
+    <span className="inline-flex items-center gap-2 text-[11px]">
+      <span className="inline-flex items-center gap-1"><span className={`h-1.5 w-1.5 rounded-full ${VISADO_META[l].dot}`} />Abogado {VISADO_META[l].icon}</span>
+      <span className="inline-flex items-center gap-1"><span className={`h-1.5 w-1.5 rounded-full ${VISADO_META[t].dot}`} />Fiscal {VISADO_META[t].icon}</span>
+    </span>
   );
 }

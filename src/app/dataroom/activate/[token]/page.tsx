@@ -37,6 +37,9 @@ export default function ActivatePage({ params }: { params: Promise<{ token: stri
     firstName: '', lastName: '', phone: '', country: 'España', company: '',
     investorType: 'individual', password: '', password2: '',
     acceptPrivacy: false, acceptTerms: false, language: 'es',
+    // KYC
+    documentType: 'dni', documentNumber: '', residenceCountry: 'ES',
+    ticketRange: '', experience: '',
   });
 
   const validate = useCallback(async () => {
@@ -72,6 +75,8 @@ export default function ActivatePage({ params }: { params: Promise<{ token: stri
     if (form.password !== form.password2) return setFormError('Las contraseñas no coinciden.');
     if (form.password.length < 12) return setFormError('La contraseña debe tener al menos 12 caracteres, con mayúsculas, minúsculas y números.');
     if (!form.acceptPrivacy || !form.acceptTerms) return setFormError('Debe aceptar la política de privacidad y los términos de uso.');
+    if (form.documentNumber.trim().length < 3) return setFormError('Introduzca su número de documento para la verificación de identidad.');
+    if (form.residenceCountry.trim().length !== 2) return setFormError('Indique su país de residencia (código de 2 letras, p. ej. ES).');
 
     setPhase('submitting');
     const res = await fetchJson<{ ok: boolean; reason?: string }>('/api/dataroom/invitations/complete', {
@@ -88,6 +93,16 @@ export default function ActivatePage({ params }: { params: Promise<{ token: stri
         acceptPrivacy: true,
         acceptTerms: true,
         language: form.language,
+        kyc: {
+          documentType: form.documentType,
+          documentNumber: form.documentNumber.trim(),
+          residenceCountry: form.residenceCountry.trim().toUpperCase(),
+          investorProfile: {
+            investorType: form.investorType,
+            ticketRange: form.ticketRange || undefined,
+            experience: form.experience || undefined,
+          },
+        },
       }),
     });
 
@@ -110,7 +125,7 @@ export default function ActivatePage({ params }: { params: Promise<{ token: stri
     }
   }
 
-  const input = 'w-full border border-[#1c3742]/25 bg-[#faf9f5] px-3 py-2 text-sm text-[#1c3742] placeholder:text-[#1c3742]/30 focus:border-[#1c3742]/50 focus:outline-none';
+  const input = 'w-full border border-[#1c3742]/25 bg-[#faf9f5] px-3 py-2 text-sm text-[#1c3742] placeholder:text-[#1c3742]/30 focus:border-[#1c3742]/50 focus:outline-none rounded-md';
   const label = 'mb-1 block text-xs font-medium uppercase tracking-wider text-[#1c3742]/60';
 
   if (phase === 'validating') return <Spinner label="Validando su invitación…" />;
@@ -121,7 +136,7 @@ export default function ActivatePage({ params }: { params: Promise<{ token: stri
         <h1 className="font-playfair text-2xl">Invitación no disponible</h1>
         <ErrorBox message={TOKEN_ERRORS[tokenError] ?? TOKEN_ERRORS.invalid} />
         {(tokenError === 'used' || tokenError === 'already_active') && (
-          <button onClick={() => router.push('/dataroom/sign-in')} className="bg-[#1c3742] px-5 py-2 text-sm font-semibold text-[#e6e2d7]">
+          <button onClick={() => router.push('/dataroom/sign-in')} className="bg-[#1c3742] px-5 py-2 text-sm font-semibold text-[#e6e2d7] rounded-md">
             Iniciar sesión
           </button>
         )}
@@ -132,9 +147,10 @@ export default function ActivatePage({ params }: { params: Promise<{ token: stri
   if (phase === 'done') {
     return (
       <div className="mx-auto max-w-md space-y-3 py-16 text-center">
-        <h1 className="font-playfair text-2xl">Cuenta activada</h1>
+        <h1 className="font-playfair text-2xl">Registro enviado</h1>
         <p className="text-sm text-[#1c3742]/70">
-          Su cuenta está lista. Le redirigimos al inicio de sesión…
+          Hemos recibido sus datos. Althara verificará su identidad y le avisará cuando su acceso
+          esté activo. Le redirigimos al inicio de sesión…
         </p>
       </div>
     );
@@ -199,6 +215,45 @@ export default function ActivatePage({ params }: { params: Promise<{ token: stri
           Mínimo 12 caracteres, con mayúsculas, minúsculas y números.
         </p>
 
+        {/* Verificación de identidad (KYC) */}
+        <div className="border-t border-[#1c3742]/10 pt-5">
+          <p className="text-sm font-semibold text-[#1c3742]">Verificación de identidad</p>
+          <p className="mt-0.5 text-xs text-[#1c3742]/55">
+            Necesaria para dar acceso a la documentación. Sus datos se guardan cifrados y los revisa Althara.
+          </p>
+          <div className="mt-3 grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className={label}>Tipo de documento *</label>
+              <select className={input} value={form.documentType} onChange={(e) => setForm({ ...form, documentType: e.target.value })}>
+                <option value="dni">DNI</option>
+                <option value="nie">NIE</option>
+                <option value="passport">Pasaporte</option>
+                <option value="other">Otro</option>
+              </select>
+            </div>
+            <div>
+              <label className={label}>Número de documento *</label>
+              <input required maxLength={60} className={input} value={form.documentNumber}
+                onChange={(e) => setForm({ ...form, documentNumber: e.target.value })} />
+            </div>
+            <div>
+              <label className={label}>País de residencia (ISO, ej. ES) *</label>
+              <input required maxLength={2} className={`${input} uppercase`} value={form.residenceCountry}
+                onChange={(e) => setForm({ ...form, residenceCountry: e.target.value.toUpperCase() })} />
+            </div>
+            <div>
+              <label className={label}>Rango de ticket (opcional)</label>
+              <input maxLength={60} className={input} value={form.ticketRange} placeholder="p. ej. 100k–500k"
+                onChange={(e) => setForm({ ...form, ticketRange: e.target.value })} />
+            </div>
+            <div className="sm:col-span-2">
+              <label className={label}>Experiencia inversora (opcional)</label>
+              <input maxLength={200} className={input} value={form.experience}
+                onChange={(e) => setForm({ ...form, experience: e.target.value })} />
+            </div>
+          </div>
+        </div>
+
         <label className="flex items-start gap-2 text-xs text-[#1c3742]/70">
           <input type="checkbox" checked={form.acceptPrivacy}
             onChange={(e) => setForm({ ...form, acceptPrivacy: e.target.checked })} className="mt-0.5" />
@@ -215,7 +270,7 @@ export default function ActivatePage({ params }: { params: Promise<{ token: stri
         <button
           type="submit"
           disabled={phase === 'submitting'}
-          className="w-full bg-[#1c3742] px-5 py-2.5 text-sm font-semibold text-[#e6e2d7] disabled:opacity-50"
+          className="w-full bg-[#1c3742] px-5 py-2.5 text-sm font-semibold text-[#e6e2d7] disabled:opacity-50 rounded-md"
         >
           {phase === 'submitting' ? 'Activando…' : 'Activar cuenta'}
         </button>
