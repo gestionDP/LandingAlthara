@@ -14,7 +14,7 @@ import { canWatermark, watermarkPdf } from '../lib/watermark';
 import { writeAudit, type AuditActor, type RequestMeta } from '../lib/audit';
 import { AuthzError, type Investor } from '../lib/authz';
 import { ndaStateFor } from './projects';
-import { isReviewApproved, resetReviews } from './reviews';
+import { isReviewApproved, resetReviews, notifyReviewersPendingReview } from './reviews';
 
 const T = DATAROOM_TENANT;
 
@@ -107,6 +107,9 @@ export async function uploadDocument(input: UploadDocumentInput, actor: AuditAct
     });
   }
 
+  // Aviso a abogado y fiscal: hay un documento nuevo pendiente de visado.
+  await notifyReviewersPendingReview(document.title, project.name);
+
   return { document, version };
 }
 
@@ -165,8 +168,11 @@ export async function addVersion(
   }
 
   if (versionNumber > 1) {
-    // Nueva versión → se reinicia el doble visado (abogado + fiscal).
+    // Nueva versión → se reinicia el doble visado (abogado + fiscal) y se avisa.
     await resetReviews(document.id);
+    const [proj] = await db().select({ name: schema.projects.name }).from(schema.projects)
+      .where(eq(schema.projects.id, document.projectId)).limit(1);
+    await notifyReviewersPendingReview(document.title, proj?.name ?? null);
     await writeAudit({
       tenant: T, actor, action: 'document.versioned', entityType: 'document', entityId: document.id,
       metadata: { versionNumber },

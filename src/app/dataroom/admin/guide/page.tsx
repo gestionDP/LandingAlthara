@@ -55,8 +55,8 @@ export default function AdminGuide() {
         title="3. Proyectos y estructura de carpetas"
         intro="Cada proyecto es un data room con su documentación, ya organizado al crearlo."
         steps={[
-          <>En <Link href="/dataroom/admin/projects" className="text-[#c08552] underline">Proyectos</Link> pulse <strong>«+ Nuevo proyecto»</strong>. Se crea con una <strong>estructura de carpetas por defecto</strong> (0. Bienvenida, 1. Resumen, 2. Corporativa, 3. Financiera, 4. Legal, 5. Fiscal, 6. Due diligence, 7. Garantías, 8. Anexos).</>,
-          <>Cada carpeta tiene un <strong>nivel</strong>: <strong>Nivel 1</strong> (bienvenida/resumen, visible tras verificar identidad, solo lectura) o <strong>Nivel 2</strong> (confidencial, requiere NDA). Puede crear más carpetas con <strong>«+ Carpeta»</strong> y cambiar su nivel.</>,
+          <>En <Link href="/dataroom/admin/projects" className="text-[#c08552] underline">Proyectos</Link> pulse <strong>«+ Nuevo proyecto»</strong>. Se crea con el <strong>árbol de carpetas estándar</strong>: 0 · Bienvenida e índice, 1 · Resumen de la operación, 2 · Estructura societaria y legal, 3 · Pasivo a cancelar, 4 · Colateral — activos, 5 · Comercialización y ventas, 6 · Información financiera, 7 · La operación propuesta, 8 · Q&amp;A y administración.</>,
+          <>Cada carpeta tiene un <strong>nivel</strong>: <strong>Nivel 1</strong> (bienvenida/resumen, visible tras verificar identidad, solo lectura) o <strong>Nivel 2</strong> (confidencial, requiere NDA). Las estándar se crean solas; con <strong>«Restaurar estándar»</strong> se recuperan las que falten. Use <strong>«+ Carpeta»</strong> solo para subcarpetas o extras (p. ej. una por proyecto dentro de «4 · Colateral»).</>,
           <>Pestañas del proyecto: <strong>Documentos</strong>, <strong>Inversores</strong>, <strong>NDA</strong> y <strong>Actividad</strong>. El banner de <strong>puesta en marcha</strong> indica lo que falta; el inversor solo ve el proyecto cuando está <strong>Activo</strong>, con inversores asignados y documentos publicados.</>,
         ]}
       />
