@@ -373,8 +373,21 @@ function loadScript(url: string, globalName: string): Promise<unknown> {
  * inline; Word (.docx) y Excel (.xlsx/.csv) se renderizan en el navegador
  * (mammoth / SheetJS). PowerPoint y otros ofrecen descarga. Sin salir del portal.
  */
-export function DocViewer({ title, src, mimeType, fileName, onClose, onDownload }: {
+/** Fondo repetido en diagonal con el texto de marca de agua (email + fecha). */
+function watermarkBg(text: string): React.CSSProperties {
+  const svg =
+    `<svg xmlns='http://www.w3.org/2000/svg' width='360' height='200'>` +
+    `<text x='10' y='150' fill='rgba(28,55,66,0.14)' font-size='14' font-family='Arial, sans-serif' ` +
+    `transform='rotate(-30 10 150)'>${text.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text></svg>`;
+  return {
+    backgroundImage: `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`,
+    backgroundRepeat: 'repeat',
+  };
+}
+
+export function DocViewer({ title, src, mimeType, fileName, watermark, onClose, onDownload }: {
   title: string; src: string; mimeType?: string | null; fileName?: string | null;
+  watermark?: string | null;
   onClose: () => void; onDownload?: () => void;
 }) {
   const hint = `${mimeType ?? ''} ${fileName ?? ''} ${src}`.toLowerCase();
@@ -471,6 +484,12 @@ export function DocViewer({ title, src, mimeType, fileName, onClose, onDownload 
           </div>
         )}
       </div>
+
+      {/* Marca de agua visual para formatos sin marca incrustada (no PDF). El PDF
+          ya la lleva dentro del archivo. Cubre el área visible, no bloquea clics. */}
+      {watermark && !isPdf && (
+        <div className="pointer-events-none absolute inset-0 z-40" style={watermarkBg(watermark)} aria-hidden />
+      )}
     </div>
   );
 }

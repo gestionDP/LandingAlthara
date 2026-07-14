@@ -478,7 +478,7 @@ export async function serveDocument(
   kind: 'preview' | 'download',
   req?: RequestMeta,
 ): Promise<
-  | { type: 'url'; url: string }
+  | { type: 'url'; url: string; watermark?: string }
   | { type: 'buffer'; data: Buffer; contentType: string; fileName: string }
 > {
   const { document, decision } = await loadAccessContext(investor, documentId);
@@ -541,7 +541,10 @@ export async function serveDocument(
     disposition: kind === 'preview' ? 'inline' : 'attachment',
     downloadName: fileName,
   });
-  return { type: 'url', url };
+  // Para formatos que no admiten marca incrustada (docx, xlsx, imagen), el
+  // visor superpone esta etiqueta (email + fecha) sobre la previsualización.
+  const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  return { type: 'url', url, watermark: `${investor.email} · ${stamp} UTC` };
 }
 
 /**
