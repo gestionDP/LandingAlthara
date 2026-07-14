@@ -1168,12 +1168,26 @@ function UploadPanel({ projectId, categories, investors, onUploaded }: {
         </select>
       </div>
       <div className="mt-3 flex flex-wrap gap-4">
-        <label className={check}><input type="checkbox" checked={meta.requiresNda} onChange={(e) => setMeta({ ...meta, requiresNda: e.target.checked })} />Requiere NDA</label>
-        <label className={check}><input type="checkbox" checked={meta.downloadable} onChange={(e) => setMeta({ ...meta, downloadable: e.target.checked })} />Descargable</label>
-        <label className={check}><input type="checkbox" checked={meta.publish} onChange={(e) => setMeta({ ...meta, publish: e.target.checked })} />Publicar ya</label>
-        <label className={check}><input type="checkbox" checked={meta.notify} onChange={(e) => setMeta({ ...meta, notify: e.target.checked })} />Notificar a inversores (email agrupado)</label>
-        <label className={check}><input type="checkbox" checked={meta.restrict} onChange={(e) => setMeta({ ...meta, restrict: e.target.checked })} />Solo inversores concretos</label>
+        <label className={check} title="Obliga al inversor a firmar el acuerdo de confidencialidad antes de poder abrir este documento."><input type="checkbox" checked={meta.requiresNda} onChange={(e) => setMeta({ ...meta, requiresNda: e.target.checked })} />Requiere NDA</label>
+        <label className={check} title="Permite que el inversor descargue el archivo. Si lo desmarca, solo podrá verlo en pantalla (con marca de agua)."><input type="checkbox" checked={meta.downloadable} onChange={(e) => setMeta({ ...meta, downloadable: e.target.checked })} />Descargable</label>
+        <label className={check} title="Deja el documento listo. Aun así no lo verá el inversor hasta que abogado y fiscal den su visado."><input type="checkbox" checked={meta.publish} onChange={(e) => setMeta({ ...meta, publish: e.target.checked })} />Publicar ya</label>
+        <label className={check} title="Envía un único email a los inversores avisando de la documentación nueva (cuando esté disponible)."><input type="checkbox" checked={meta.notify} onChange={(e) => setMeta({ ...meta, notify: e.target.checked })} />Notificar a inversores (email agrupado)</label>
+        <label className={check} title="En vez de seguir el acceso del proyecto, comparte este documento solo con los inversores que elija."><input type="checkbox" checked={meta.restrict} onChange={(e) => setMeta({ ...meta, restrict: e.target.checked })} />Solo inversores concretos</label>
       </div>
+
+      {/* Ayuda: qué significa cada opción */}
+      <details className="mt-3 rounded-md border border-[#1c3742]/10 bg-[#faf9f5] px-3 py-2 text-xs text-[#1c3742]/70">
+        <summary className="cursor-pointer font-medium text-[#1c3742]/80">¿Qué significa cada opción?</summary>
+        <ul className="mt-2 space-y-1.5">
+          <li><strong>Categoría</strong>: la carpeta donde se guarda el documento.</li>
+          <li><strong>Confidencial / General</strong>: «Confidencial» solo lo ven los inversores con acceso completo; «General» lo ven todos los que tienen acceso al proyecto.</li>
+          <li><strong>Requiere NDA</strong>: el inversor debe firmar el acuerdo de confidencialidad antes de abrirlo.</li>
+          <li><strong>Descargable</strong>: si se desmarca, el inversor solo puede verlo en pantalla (no descargar).</li>
+          <li><strong>Publicar ya</strong>: deja el documento listo, pero <strong>no lo verá el inversor hasta que abogado y fiscal lo aprueben</strong> (doble visado).</li>
+          <li><strong>Notificar a inversores</strong>: manda un solo email avisando de documentación nueva.</li>
+          <li><strong>Solo inversores concretos</strong>: comparte el documento únicamente con las personas que marque.</li>
+        </ul>
+      </details>
       {meta.restrict && (
         investors.length === 0 ? (
           <p className="mt-2 border border-[#c08552]/40 bg-[#c08552]/10 p-3 text-xs text-[#8a5a33] rounded-md">

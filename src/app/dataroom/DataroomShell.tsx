@@ -26,6 +26,7 @@ const INVESTOR_NAV = [
 ];
 const REVIEWER_NAV = [
   { href: '/dataroom/review', label: 'Revisión' },
+  { href: '/dataroom/review/all', label: 'Todos los documentos' },
   { href: '/dataroom/review/guide', label: 'Guía' },
 ];
 
@@ -74,9 +75,9 @@ export default function DataroomShell({ children }: { children: React.ReactNode 
       <div className="flex min-h-screen flex-col bg-[#f4f2ec] text-[#1c3742]">
         {/* Suite bar */}
         <header className="sticky top-0 z-40 flex h-12 shrink-0 items-center gap-2 bg-[#1c3742] px-4 text-[#e6e2d7]">
-          <Link href={home} className="text-sm font-semibold tracking-wide">Althara</Link>
-          <div className="mx-auto hidden w-full max-w-xl px-4 md:block">
-            <label className="flex items-center gap-2 rounded-md bg-white/10 px-3 text-sm text-[#e6e2d7] focus-within:bg-white/20">
+          <Link href={home} className="relative z-10 text-sm font-semibold tracking-wide">Althara</Link>
+          <div className="absolute inset-x-0 hidden justify-center px-36 md:flex">
+            <label className="flex w-full max-w-xl items-center gap-2 rounded-md bg-white/10 px-3 text-sm text-[#e6e2d7] focus-within:bg-white/20">
               <SearchIcon />
               <input
                 value={query}
@@ -89,7 +90,7 @@ export default function DataroomShell({ children }: { children: React.ReactNode 
               )}
             </label>
           </div>
-          <div className="ml-auto flex items-center gap-1">
+          <div className="relative z-10 ml-auto flex items-center gap-1">
             <a href="mailto:info@althara.es" aria-label="Ayuda"
               className="hidden h-9 w-9 items-center justify-center rounded-md text-sm transition-colors hover:bg-white/10 sm:flex">?</a>
             <SignedIn><div className="pl-1"><UserButton /></div></SignedIn>

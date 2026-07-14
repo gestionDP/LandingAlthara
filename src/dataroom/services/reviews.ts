@@ -50,6 +50,37 @@ export async function listPendingReviews(roles: ReviewerRole[]) {
     .orderBy(desc(schema.documents.updatedAt));
 }
 
+/**
+ * Vista global para el revisor: TODOS los documentos de TODOS los proyectos
+ * (no borrados), con su estado de visado y carpeta. Solo lectura.
+ */
+export async function listAllForReview() {
+  return db()
+    .select({
+      id: schema.documents.id,
+      title: schema.documents.title,
+      status: schema.documents.status,
+      updatedAt: schema.documents.updatedAt,
+      legalStatus: schema.documents.legalStatus,
+      legalReason: schema.documents.legalReason,
+      taxStatus: schema.documents.taxStatus,
+      taxReason: schema.documents.taxReason,
+      projectId: schema.projects.id,
+      projectName: schema.projects.name,
+      projectStatus: schema.projects.status,
+      categoryName: schema.documentCategories.name,
+    })
+    .from(schema.documents)
+    .innerJoin(schema.projects, eq(schema.documents.projectId, schema.projects.id))
+    .leftJoin(schema.documentCategories, eq(schema.documents.categoryId, schema.documentCategories.id))
+    .where(and(
+      eq(schema.documents.tenant, T),
+      isNull(schema.documents.deletedAt),
+      isNull(schema.projects.deletedAt),
+    ))
+    .orderBy(schema.projects.name, schema.documents.title);
+}
+
 /** El revisor aprueba o rechaza (con motivo) su visado del documento. */
 export async function reviewDocument(
   documentId: string,
@@ -94,6 +125,23 @@ export async function reviewDocument(
   }
 
   return { ok: true };
+}
+
+/** Avisa por email al abogado y al fiscal de que hay un documento por visar. */
+export async function notifyReviewersPendingReview(documentTitle: string, projectName: string | null) {
+  const to = env.reviewerEmails();
+  await Promise.all(to.map((addr) =>
+    sendTransactionalEmail({
+      template: 'document_pending_review',
+      locale: 'es',
+      to: addr,
+      params: {
+        documentTitle,
+        projectName: projectName ?? undefined,
+        actionUrl: `${env.appBaseUrl()}/dataroom/review`,
+      },
+    }).catch(() => { /* el fallo de email no bloquea la subida */ }),
+  ));
 }
 
 /** Reinicia ambos visados a pendiente (al subir una versión nueva). */
