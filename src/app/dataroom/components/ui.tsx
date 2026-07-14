@@ -2,6 +2,7 @@
 
 /** Shared UI primitives for the dataroom — light, Drive-like, Althara palette. */
 import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export async function fetchJson<T = unknown>(
   url: string,
@@ -267,21 +268,50 @@ export interface MenuItem { label: string; onClick: () => void; danger?: boolean
  */
 export function KebabMenu({ items, label = 'Más acciones' }: { items: MenuItem[]; label?: string }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const width = 208;
 
   useEffect(() => {
     if (!open) return;
-    const onDoc = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    const close = () => setOpen(false);
+    const onDoc = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node) && !btnRef.current?.contains(e.target as Node)) setOpen(false);
+    };
     const onEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
     document.addEventListener('mousedown', onDoc);
     document.addEventListener('keydown', onEsc);
-    return () => { document.removeEventListener('mousedown', onDoc); document.removeEventListener('keydown', onEsc); };
+    // Se cierra al hacer scroll o redimensionar (como Drive) → nunca alarga la página.
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('resize', close);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onEsc);
+      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('resize', close);
+    };
   }, [open]);
 
+  function toggle(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      const menuH = Math.min(items.length * 40 + 8, 340);
+      const openUp = r.bottom + menuH > window.innerHeight - 8;
+      setPos({
+        top: openUp ? Math.max(8, r.top - menuH - 4) : r.bottom + 4,
+        left: Math.max(8, Math.min(r.right - width, window.innerWidth - width - 8)),
+      });
+    }
+    setOpen((v) => !v);
+  }
+
   return (
-    <div ref={ref} className="relative">
+    <>
       <button
-        onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
+        ref={btnRef}
+        onClick={toggle}
         aria-label={label}
         aria-haspopup="menu"
         aria-expanded={open}
@@ -291,8 +321,13 @@ export function KebabMenu({ items, label = 'Más acciones' }: { items: MenuItem[
           <circle cx="12" cy="5" r="1.7" /><circle cx="12" cy="12" r="1.7" /><circle cx="12" cy="19" r="1.7" />
         </svg>
       </button>
-      {open && (
-        <div role="menu" className="absolute right-0 z-30 mt-1 min-w-48 border border-[#1c3742]/15 bg-white py-1 shadow-lg">
+      {open && typeof document !== 'undefined' && createPortal(
+        <div
+          ref={menuRef}
+          role="menu"
+          style={{ position: 'fixed', top: pos.top, left: pos.left, width }}
+          className="z-[60] border border-[#1c3742]/15 bg-white py-1 shadow-xl"
+        >
           {items.map((it, i) => (
             <button
               key={i}
@@ -303,9 +338,10 @@ export function KebabMenu({ items, label = 'Más acciones' }: { items: MenuItem[
               {it.label}
             </button>
           ))}
-        </div>
+        </div>,
+        document.body,
       )}
-    </div>
+    </>
   );
 }
 

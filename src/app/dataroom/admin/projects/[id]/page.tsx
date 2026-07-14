@@ -47,6 +47,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
   const [docView, setDocView] = useState<'list' | 'grid'>('list');
   const [shareDoc, setShareDoc] = useState<{ id: string; title: string; confidentiality: string } | null>(null);
   const [viewer, setViewer] = useState<{ title: string; src: string; mimeType?: string | null; docId: string } | null>(null);
+  const [tab, setTab] = useState<'docs' | 'investors' | 'nda' | 'activity'>('docs');
 
   const load = useCallback(async () => {
     const [d, inv] = await Promise.all([
@@ -134,8 +135,8 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
   // Pasos del flujo de puesta en marcha
   const steps = [
     ...(p.ndaRequired ? [{ label: 'Publicar el NDA global', done: hasNda, action: () => router.push('/dataroom/admin/nda'), cta: 'Ir al NDA' }] : []),
-    { label: 'Asignar inversores', done: assignedInvestors.length > 0, cta: 'Abajo ↓' },
-    { label: 'Subir y publicar documentos', done: publishedDocs.length > 0, cta: 'Abajo ↓' },
+    { label: 'Asignar inversores', done: assignedInvestors.length > 0, action: () => setTab('investors'), cta: 'Ir' },
+    { label: 'Subir y publicar documentos', done: publishedDocs.length > 0, action: () => setTab('docs'), cta: 'Ir' },
     { label: 'Activar el proyecto', done: p.status === 'active', action: () => patch({ action: 'update', data: { status: 'active' } }, 'Proyecto activado.'), cta: 'Activar' },
   ];
   const setupPending = steps.some((s) => !s.done);
@@ -193,7 +194,28 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
         </div>
       )}
 
-      {/* 1. Inversores — asignación directa desde el proyecto */}
+      {/* Pestañas estilo SharePoint */}
+      <div className="flex gap-1 overflow-x-auto border-b border-[#1c3742]/15">
+        {([
+          ['docs', `Documentos (${data.documents.length})`],
+          ['investors', `Inversores (${activeInvestors.length})`],
+          ['nda', 'NDA'],
+          ['activity', 'Actividad'],
+        ] as const).map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setTab(key)}
+            className={`whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
+              tab === key ? 'border-[#c08552] text-[#1c3742]' : 'border-transparent text-[#1c3742]/55 hover:text-[#1c3742]'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Inversores — asignación directa desde el proyecto */}
+      {tab === 'investors' && (
       <section className={section}>
         <h2 className={h}>Inversores con acceso ({activeInvestors.length})</h2>
         <AssignInvestor
@@ -239,8 +261,10 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
           </ul>
         )}
       </section>
+      )}
 
-      {/* 2. NDA (global, común a todo el portal) */}
+      {/* NDA (global, común a todo el portal) */}
+      {tab === 'nda' && (
       <section className={section}>
         <h2 className={h}>NDA</h2>
         <div className="flex flex-wrap items-center gap-3 text-sm">
@@ -292,8 +316,11 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
           </div>
         )}
       </section>
+      )}
 
-      {/* 3. Documentos */}
+      {/* Documentos: subida + biblioteca */}
+      {tab === 'docs' && (
+      <div className="space-y-5">
       <UploadPanel projectId={id} categories={data.categories} investors={activeInvestors} onUploaded={load} />
 
       {/* Biblioteca de documentos — estilo SharePoint (carpetas navegables) */}
@@ -371,10 +398,13 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
           </div>
         )}
       </section>
+      </div>
+      )}
 
+      {tab === 'activity' && (
       <section className={section}>
         <h2 className={h}>Actividad</h2>
-        <ul className="max-h-64 space-y-1 overflow-auto pr-1 text-xs text-[#1c3742]/70">
+        <ul className="max-h-[60vh] space-y-1 overflow-auto pr-1 text-xs text-[#1c3742]/70">
           {data.activity.map((a) => (
             <li key={a.id}>
               {formatDate(a.createdAt)} — {actionLabel(a.action)}
@@ -384,6 +414,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
           ))}
         </ul>
       </section>
+      )}
 
       {shareDoc && (
         <ShareDialog
