@@ -58,7 +58,7 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
   const [ndaOpen, setNdaOpen] = useState(false);
   const [busyDoc, setBusyDoc] = useState<string | null>(null);
   const [docError, setDocError] = useState<string | null>(null);
-  const [viewer, setViewer] = useState<{ title: string; src: string; mimeType?: string | null; canDownload: boolean; docId: string; revoke?: string } | null>(null);
+  const [viewer, setViewer] = useState<{ title: string; src: string; mimeType?: string | null; canDownload: boolean; docId: string; revoke?: string; watermark?: string | null } | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -152,8 +152,8 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
       }
       const ct = res.headers.get('content-type') ?? '';
       if (ct.includes('application/json')) {
-        const { url } = await res.json();
-        setViewer({ title: doc.title, src: url, mimeType: doc.mimeType, canDownload: doc.canDownload, docId: doc.id });
+        const { url, watermark } = await res.json();
+        setViewer({ title: doc.title, src: url, mimeType: doc.mimeType, canDownload: doc.canDownload, docId: doc.id, watermark });
       } else {
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
@@ -377,6 +377,7 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
           title={viewer.title}
           src={viewer.src}
           mimeType={viewer.mimeType}
+          watermark={viewer.watermark}
           onClose={closeViewer}
           onDownload={
             viewer.canDownload

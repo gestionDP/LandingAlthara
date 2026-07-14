@@ -10,7 +10,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     const investor = await requireInvestor();
     const { id } = await ctx.params;
     const result = await serveDocument(investor, id, 'preview', requestMeta(req));
-    if (result.type === 'url') return Response.json({ url: result.url });
+    if (result.type === 'url') return Response.json({ url: result.url, watermark: result.watermark });
     return new Response(new Uint8Array(result.data), {
       headers: {
         'Content-Type': result.contentType,
