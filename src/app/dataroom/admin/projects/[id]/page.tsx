@@ -546,8 +546,10 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
                 className="whitespace-nowrap border border-[#1c3742]/25 px-3 py-2 text-xs font-medium hover:bg-[#1c3742]/5 rounded-md disabled:opacity-40">
                 Restaurar estándar
               </button>
-              <button onClick={() => setNewFolder({ name: '', level: (docNav.currentLevel ?? 2) as 1 | 2 })} className="whitespace-nowrap border border-[#1c3742]/25 px-3 py-2 text-xs font-medium hover:bg-[#1c3742]/5 rounded-md">
-                + Carpeta
+              <button onClick={() => setNewFolder({ name: '', level: (docNav.currentLevel ?? 2) as 1 | 2 })}
+                title={docNav.currentName ? `Crear subcarpeta dentro de «${docNav.currentName}»` : 'Crear carpeta en la raíz del proyecto'}
+                className="whitespace-nowrap border border-[#1c3742]/25 px-3 py-2 text-xs font-medium hover:bg-[#1c3742]/5 rounded-md">
+                {docNav.currentName ? '+ Subcarpeta' : '+ Carpeta'}
               </button>
               <ViewToggle view={docView} onChange={setDocView} />
             </div>
@@ -583,7 +585,13 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
         {data.categories.length === 0 && data.documents.length === 0 ? (
           <p className="p-4 text-sm text-[#1c3742]/50">Todavía no hay carpetas ni documentos. Use «Restaurar estándar» para crear el árbol.</p>
         ) : docNav.folders.length === 0 && docNav.docs.length === 0 ? (
-          <p className="p-4 text-sm text-[#1c3742]/50">{docSearch ? 'Sin resultados para la búsqueda.' : 'Esta carpeta está vacía. Súbale documentos con el panel de arriba.'}</p>
+          <p className="p-4 text-sm text-[#1c3742]/50">
+            {docSearch
+              ? 'Sin resultados para la búsqueda.'
+              : docNav.currentName
+                ? <>Esta carpeta está vacía. Pulse <strong>«+ Subcarpeta»</strong> (arriba a la derecha) para crear una por proyecto (Manacor, Cala Gamba…), o suba documentos con el panel de arriba.</>
+                : 'Esta carpeta está vacía. Súbale documentos con el panel de arriba.'}
+          </p>
         ) : docView === 'grid' ? (
           <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 lg:grid-cols-4">
             {docNav.folders.map((f) => (
@@ -718,7 +726,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#102027]/50 p-4" onClick={() => setNewFolder(null)}>
           <div className="w-full max-w-md border border-[#1c3742]/20 bg-white rounded-lg" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b border-[#1c3742]/15 px-5 py-4">
-              <h2 className="font-playfair text-lg leading-tight">Nueva carpeta</h2>
+              <h2 className="font-playfair text-lg leading-tight">{docNav.currentName ? 'Nueva subcarpeta' : 'Nueva carpeta'}</h2>
               <button onClick={() => setNewFolder(null)} aria-label="Cerrar" className="text-[#1c3742]/60 hover:text-[#1c3742]">✕</button>
             </div>
             <div className="space-y-4 p-5">
