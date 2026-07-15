@@ -52,7 +52,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
       },
       accessStatus: assignment?.status,
       ndaState,
-      categories: categories.map((c) => ({ name: c.name, slug: c.slug })),
+      categories: categories.map((c) => ({ id: c.id, name: c.name, slug: c.slug, parentId: c.parentId })),
       documents,
     });
   } catch (err) {
