@@ -242,9 +242,13 @@ export const documentCategories = dataroom.table(
     // identidad verificada, solo vista + watermark); 2 = documentación completa
     // (requiere NDA firmado). Por defecto 2.
     level: integer('level').notNull().default(2),
+    parentId: uuid('parent_id'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [uniqueIndex('uq_categories_project_slug').on(t.projectId, t.slug)],
+  (t) => [
+    uniqueIndex('uq_categories_project_slug').on(t.projectId, t.slug),
+    index('ix_categories_parent').on(t.parentId),
+  ],
 );
 
 export const documents = dataroom.table(

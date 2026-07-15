@@ -25,7 +25,7 @@ interface Detail {
   };
   investors: { access: { status: string; accessLevel: string; grantedAt: string }; investorId: string; email: string; firstName: string | null; lastName: string | null; investorStatus: string }[];
   documents: { id: string; title: string; status: string; confidentiality: string; downloadable: boolean; requiresNda: boolean; updatedAt: string; categoryId: string | null; legalStatus: string; taxStatus: string; legalReason: string | null; taxReason: string | null }[];
-  categories: { id: string; name: string; slug: string; level: number }[];
+  categories: { id: string; name: string; slug: string; level: number; parentId: string | null }[];
   ndaVersions: { id: string; version: number; title: string; active: boolean; createdAt: string }[];
   signatures: { id: string; investorId: string; status: string; signedAt: string; signerFullName: string; hasCopy: string | null }[];
   activity: { id: string; action: string; result: string; createdAt: string; actorEmail: string | null }[];
@@ -79,18 +79,32 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
     const cats = data?.categories ?? [];
     const q = (docSearch.trim() || globalSearch.trim()).toLowerCase();
     const searching = q.length > 0;
-    // Todas las carpetas (incluidas las vacías) con su progreso frente al
-    // contenido esperado del árbol estándar.
-    const allFolders = cats.map((c) => {
+    const catById = new Map(cats.map((c) => [c.id, c]));
+
+    const breadcrumb: { id: string; name: string }[] = [];
+    if (docFolder && !searching) {
+      let cur: string | null = docFolder;
+      while (cur) {
+        const c = catById.get(cur);
+        if (!c) break;
+        breadcrumb.unshift({ id: c.id, name: c.name });
+        cur = c.parentId;
+      }
+    }
+
+    const folderMeta = (c: (typeof cats)[number]) => {
       const count = allDocs.filter((d) => d.categoryId === c.id).length;
       const expected = FOLDER_CONTENTS[c.name]?.length ?? null;
       return { id: c.id, name: c.name, level: c.level, count, expected };
-    });
-    const currentName = docFolder ? (cats.find((c) => c.id === docFolder)?.name ?? null) : null;
-    const currentLevel = docFolder ? (cats.find((c) => c.id === docFolder)?.level ?? null) : null;
+    };
 
-    // Progreso global del data room (solo carpetas estándar con contenido esperado).
-    const standard = allFolders.filter((f) => f.expected != null);
+    const allFolders = cats.map(folderMeta);
+    const currentCat = docFolder ? catById.get(docFolder) : undefined;
+    const currentName = currentCat?.name ?? null;
+    const currentLevel = currentCat?.level ?? null;
+
+    // Progreso global del data room (solo carpetas estándar raíz con contenido esperado).
+    const standard = allFolders.filter((f) => f.expected != null && !catById.get(f.id)?.parentId);
     const expectedTotal = standard.reduce((s, f) => s + (f.expected ?? 0), 0);
     const uploadedTotal = standard.reduce((s, f) => s + Math.min(f.count, f.expected ?? 0), 0);
     const overall = expectedTotal > 0 ? Math.round((uploadedTotal / expectedTotal) * 100) : 0;
@@ -98,8 +112,13 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
     let folders: { id: string; name: string; count: number; level: number; expected: number | null }[] = [];
     let rawDocs = allDocs;
     if (searching) rawDocs = allDocs.filter((d) => d.title.toLowerCase().includes(q));
-    else if (docFolder) rawDocs = allDocs.filter((d) => d.categoryId === docFolder);
-    else { folders = allFolders; rawDocs = allDocs.filter((d) => !d.categoryId); }
+    else if (docFolder) {
+      folders = cats.filter((c) => c.parentId === docFolder).map(folderMeta);
+      rawDocs = allDocs.filter((d) => d.categoryId === docFolder);
+    } else {
+      folders = cats.filter((c) => !c.parentId).map(folderMeta);
+      rawDocs = allDocs.filter((d) => !d.categoryId);
+    }
 
     const docs = [...rawDocs].sort((a, b) => {
       const av = sort.key === 'name' ? a.title.toLowerCase() : sort.key === 'status' ? a.status : a.updatedAt;
@@ -107,7 +126,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
       const cmp = av < bv ? -1 : av > bv ? 1 : 0;
       return sort.dir === 'asc' ? cmp : -cmp;
     });
-    return { folders, docs, currentName: searching ? null : currentName, currentLevel: searching ? null : currentLevel, overall, expectedTotal, uploadedTotal };
+    return { folders, docs, currentName: searching ? null : currentName, currentLevel: searching ? null : currentLevel, breadcrumb: searching ? [] : breadcrumb, overall, expectedTotal, uploadedTotal };
   }, [data, docSearch, globalSearch, docFolder, sort]);
 
   async function patch(body: Record<string, unknown>, okMsg = 'Guardado.') {
@@ -189,11 +208,19 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
     if (!newFolder || !newFolder.name.trim()) return;
     setFolderBusy(true);
     const res = await fetchJson(`/api/dataroom/admin/projects/${id}/categories`, {
-      method: 'POST', body: JSON.stringify({ name: newFolder.name.trim(), level: newFolder.level }),
+      method: 'POST',
+      body: JSON.stringify({
+        name: newFolder.name.trim(),
+        level: newFolder.level,
+        ...(docFolder ? { parentId: docFolder } : {}),
+      }),
     });
     setFolderBusy(false);
-    if (res.ok) { toast(`Carpeta creada (Nivel ${newFolder.level}).`); setNewFolder(null); load(); }
-    else toast('No se pudo crear la carpeta.', 'error');
+    if (res.ok) {
+      toast(docFolder ? `Subcarpeta creada dentro de «${docNav.currentName}».` : `Carpeta creada (Nivel ${newFolder.level}).`);
+      setNewFolder(null);
+      load();
+    } else toast('No se pudo crear la carpeta.', 'error');
   }
 
   async function restoreStandardFolders() {
@@ -501,12 +528,16 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
             <div className="flex min-w-0 items-center gap-1.5 text-sm">
               <FolderGlyph className="h-5 w-5 shrink-0 text-[#c08552]" />
               <button type="button" onClick={() => { setDocFolder(null); setDocSearch(''); }} className="font-medium text-[#1c3742] hover:underline">Documentos</button>
-              {docNav.currentName && (
-                <>
+              {docNav.breadcrumb.map((crumb, i) => (
+                <span key={crumb.id} className="flex min-w-0 items-center gap-1.5">
                   <span className="text-[#1c3742]/35">›</span>
-                  <span className="truncate font-medium text-[#1c3742]">{docNav.currentName}</span>
-                </>
-              )}
+                  {i === docNav.breadcrumb.length - 1 ? (
+                    <span className="truncate font-medium text-[#1c3742]">{crumb.name}</span>
+                  ) : (
+                    <button type="button" onClick={() => setDocFolder(crumb.id)} className="truncate font-medium text-[#1c3742] hover:underline">{crumb.name}</button>
+                  )}
+                </span>
+              ))}
             </div>
             <div className="flex items-center gap-2">
               {data.documents.length > 0 && <LibrarySearch value={docSearch} onChange={setDocSearch} />}
@@ -515,7 +546,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
                 className="whitespace-nowrap border border-[#1c3742]/25 px-3 py-2 text-xs font-medium hover:bg-[#1c3742]/5 rounded-md disabled:opacity-40">
                 Restaurar estándar
               </button>
-              <button onClick={() => setNewFolder({ name: '', level: 2 })} className="whitespace-nowrap border border-[#1c3742]/25 px-3 py-2 text-xs font-medium hover:bg-[#1c3742]/5 rounded-md">
+              <button onClick={() => setNewFolder({ name: '', level: (docNav.currentLevel ?? 2) as 1 | 2 })} className="whitespace-nowrap border border-[#1c3742]/25 px-3 py-2 text-xs font-medium hover:bg-[#1c3742]/5 rounded-md">
                 + Carpeta
               </button>
               <ViewToggle view={docView} onChange={setDocView} />
@@ -692,10 +723,13 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
             </div>
             <div className="space-y-4 p-5">
               <p className="rounded-md border border-[#1c3742]/10 bg-[#faf9f5] px-3 py-2 text-xs text-[#1c3742]/65">
-                El <strong>árbol estándar</strong> (0 · Bienvenida … 8 · Q&amp;A) se crea solo; no hace falta
-                escribirlo. Si falta alguna, use <strong>«Restaurar estándar»</strong>. Cree una carpeta aquí
-                solo para <strong>subcarpetas o extras</strong> (p. ej. dentro de «4 · Colateral», una por
-                proyecto: Cala Gamba, Manacor, Sa Pobla, Sant Ignasi).
+                {docNav.currentName ? (
+                  <>Se creará <strong>dentro de «{docNav.currentName}»</strong> (hereda Nivel {docNav.currentLevel}). Use esto para subcarpetas por proyecto: Cala Gamba, Manacor, Sa Pobla, Sant Ignasi…</>
+                ) : (
+                  <>El <strong>árbol estándar</strong> (0 · Bienvenida … 8 · Q&amp;A) se crea solo; no hace falta
+                  escribirlo. Si falta alguna, use <strong>«Restaurar estándar»</strong>. Entre primero en una carpeta
+                  (p. ej. «4 · Colateral») y pulse <strong>«+ Carpeta»</strong> para crear subcarpetas ahí.</>
+                )}
               </p>
               <div>
                 <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-[#1c3742]/60">Nombre de la carpeta</label>
@@ -745,9 +779,10 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
               <button onClick={() => moveDoc(movingDoc.id, null)} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm hover:bg-[#1c3742]/[0.06]">
                 <FolderGlyph className="h-5 w-5 text-[#c08552]" /> Raíz (sin carpeta)
               </button>
-              {data.categories.map((c) => (
-                <button key={c.id} onClick={() => moveDoc(movingDoc.id, c.id)} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm hover:bg-[#1c3742]/[0.06]">
-                  <FolderIconFilled className="h-5 w-5" /> {c.name}
+              {flattenCategoryTree(data.categories).map(({ cat, depth }) => (
+                <button key={cat.id} onClick={() => moveDoc(movingDoc.id, cat.id)} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm hover:bg-[#1c3742]/[0.06]">
+                  <FolderIconFilled className="h-5 w-5 shrink-0" />
+                  <span style={{ paddingLeft: depth * 12 }}>{cat.name}</span>
                 </button>
               ))}
             </div>
@@ -1217,6 +1252,26 @@ function AssignInvestor({ projectId, allInvestors, assigned, onChanged, onError 
   );
 }
 
+/** Lista de carpetas en orden de árbol (raíz → hijos) para selects y diálogos. */
+function flattenCategoryTree(categories: { id: string; name: string; parentId: string | null }[]) {
+  const byParent = new Map<string | null, typeof categories>();
+  for (const c of categories) {
+    const key = c.parentId ?? null;
+    const list = byParent.get(key) ?? [];
+    list.push(c);
+    byParent.set(key, list);
+  }
+  const out: { cat: (typeof categories)[number]; depth: number }[] = [];
+  function walk(parentId: string | null, depth: number) {
+    for (const cat of byParent.get(parentId) ?? []) {
+      out.push({ cat, depth });
+      walk(cat.id, depth + 1);
+    }
+  }
+  walk(null, 0);
+  return out;
+}
+
 /** Ajustes de acceso por defecto según el nivel de la carpeta (spec). */
 function levelDefaults(level: number | null | undefined) {
   if (level === 1) return { requiresNda: false, confidentiality: 'generic', downloadable: false };
@@ -1226,7 +1281,7 @@ function levelDefaults(level: number | null | undefined) {
 
 function UploadPanel({ projectId, categories, investors, currentFolderId, currentFolderName, currentFolderLevel, onUploaded }: {
   projectId: string;
-  categories: { id: string; name: string; level: number }[];
+  categories: { id: string; name: string; level: number; parentId: string | null }[];
   investors: Detail['investors'];
   currentFolderId: string | null;
   currentFolderName: string | null;
@@ -1321,7 +1376,9 @@ function UploadPanel({ projectId, categories, investors, currentFolderId, curren
           title="Carpeta donde se guardará el documento. Es obligatorio para mantener el orden."
           className={`border bg-[#faf9f5] px-2 py-1.5 text-xs rounded-md ${meta.categoryId ? 'border-[#1c3742]/25' : 'border-[#c08552]/60'}`}>
           <option value="">Elegir carpeta… *</option>
-          {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+          {flattenCategoryTree(categories).map(({ cat, depth }) => (
+            <option key={cat.id} value={cat.id}>{`${'\u00a0'.repeat(depth * 2)}${depth > 0 ? '↳ ' : ''}${cat.name}`}</option>
+          ))}
         </select>
       </div>
 

@@ -37,7 +37,7 @@ function Semaforo({ state }: { state?: string }) {
 interface ProjectData {
   project: { id: string; name: string; description: string | null; status: string; investmentType: string | null; updatedAt: string; ndaRequired: boolean };
   ndaState: string;
-  categories: { name: string; slug: string }[];
+  categories: { id: string; name: string; slug: string; parentId: string | null }[];
   documents: Doc[];
 }
 
@@ -74,19 +74,49 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
 
   // Navegación por carpetas (categorías) estilo SharePoint.
   const nav = useMemo(() => {
-    if (!data) return { folders: [] as { slug: string; name: string; count: number }[], docs: [] as Doc[], currentName: null as string | null };
+    if (!data) return { folders: [] as { slug: string; name: string; count: number }[], docs: [] as Doc[], currentName: null as string | null, breadcrumb: [] as { slug: string; name: string }[] };
     const q = (search.trim() || globalSearch.trim()).toLowerCase();
     const searching = q.length > 0;
-    const catsWithDocs = data.categories
-      .filter((c) => data.documents.some((d) => d.categorySlug === c.slug))
-      .map((c) => ({ slug: c.slug, name: c.name, count: data.documents.filter((d) => d.categorySlug === c.slug).length }));
-    const currentName = folder ? (data.categories.find((c) => c.slug === folder)?.name ?? null) : null;
+    const catBySlug = new Map(data.categories.map((c) => [c.slug, c]));
+    const catById = new Map(data.categories.map((c) => [c.id, c]));
+
+    const categoryHasDocs = (catId: string): boolean => {
+      const cat = catById.get(catId);
+      if (!cat) return false;
+      if (data.documents.some((d) => d.categorySlug === cat.slug)) return true;
+      return data.categories.filter((c) => c.parentId === catId).some((child) => categoryHasDocs(child.id));
+    };
+
+    const breadcrumb: { slug: string; name: string }[] = [];
+    if (folder && !searching) {
+      let cur = catBySlug.get(folder);
+      while (cur) {
+        breadcrumb.unshift({ slug: cur.slug, name: cur.name });
+        cur = cur.parentId ? catById.get(cur.parentId) : undefined;
+      }
+    }
+
+    const folderEntry = (c: ProjectData['categories'][number]) => ({
+      slug: c.slug,
+      name: c.name,
+      count: data.documents.filter((d) => d.categorySlug === c.slug).length,
+    });
 
     let folders: { slug: string; name: string; count: number }[] = [];
     let rawDocs: Doc[];
     if (searching) rawDocs = data.documents.filter((d) => d.title.toLowerCase().includes(q));
-    else if (folder) rawDocs = data.documents.filter((d) => d.categorySlug === folder);
-    else { folders = catsWithDocs; rawDocs = data.documents.filter((d) => !d.categorySlug); }
+    else if (folder) {
+      const current = catBySlug.get(folder);
+      folders = data.categories
+        .filter((c) => c.parentId === current?.id && categoryHasDocs(c.id))
+        .map(folderEntry);
+      rawDocs = data.documents.filter((d) => d.categorySlug === folder);
+    } else {
+      folders = data.categories
+        .filter((c) => !c.parentId && categoryHasDocs(c.id))
+        .map(folderEntry);
+      rawDocs = data.documents.filter((d) => !d.categorySlug);
+    }
 
     const docs = [...rawDocs].sort((a, b) => {
       const av = sort.key === 'name' ? a.title.toLowerCase() : a.updatedAt;
@@ -94,7 +124,8 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
       const cmp = av < bv ? -1 : av > bv ? 1 : 0;
       return sort.dir === 'asc' ? cmp : -cmp;
     });
-    return { folders, docs, currentName: searching ? null : currentName };
+    const currentName = folder ? (catBySlug.get(folder)?.name ?? null) : null;
+    return { folders, docs, currentName: searching ? null : currentName, breadcrumb: searching ? [] : breadcrumb };
   }, [data, search, globalSearch, folder, sort]);
 
   async function openDoc(doc: Doc, kind: 'preview' | 'download') {
@@ -239,12 +270,16 @@ export default function ProjectDataRoom({ params }: { params: Promise<{ id: stri
             <button type="button" onClick={() => { setFolder(null); setSearch(''); }} className="font-medium text-[#1c3742] hover:underline">
               Documentos
             </button>
-            {nav.currentName && (
-              <>
+            {nav.breadcrumb.map((crumb, i) => (
+              <span key={crumb.slug} className="flex min-w-0 items-center gap-1.5">
                 <span className="text-[#1c3742]/35">›</span>
-                <span className="truncate font-medium text-[#1c3742]">{nav.currentName}</span>
-              </>
-            )}
+                {i === nav.breadcrumb.length - 1 ? (
+                  <span className="truncate font-medium text-[#1c3742]">{crumb.name}</span>
+                ) : (
+                  <button type="button" onClick={() => setFolder(crumb.slug)} className="truncate font-medium text-[#1c3742] hover:underline">{crumb.name}</button>
+                )}
+              </span>
+            ))}
           </div>
           <div className="flex items-center gap-2">
             <LibrarySearch value={search} onChange={setSearch} />
