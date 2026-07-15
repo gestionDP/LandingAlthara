@@ -16,6 +16,7 @@ import {
 } from '../../../components/ui';
 import { useDataroomSearch, useToast } from '../../../DataroomShell';
 import { FOLDER_CONTENTS } from '@/dataroom/core/standard-folders';
+import { uploadProjectDocuments, summarizeUploadOutcome, type BatchUploadProgress } from '@/dataroom/lib/batch-upload-client';
 
 interface Detail {
   project: {
@@ -266,23 +267,17 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
       return;
     }
     setBulkBusy(true);
-    const form = new FormData();
-    for (const f of files) form.append('files', f);
-    form.append('meta', JSON.stringify({
-      categoryId: docFolder || undefined,
-      confidentiality: 'sensitive',
-      downloadable: true,
-      requiresNda: true,
-      publish: false,
-    }));
     try {
-      const res = await fetch(`/api/dataroom/admin/projects/${id}/documents`, { method: 'POST', body: form });
-      const body = await res.json().catch(() => null);
-      if (res.ok && body?.results) {
-        const okN = body.results.filter((r: { ok: boolean }) => r.ok).length;
-        toast(`${okN} archivo(s) subido(s) como borrador. Revísalos y publícalos.`, okN ? 'ok' : 'error');
-        load();
-      } else toast('Error al subir los archivos.', 'error');
+      const outcome = await uploadProjectDocuments(id, files, {
+        categoryId: docFolder,
+        confidentiality: 'sensitive',
+        downloadable: true,
+        requiresNda: true,
+        publish: false,
+      });
+      const okN = outcome.results.filter((r) => r.ok).length;
+      toast(`${okN} archivo(s) subido(s) como borrador. Revísalos y publícalos.`, okN ? 'ok' : 'error');
+      load();
     } catch {
       toast('Error de red al subir.', 'error');
     }
@@ -1312,6 +1307,7 @@ function UploadPanel({ projectId, categories, investors, currentFolderId, curren
   const targetCat = categories.find((c) => c.id === meta.categoryId) ?? null;
   const [selectedInvestors, setSelectedInvestors] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<BatchUploadProgress | null>(null);
   const [result, setResult] = useState<string | null>(null);
 
   async function upload() {
@@ -1322,35 +1318,36 @@ function UploadPanel({ projectId, categories, investors, currentFolderId, curren
     }
     setBusy(true);
     setResult(null);
-    const form = new FormData();
-    for (const f of files) form.append('files', f);
-    form.append('meta', JSON.stringify({
-      categoryId: meta.categoryId || undefined,
-      confidentiality: meta.confidentiality,
-      downloadable: meta.downloadable,
-      requiresNda: meta.requiresNda,
-      publish: meta.publish,
-      notify: meta.notify,
-      restrictToInvestorIds: meta.restrict && selectedInvestors.length ? selectedInvestors : undefined,
-    }));
+    setProgress({ done: 0, total: files.length, current: files[0]?.name });
     try {
-      const res = await fetch(`/api/dataroom/admin/projects/${projectId}/documents`, { method: 'POST', body: form });
-      const body = await res.json().catch(() => null);
-      if (res.ok && body) {
-        const ok = body.results.filter((r: { ok: boolean }) => r.ok).length;
-        const failed = body.results.filter((r: { ok: boolean }) => !r.ok);
-        setResult(`${ok} archivo(s) subido(s)${failed.length ? ` · ${failed.length} con error (${failed.map((f: { error: string }) => f.error).join(', ')})` : ''}${body.notified ? ` · ${body.notified} inversor(es) notificado(s)` : ''}`);
+      const outcome = await uploadProjectDocuments(
+        projectId,
+        files,
+        {
+          categoryId: meta.categoryId || undefined,
+          confidentiality: meta.confidentiality,
+          downloadable: meta.downloadable,
+          requiresNda: meta.requiresNda,
+          publish: meta.publish,
+          notify: meta.notify,
+          restrictToInvestorIds: meta.restrict && selectedInvestors.length ? selectedInvestors : undefined,
+        },
+        setProgress,
+      );
+      setResult(summarizeUploadOutcome(outcome));
+      if (outcome.results.some((r) => r.ok)) {
         setFiles([]);
         if (fileRef.current) fileRef.current.value = '';
         onUploaded();
-      } else {
-        setResult(`Error: ${body?.error ?? res.status}`);
       }
     } catch {
       setResult('Error de red durante la subida.');
     }
+    setProgress(null);
     setBusy(false);
   }
+
+  const totalBytes = files.reduce((s, f) => s + f.size, 0);
 
   const check = 'flex items-center gap-2 text-xs text-[#1c3742]/70';
   return (
@@ -1444,15 +1441,31 @@ function UploadPanel({ projectId, categories, investors, currentFolderId, curren
         </p>
       )}
       {files.length > 0 && (
-        <p className="mt-2 text-xs text-[#1c3742]/60">
-          {files.length} archivo(s): {files.map((f) => `${f.name} (${formatBytes(f.size)})`).join(', ')}
-        </p>
+        <div className="mt-2 text-xs text-[#1c3742]/60">
+          <p>
+            <strong>{files.length}</strong> archivo(s) · {formatBytes(totalBytes)} en total
+            {files.length <= 5
+              ? `: ${files.map((f) => `${f.name} (${formatBytes(f.size)})`).join(', ')}`
+              : `: ${files.slice(0, 3).map((f) => f.name).join(', ')}… y ${files.length - 3} más`}
+          </p>
+          {progress && (
+            <div className="mt-2">
+              <div className="mb-1 flex items-center justify-between text-[11px] text-[#1c3742]/55">
+                <span className="truncate">Subiendo {progress.done + 1}/{progress.total}{progress.current ? ` · ${progress.current}` : ''}</span>
+                <span>{Math.round((progress.done / Math.max(progress.total, 1)) * 100)}%</span>
+              </div>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#1c3742]/10">
+                <div className="h-full rounded-full bg-[#c08552] transition-all" style={{ width: `${Math.round((progress.done / Math.max(progress.total, 1)) * 100)}%` }} />
+              </div>
+            </div>
+          )}
+        </div>
       )}
       {result && <p className="mt-2 text-xs font-medium text-[#8a5a33]">{result}</p>}
       <button onClick={upload} disabled={busy || files.length === 0 || !meta.categoryId}
         title={!meta.categoryId ? 'Elija una carpeta primero' : undefined}
         className="mt-3 bg-[#1c3742] px-4 py-2 text-sm font-semibold text-[#e6e2d7] disabled:opacity-40 rounded-md">
-        {busy ? 'Subiendo…' : 'Subir'}
+        {busy ? (progress ? `Subiendo ${progress.done}/${progress.total}…` : 'Subiendo…') : files.length > 1 ? `Subir ${files.length} archivos` : 'Subir'}
       </button>
     </section>
   );

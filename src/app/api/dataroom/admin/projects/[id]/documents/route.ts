@@ -34,7 +34,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
 
     const files = form.getAll('files').filter((f): f is File => f instanceof File);
     if (files.length === 0) return Response.json({ error: 'no_files' }, { status: 400 });
-    if (files.length > 20) return Response.json({ error: 'too_many_files' }, { status: 400 });
+    if (files.length > 50) return Response.json({ error: 'too_many_files' }, { status: 400 });
 
     const actor = { type: 'admin' as const, id: admin.userId, email: admin.email };
     const results: { fileName: string; ok: boolean; documentId?: string; error?: string }[] = [];
