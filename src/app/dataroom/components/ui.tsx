@@ -1,5 +1,7 @@
 'use client';
 
+import { Trash2 } from 'lucide-react';
+
 /** Shared UI primitives for the dataroom — light, Drive-like, Althara palette. */
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -385,10 +387,10 @@ function watermarkBg(text: string): React.CSSProperties {
   };
 }
 
-export function DocViewer({ title, src, mimeType, fileName, watermark, onClose, onDownload }: {
+export function DocViewer({ title, src, mimeType, fileName, watermark, onClose, onDownload, onDelete }: {
   title: string; src: string; mimeType?: string | null; fileName?: string | null;
   watermark?: string | null;
-  onClose: () => void; onDownload?: () => void;
+  onClose: () => void; onDownload?: () => void; onDelete?: () => void;
 }) {
   const hint = `${mimeType ?? ''} ${fileName ?? ''} ${src}`.toLowerCase();
   const isImage = (mimeType ?? '').startsWith('image/') || /\.(png|jpe?g|webp|gif)(\?|%|$)/.test(hint);
@@ -444,6 +446,17 @@ export function DocViewer({ title, src, mimeType, fileName, watermark, onClose, 
         <div className="flex items-center gap-2">
           {onDownload && (
             <button onClick={onDownload} className="border border-[#e6e2d7]/40 px-3 py-1.5 text-xs transition-colors hover:bg-white/10 rounded-md">Descargar</button>
+          )}
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              aria-label="Eliminar documento"
+              title="Eliminar documento"
+              className="flex items-center gap-1.5 border border-red-400/50 px-3 py-1.5 text-xs text-red-200 transition-colors hover:bg-red-500/20 rounded-md"
+            >
+              <Trash2 className="h-3.5 w-3.5" aria-hidden />
+              Eliminar
+            </button>
           )}
           <button onClick={onClose} aria-label="Cerrar" className="flex h-8 w-8 items-center justify-center rounded-full text-lg transition-colors hover:bg-white/10">✕</button>
         </div>

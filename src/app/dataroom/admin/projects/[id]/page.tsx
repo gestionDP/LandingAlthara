@@ -9,6 +9,7 @@
 import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Trash2 } from 'lucide-react';
 import {
   fetchJson, Spinner, ErrorBox, Badge, STATUS_LABELS, actionLabel, formatDate, formatBytes,
   FileIcon, accessLevelLabel, ACCESS_LEVEL_HINTS, FolderGlyph, FolderIconFilled, LibrarySearch, ViewToggle,
@@ -162,7 +163,11 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
   async function deleteDoc(docId: string, title: string) {
     if (!confirm(`¿Eliminar «${title}»? Dejará de ser visible para todos (el registro se conserva en auditoría).`)) return;
     const res = await fetchJson(`/api/dataroom/admin/documents/${docId}`, { method: 'DELETE' });
-    if (res.ok) { toast('Documento eliminado.'); load(); } else toast(`Error: ${res.error}`, 'error');
+    if (res.ok) {
+      toast('Documento eliminado.');
+      setViewer((v) => (v?.docId === docId ? null : v));
+      load();
+    } else toast(`Error: ${res.error}`, 'error');
   }
 
   function toggleSort(key: 'name' | 'status' | 'modified') {
@@ -712,6 +717,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
           mimeType={viewer.mimeType}
           onClose={() => setViewer(null)}
           onDownload={() => downloadDoc(viewer.docId)}
+          onDelete={() => deleteDoc(viewer.docId, viewer.title)}
         />
       )}
       {detailsDoc && (
@@ -1149,6 +1155,18 @@ function AdminDocRow({ d, view, selected, onToggleSelect, onRename, onMove, onDe
     <input ref={fileRef} type="file" hidden onChange={onNewVersion} accept=".pdf,.docx,.xlsx,.pptx,.csv,.png,.jpg,.jpeg,.webp" />
   );
 
+  const deleteBtn = (
+    <button
+      type="button"
+      onClick={(e) => { e.stopPropagation(); deleteDoc(d.id, d.title); }}
+      aria-label={`Eliminar ${d.title}`}
+      title="Eliminar documento"
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#1c3742]/45 transition-colors hover:bg-red-50 hover:text-red-600"
+    >
+      <Trash2 className="h-4 w-4" aria-hidden />
+    </button>
+  );
+
   if (view === 'grid') {
     return (
       <div className={`group flex flex-col border bg-white rounded-lg transition-colors hover:border-[#1c3742]/25 ${selected ? 'border-[#c08552]' : 'border-[#1c3742]/12'}`}>
@@ -1162,6 +1180,7 @@ function AdminDocRow({ d, view, selected, onToggleSelect, onRename, onMove, onDe
             <VisadoInline legalStatus={d.legalStatus} taxStatus={d.taxStatus} />
           </div>
           {hiddenInput}
+          {deleteBtn}
           <KebabMenu items={items} />
         </div>
       </div>
@@ -1190,7 +1209,10 @@ function AdminDocRow({ d, view, selected, onToggleSelect, onRename, onMove, onDe
       <td className="px-4 py-2.5 text-[#1c3742]/60">Althara</td>
       <td className="px-2 py-2.5">
         {hiddenInput}
-        <div className="flex justify-end"><KebabMenu items={items} /></div>
+        <div className="flex items-center justify-end gap-1">
+          {deleteBtn}
+          <KebabMenu items={items} />
+        </div>
       </td>
     </tr>
   );
@@ -1349,6 +1371,14 @@ function UploadPanel({ projectId, categories, investors, currentFolderId, curren
 
   const totalBytes = files.reduce((s, f) => s + f.size, 0);
 
+  function removeQueuedFile(index: number) {
+    setFiles((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      if (next.length === 0 && fileRef.current) fileRef.current.value = '';
+      return next;
+    });
+  }
+
   const check = 'flex items-center gap-2 text-xs text-[#1c3742]/70';
   return (
     <section className="border border-[#1c3742]/10 bg-white p-5 rounded-lg">
@@ -1442,12 +1472,27 @@ function UploadPanel({ projectId, categories, investors, currentFolderId, curren
       )}
       {files.length > 0 && (
         <div className="mt-2 text-xs text-[#1c3742]/60">
-          <p>
+          <p className="mb-1.5">
             <strong>{files.length}</strong> archivo(s) · {formatBytes(totalBytes)} en total
-            {files.length <= 5
-              ? `: ${files.map((f) => `${f.name} (${formatBytes(f.size)})`).join(', ')}`
-              : `: ${files.slice(0, 3).map((f) => f.name).join(', ')}… y ${files.length - 3} más`}
           </p>
+          <ul className="max-h-44 space-y-1 overflow-y-auto rounded-md border border-[#1c3742]/10 bg-[#faf9f5] p-2">
+            {files.map((f, i) => (
+              <li key={`${f.name}-${f.lastModified}-${i}`} className="flex items-center gap-2 rounded px-1 py-0.5 hover:bg-white">
+                <span className="min-w-0 flex-1 truncate text-[#1c3742]/80">{f.name}</span>
+                <span className="shrink-0 tabular-nums text-[#1c3742]/40">{formatBytes(f.size)}</span>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => removeQueuedFile(i)}
+                  aria-label={`Quitar ${f.name}`}
+                  title="Quitar de la selección"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded text-[#1c3742]/40 hover:bg-red-50 hover:text-red-600 disabled:opacity-40"
+                >
+                  <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                </button>
+              </li>
+            ))}
+          </ul>
           {progress && (
             <div className="mt-2">
               <div className="mb-1 flex items-center justify-between text-[11px] text-[#1c3742]/55">
