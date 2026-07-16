@@ -547,6 +547,18 @@ export async function serveDocument(
   return { type: 'url', url, watermark: `${investor.email} · ${stamp} UTC` };
 }
 
+async function loadAdminDocumentFile(documentId: string) {
+  const [document] = await db().select().from(schema.documents)
+    .where(and(eq(schema.documents.id, documentId), eq(schema.documents.tenant, T))).limit(1);
+  if (!document || !document.currentVersionId) throw new AuthzError(404, 'not_found');
+  const [version] = await db().select().from(schema.documentVersions)
+    .where(eq(schema.documentVersions.id, document.currentVersionId)).limit(1);
+  if (!version) throw new AuthzError(404, 'not_found');
+  const ext = version.storagePath.split('.').pop() ?? 'bin';
+  const fileName = safeDownloadName(document.title, ext);
+  return { version, fileName };
+}
+
 /**
  * ADMIN: URL firmada del documento (sin marca de agua, sin registro de
  * descarga de inversor). Permite abrir/previsualizar el archivo cargado.
@@ -555,19 +567,24 @@ export async function serveDocumentAsAdmin(
   documentId: string,
   kind: 'preview' | 'download',
 ): Promise<{ url: string; mimeType: string | null; fileName: string }> {
-  const [document] = await db().select().from(schema.documents)
-    .where(and(eq(schema.documents.id, documentId), eq(schema.documents.tenant, T))).limit(1);
-  if (!document || !document.currentVersionId) throw new AuthzError(404, 'not_found');
-  const [version] = await db().select().from(schema.documentVersions)
-    .where(eq(schema.documentVersions.id, document.currentVersionId)).limit(1);
-  if (!version) throw new AuthzError(404, 'not_found');
-
-  const ext = version.storagePath.split('.').pop() ?? 'bin';
-  const fileName = safeDownloadName(document.title, ext);
+  const { version, fileName } = await loadAdminDocumentFile(documentId);
   const url = await signedUrl({
     path: version.storagePath,
     disposition: kind === 'preview' ? 'inline' : 'attachment',
     downloadName: fileName,
   });
   return { url, mimeType: version.mimeType, fileName };
+}
+
+/**
+ * ADMIN/REVISOR: sirve el archivo por el mismo origen (evita CORS con GCS al
+ * renderizar Word/Excel en el visor del navegador).
+ */
+export async function streamDocumentAsAdmin(
+  documentId: string,
+  kind: 'preview' | 'download',
+): Promise<{ data: Buffer; mimeType: string; fileName: string }> {
+  const { version, fileName } = await loadAdminDocumentFile(documentId);
+  const data = await downloadObject(version.storagePath);
+  return { data, mimeType: version.mimeType, fileName };
 }

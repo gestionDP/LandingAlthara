@@ -16,6 +16,7 @@ import {
   KebabMenu, DocViewer, VisadoProgress, VisadoInline, type MenuItem,
 } from '../../../components/ui';
 import { useDataroomSearch, useToast } from '../../../DataroomShell';
+import { closeDataroomPreview, openDataroomPreview, type PreviewViewerState } from '../../../lib/preview';
 import { FOLDER_CONTENTS } from '@/dataroom/core/standard-folders';
 import { uploadProjectDocuments, summarizeUploadOutcome, type BatchUploadProgress } from '@/dataroom/lib/batch-upload-client';
 
@@ -49,7 +50,7 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
   const [docFolder, setDocFolder] = useState<string | null>(null);
   const [docView, setDocView] = useState<'list' | 'grid'>('list');
   const [shareDoc, setShareDoc] = useState<{ id: string; title: string; confidentiality: string } | null>(null);
-  const [viewer, setViewer] = useState<{ title: string; src: string; mimeType?: string | null; docId: string } | null>(null);
+  const [viewer, setViewer] = useState<PreviewViewerState | null>(null);
   const [detailsDoc, setDetailsDoc] = useState<{ id: string; title: string } | null>(null);
   const [movingDoc, setMovingDoc] = useState<{ id: string; title: string } | null>(null);
   const [tab, setTab] = useState<'docs' | 'investors' | 'nda' | 'activity'>('docs');
@@ -148,8 +149,8 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
 
   async function openPreview(id: string, title: string) {
     setMsg(null);
-    const res = await fetchJson<{ url: string; mimeType: string | null }>(`/api/dataroom/admin/documents/${id}/file?kind=preview`);
-    if (res.ok && res.data?.url) setViewer({ title, src: res.data.url, mimeType: res.data.mimeType, docId: id });
+    const opened = await openDataroomPreview(id, title, `/api/dataroom/admin/documents/${id}/file`);
+    if (opened) setViewer(opened);
     else setMsg('No se ha podido abrir el documento.');
   }
 
@@ -715,7 +716,8 @@ export default function AdminProjectDetail({ params }: { params: Promise<{ id: s
           title={viewer.title}
           src={viewer.src}
           mimeType={viewer.mimeType}
-          onClose={() => setViewer(null)}
+          fileName={viewer.fileName}
+          onClose={() => closeDataroomPreview(viewer, () => setViewer(null))}
           onDownload={() => downloadDoc(viewer.docId)}
           onDelete={() => deleteDoc(viewer.docId, viewer.title)}
         />

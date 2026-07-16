@@ -5,6 +5,7 @@ import { Trash2 } from 'lucide-react';
 /** Shared UI primitives for the dataroom — light, Drive-like, Althara palette. */
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { fileExtension } from '@/dataroom/core/naming';
 
 export async function fetchJson<T = unknown>(
   url: string,
@@ -387,16 +388,25 @@ function watermarkBg(text: string): React.CSSProperties {
   };
 }
 
+function detectDocKind(mimeType?: string | null, fileName?: string | null, src?: string) {
+  const m = (mimeType ?? '').toLowerCase();
+  const ext = fileExtension(fileName ?? '') || fileExtension((src ?? '').split('?')[0]);
+  const hint = `${m} ${fileName ?? ''} ${src ?? ''}`.toLowerCase();
+  return {
+    isImage: m.startsWith('image/') || ['png', 'jpg', 'jpeg', 'webp', 'gif'].includes(ext),
+    isPdf: m.includes('pdf') || ext === 'pdf' || /\.pdf(\?|%|$)/.test(hint),
+    isDocx: m.includes('wordprocessingml') || ext === 'docx' || /\.docx(\?|%|$)/.test(hint),
+    isSheet: m.includes('spreadsheetml') || m.includes('ms-excel') || m === 'text/csv' || ['xlsx', 'xls', 'csv'].includes(ext) || /\.(xlsx|xls|csv)(\?|%|$)/.test(hint),
+    isPptx: m.includes('presentationml') || ext === 'pptx' || /\.pptx(\?|%|$)/.test(hint),
+  };
+}
+
 export function DocViewer({ title, src, mimeType, fileName, watermark, onClose, onDownload, onDelete }: {
   title: string; src: string; mimeType?: string | null; fileName?: string | null;
   watermark?: string | null;
   onClose: () => void; onDownload?: () => void; onDelete?: () => void;
 }) {
-  const hint = `${mimeType ?? ''} ${fileName ?? ''} ${src}`.toLowerCase();
-  const isImage = (mimeType ?? '').startsWith('image/') || /\.(png|jpe?g|webp|gif)(\?|%|$)/.test(hint);
-  const isPdf = (mimeType ?? '').includes('pdf') || /\.pdf(\?|%|$)/.test(hint);
-  const isDocx = (mimeType ?? '').includes('wordprocessingml') || /\.docx(\?|%|$)/.test(hint);
-  const isSheet = (mimeType ?? '').includes('spreadsheetml') || (mimeType ?? '').includes('ms-excel') || /\.(xlsx|xls|csv)(\?|%|$)/.test(hint);
+  const { isImage, isPdf, isDocx, isSheet, isPptx } = detectDocKind(mimeType, fileName ?? title, src);
 
   const [state, setState] = useState<'ready' | 'loading' | 'unsupported'>(isPdf || isImage ? 'ready' : 'loading');
   const [html, setHtml] = useState('');
@@ -409,7 +419,7 @@ export function DocViewer({ title, src, mimeType, fileName, watermark, onClose, 
   }, [onClose]);
 
   useEffect(() => {
-    if (isPdf || isImage) { setState('ready'); return; }
+    if (isPdf || isImage || isPptx) { setState(isPptx ? 'unsupported' : 'ready'); return; }
     let cancelled = false;
     (async () => {
       try {
@@ -437,7 +447,7 @@ export function DocViewer({ title, src, mimeType, fileName, watermark, onClose, 
       }
     })();
     return () => { cancelled = true; };
-  }, [src, isPdf, isImage, isDocx, isSheet]);
+  }, [src, isPdf, isImage, isDocx, isSheet, isPptx]);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-[#102027]/85" role="dialog" aria-modal="true">
@@ -490,7 +500,11 @@ export function DocViewer({ title, src, mimeType, fileName, watermark, onClose, 
           </div>
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-3 text-[#e6e2d7]/85">
-            <p className="text-sm">La vista previa de este tipo de archivo no está disponible aquí.</p>
+            <p className="text-sm">
+              {isPptx
+                ? 'La vista previa de PowerPoint no está disponible aquí. Descargue el archivo para revisarlo.'
+                : 'La vista previa de este tipo de archivo no está disponible aquí.'}
+            </p>
             {onDownload && (
               <button onClick={onDownload} className="bg-[#e6e2d7] px-4 py-2 text-sm font-semibold text-[#102027] rounded-md">Descargar para verlo</button>
             )}
