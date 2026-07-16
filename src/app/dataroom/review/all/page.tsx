@@ -10,6 +10,9 @@ import {
   fetchJson, Spinner, ErrorBox, EmptyState, FileIcon, DocViewer, Badge, formatDate, VisadoInline,
 } from '../../components/ui';
 import { useDataroomSearch, useToast } from '../../DataroomShell';
+import {
+  closeDataroomPreview, downloadDataroomDocument, openDataroomPreview, type PreviewViewerState,
+} from '../../lib/preview';
 
 interface Item {
   id: string;
@@ -32,7 +35,7 @@ export default function ReviewAllPage() {
   const [items, setItems] = useState<Item[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [previewBusy, setPreviewBusy] = useState<string | null>(null);
-  const [viewer, setViewer] = useState<{ title: string; src: string; mimeType?: string | null; fileName?: string | null } | null>(null);
+  const [viewer, setViewer] = useState<PreviewViewerState | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -46,15 +49,10 @@ export default function ReviewAllPage() {
 
   async function preview(item: Item) {
     setPreviewBusy(item.id);
-    const res = await fetchJson<{ url: string; mimeType: string; fileName: string }>(
-      `/api/dataroom/review/documents/${item.id}/file?kind=preview`,
-    );
+    const opened = await openDataroomPreview(item.id, item.title);
     setPreviewBusy(null);
-    if (res.ok && res.data?.url) {
-      setViewer({ title: item.title, src: res.data.url, mimeType: res.data.mimeType, fileName: res.data.fileName });
-    } else {
-      toast('No se ha podido abrir la vista previa.', 'error');
-    }
+    if (opened) setViewer(opened);
+    else toast('No se ha podido abrir la vista previa.', 'error');
   }
 
   // Agrupar por proyecto (aplicando el buscador global por nombre de doc/proyecto/carpeta).
@@ -141,7 +139,8 @@ export default function ReviewAllPage() {
           src={viewer.src}
           mimeType={viewer.mimeType}
           fileName={viewer.fileName}
-          onClose={() => setViewer(null)}
+          onClose={() => closeDataroomPreview(viewer, () => setViewer(null))}
+          onDownload={() => downloadDataroomDocument(viewer.docId)}
         />
       )}
     </div>
