@@ -538,7 +538,7 @@ export function LibrarySearch({ value, onChange, placeholder = 'Buscar en esta b
   );
 }
 
-/* --------------------------- Doble visado (visual) ------------------------ */
+/* --------------------------- Visado del abogado (visual) ------------------ */
 
 export type VisadoStatus = 'pending' | 'approved' | 'rejected';
 
@@ -548,55 +548,50 @@ const VISADO_META: Record<VisadoStatus, { label: string; icon: string; fill: str
   pending: { label: 'Pendiente', icon: '⏳', fill: 'bg-[#c08552]', text: 'text-[#c08552]', dot: 'bg-[#c08552]' },
 };
 
-/** Frase-resumen del estado combinado del doble visado. */
-export function visadoCaption(legal: VisadoStatus, tax: VisadoStatus): { text: string; tone: 'ok' | 'bad' | 'wait' } {
-  if (legal === 'approved' && tax === 'approved') return { text: 'Disponible para inversores', tone: 'ok' };
-  if (legal === 'rejected' || tax === 'rejected') return { text: 'Rechazado — requiere corrección', tone: 'bad' };
-  if (legal === 'approved') return { text: 'Aprobado por abogado · Pendiente de fiscal', tone: 'wait' };
-  if (tax === 'approved') return { text: 'Aprobado por fiscal · Pendiente de abogado', tone: 'wait' };
-  return { text: 'Pendiente de abogado y fiscal', tone: 'wait' };
+/** Frase-resumen del estado del visado del abogado. */
+export function visadoCaption(legal: VisadoStatus): { text: string; tone: 'ok' | 'bad' | 'wait' } {
+  if (legal === 'approved') return { text: 'Disponible para inversores', tone: 'ok' };
+  if (legal === 'rejected') return { text: 'Rechazado — requiere corrección', tone: 'bad' };
+  return { text: 'Pendiente de abogado', tone: 'wait' };
 }
 
 /**
- * Barra de progreso del doble visado: dos tramos (Abogado, Fiscal), cada uno
- * coloreado por su estado, con una frase-resumen debajo. Reutilizada en el
- * portal del revisor y en el panel de administración.
+ * Barra de progreso del visado del abogado. Reutilizada en el portal del
+ * revisor y en el panel de administración.
+ * `taxStatus` se ignora (compatibilidad con llamadas antiguas).
  */
 export function VisadoProgress({
-  legalStatus, taxStatus, compact = false,
-}: { legalStatus: string; taxStatus: string; compact?: boolean }) {
+  legalStatus, compact = false,
+}: { legalStatus: string; taxStatus?: string; compact?: boolean }) {
   const legal = (['pending', 'approved', 'rejected'].includes(legalStatus) ? legalStatus : 'pending') as VisadoStatus;
-  const tax = (['pending', 'approved', 'rejected'].includes(taxStatus) ? taxStatus : 'pending') as VisadoStatus;
-  const cap = visadoCaption(legal, tax);
+  const cap = visadoCaption(legal);
   const capColor = cap.tone === 'ok' ? 'text-[#2e9e5a]' : cap.tone === 'bad' ? 'text-red-600' : 'text-[#c08552]';
-  const seg = (role: 'Abogado' | 'Fiscal', s: VisadoStatus) => (
-    <div className="flex-1">
-      <div className={`h-1.5 w-full rounded-full ${s === 'pending' ? 'bg-[#c08552]/25' : VISADO_META[s].fill}`} />
-      {!compact && (
-        <div className="mt-1 flex items-center gap-1">
-          <span className={`text-[11px] ${VISADO_META[s].text}`}>{VISADO_META[s].icon}</span>
-          <span className="text-[11px] text-[#1c3742]/70">{role}</span>
-          <span className={`text-[11px] ${VISADO_META[s].text}`}>· {VISADO_META[s].label}</span>
-        </div>
-      )}
-    </div>
-  );
   return (
     <div>
-      <div className="flex items-center gap-1.5">{seg('Abogado', legal)}{seg('Fiscal', tax)}</div>
+      <div className="flex items-center gap-1.5">
+        <div className="flex-1">
+          <div className={`h-1.5 w-full rounded-full ${legal === 'pending' ? 'bg-[#c08552]/25' : VISADO_META[legal].fill}`} />
+          {!compact && (
+            <div className="mt-1 flex items-center gap-1">
+              <span className={`text-[11px] ${VISADO_META[legal].text}`}>{VISADO_META[legal].icon}</span>
+              <span className="text-[11px] text-[#1c3742]/70">Abogado</span>
+              <span className={`text-[11px] ${VISADO_META[legal].text}`}>· {VISADO_META[legal].label}</span>
+            </div>
+          )}
+        </div>
+      </div>
       <p className={`mt-1 text-[11px] font-medium ${capColor}`}>{cap.text}</p>
     </div>
   );
 }
 
-/** Indicador compacto en línea (para filas densas): Abogado ✓ · Fiscal ⏳. */
-export function VisadoInline({ legalStatus, taxStatus }: { legalStatus: string; taxStatus: string }) {
+/** Indicador compacto en línea: Abogado ✓. */
+export function VisadoInline({ legalStatus }: { legalStatus: string; taxStatus?: string }) {
   const norm = (v: string): VisadoStatus => (['pending', 'approved', 'rejected'].includes(v) ? v : 'pending') as VisadoStatus;
-  const l = norm(legalStatus); const t = norm(taxStatus);
+  const l = norm(legalStatus);
   return (
     <span className="inline-flex items-center gap-2 text-[11px]">
       <span className="inline-flex items-center gap-1"><span className={`h-1.5 w-1.5 rounded-full ${VISADO_META[l].dot}`} />Abogado {VISADO_META[l].icon}</span>
-      <span className="inline-flex items-center gap-1"><span className={`h-1.5 w-1.5 rounded-full ${VISADO_META[t].dot}`} />Fiscal {VISADO_META[t].icon}</span>
     </span>
   );
 }

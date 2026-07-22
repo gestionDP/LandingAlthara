@@ -873,13 +873,13 @@ function DetailsPanel({ doc, onClose, onChanged }: {
               </section>
 
               <section>
-                <h3 className={hh}>Doble visado</h3>
+                <h3 className={hh}>Visado del abogado</h3>
                 {(() => {
                   const doc = data.document;
-                  const available = doc.legalStatus === 'approved' && doc.taxStatus === 'approved';
-                  const reviewDetail = (role: string, status: string, reviewedBy: string | null, reviewedAt: string | null, reason: string | null) => (
+                  const available = doc.legalStatus === 'approved';
+                  const reviewDetail = (status: string, reviewedBy: string | null, reviewedAt: string | null, reason: string | null) => (
                     <div className="border border-[#1c3742]/10 bg-[#faf9f5] px-3 py-2 text-sm rounded-md">
-                      <span className="font-medium text-[#1c3742]">{role}</span>
+                      <span className="font-medium text-[#1c3742]">Abogado</span>
                       {reviewedBy || reviewedAt ? (
                         <p className="mt-1 text-[11px] text-[#1c3742]/50">
                           {reviewedBy ? reviewedBy : 'Revisor no registrado'}
@@ -895,10 +895,9 @@ function DetailsPanel({ doc, onClose, onChanged }: {
                   );
                   return (
                     <>
-                      <VisadoProgress legalStatus={doc.legalStatus} taxStatus={doc.taxStatus} />
+                      <VisadoProgress legalStatus={doc.legalStatus} />
                       <div className="mt-3 space-y-2">
-                        {reviewDetail('Abogado', doc.legalStatus, doc.legalReviewedBy, doc.legalReviewedAt, doc.legalReason)}
-                        {reviewDetail('Fiscal', doc.taxStatus, doc.taxReviewedBy, doc.taxReviewedAt, doc.taxReason)}
+                        {reviewDetail(doc.legalStatus, doc.legalReviewedBy, doc.legalReviewedAt, doc.legalReason)}
                       </div>
                       <p className="mt-2 text-sm">
                         <span className="text-[#1c3742]/50">Disponible para inversores: </span>
@@ -1179,7 +1178,7 @@ function AdminDocRow({ d, view, selected, onToggleSelect, onRename, onMove, onDe
           <input type="checkbox" checked={selected} onChange={() => onToggleSelect(d.id)} aria-label={`Seleccionar ${d.title}`} />
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-medium text-[#1c3742]">{d.title}</p>
-            <VisadoInline legalStatus={d.legalStatus} taxStatus={d.taxStatus} />
+            <VisadoInline legalStatus={d.legalStatus} />
           </div>
           {hiddenInput}
           {deleteBtn}
@@ -1199,7 +1198,7 @@ function AdminDocRow({ d, view, selected, onToggleSelect, onRename, onMove, onDe
           <FileIcon fileName={d.title} />
           <button type="button" onClick={() => onPreview(d.id, d.title)} className="min-w-0 text-left">
             <p className="truncate font-medium text-[#1c3742] hover:underline">{d.title}</p>
-            <VisadoInline legalStatus={d.legalStatus} taxStatus={d.taxStatus} />
+            <VisadoInline legalStatus={d.legalStatus} />
           </button>
           {d.confidentiality === 'sensitive' && (
             <span className="shrink-0 text-[10px] uppercase tracking-wider text-[#c08552]">Confidencial</span>
@@ -1423,7 +1422,7 @@ function UploadPanel({ projectId, categories, investors, currentFolderId, curren
           y el NDA los define el NIVEL de la carpeta, no el admin. */}
       <div className="mt-3 flex flex-wrap gap-4">
         <label className={check} title="Si lo desmarca, el inversor solo podrá verlo en pantalla (con marca de agua), no descargarlo."><input type="checkbox" checked={meta.downloadable} onChange={(e) => setMeta({ ...meta, downloadable: e.target.checked })} />Se puede descargar</label>
-        <label className={check} title="Deja el documento listo. Aun así no lo verá el inversor hasta que abogado y fiscal lo aprueben."><input type="checkbox" checked={meta.publish} onChange={(e) => setMeta({ ...meta, publish: e.target.checked })} />Publicar ya</label>
+        <label className={check} title="Deja el documento listo. Aun así no lo verá el inversor hasta que el abogado lo apruebe."><input type="checkbox" checked={meta.publish} onChange={(e) => setMeta({ ...meta, publish: e.target.checked })} />Publicar ya</label>
         <label className={check} title="Envía un único email a los inversores avisando de la documentación nueva."><input type="checkbox" checked={meta.notify} onChange={(e) => setMeta({ ...meta, notify: e.target.checked })} />Avisar por email</label>
       </div>
 
@@ -1469,7 +1468,7 @@ function UploadPanel({ projectId, categories, investors, currentFolderId, curren
             : 'Nivel 2: confidencial, requiere NDA firmado.'}{' '}
           {meta.downloadable ? 'Se puede descargar.' : 'Solo visualización (con marca de agua).'}{' '}
           {meta.restrict ? 'Visible solo para los inversores que elijas.' : 'Visible para todos los inversores con acceso al proyecto.'}{' '}
-          No aparecerá para el inversor hasta que <strong>abogado y fiscal</strong> lo aprueben.
+          No aparecerá para el inversor hasta que el <strong>abogado</strong> lo apruebe.
         </p>
       )}
       {files.length > 0 && (

@@ -23,7 +23,7 @@ export async function GET() {
           return Response.json({ admin: true });
         } catch { /* sigue */ }
 
-        // ¿Es revisor (abogado/fiscal)? → a su portal de visado.
+        // ¿Es revisor (abogado)? → a su portal de visado.
         try {
           await requireReviewer();
           return Response.json({ reviewer: true });

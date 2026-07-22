@@ -166,12 +166,12 @@ const es: Dict = {
   document_reviewed_admin: (p) => ({
     subject: `Visado ${p.reviewDecision ?? ''} — ${p.documentTitle ?? 'documento'}`,
     title: `Un revisor ha ${p.reviewDecision ?? 'revisado'} un documento`,
-    body: `El revisor de <strong>${p.reviewRole ?? ''}</strong> ha <strong>${p.reviewDecision ?? 'revisado'}</strong> el documento <strong>${p.documentTitle ?? ''}</strong>.${p.reason ? `<br/><br/>Motivo: <strong>${p.reason}</strong>` : ''}<br/><br/>Consulte el estado del doble visado en el panel de administración.`,
+    body: `El revisor de <strong>${p.reviewRole ?? ''}</strong> ha <strong>${p.reviewDecision ?? 'revisado'}</strong> el documento <strong>${p.documentTitle ?? ''}</strong>.${p.reason ? `<br/><br/>Motivo: <strong>${p.reason}</strong>` : ''}<br/><br/>Consulte el estado del visado en el panel de administración.`,
   }),
   document_pending_review: (p) => ({
     subject: `Nuevo documento pendiente de su visado — ${p.projectName ?? 'Althara'}`,
     title: 'Tiene un documento pendiente de revisión',
-    body: `Se ha subido el documento <strong>${p.documentTitle ?? ''}</strong>${p.projectName ? ` en el proyecto <strong>${p.projectName}</strong>` : ''} y requiere su visado (abogado/fiscal) antes de publicarse al inversor.`,
+    body: `Se ha subido el documento <strong>${p.documentTitle ?? ''}</strong>${p.projectName ? ` en el proyecto <strong>${p.projectName}</strong>` : ''} y requiere su visado de abogado antes de publicarse al inversor.`,
     cta: 'Revisar ahora',
   }),
 };
@@ -261,12 +261,12 @@ const en: Dict = {
   document_reviewed_admin: (p) => ({
     subject: `Review ${p.reviewDecision ?? ''} — ${p.documentTitle ?? 'document'}`,
     title: `A reviewer has ${p.reviewDecision ?? 'reviewed'} a document`,
-    body: `The <strong>${p.reviewRole ?? ''}</strong> reviewer has <strong>${p.reviewDecision ?? 'reviewed'}</strong> the document <strong>${p.documentTitle ?? ''}</strong>.${p.reason ? `<br/><br/>Reason: <strong>${p.reason}</strong>` : ''}<br/><br/>Check the dual-review status in the admin panel.`,
+    body: `The <strong>${p.reviewRole ?? ''}</strong> reviewer has <strong>${p.reviewDecision ?? 'reviewed'}</strong> the document <strong>${p.documentTitle ?? ''}</strong>.${p.reason ? `<br/><br/>Reason: <strong>${p.reason}</strong>` : ''}<br/><br/>Check the review status in the admin panel.`,
   }),
   document_pending_review: (p) => ({
     subject: `New document pending your review — ${p.projectName ?? 'Althara'}`,
     title: 'You have a document pending review',
-    body: `The document <strong>${p.documentTitle ?? ''}</strong>${p.projectName ? ` in project <strong>${p.projectName}</strong>` : ''} has been uploaded and requires your review (legal/tax) before it is published to the investor.`,
+    body: `The document <strong>${p.documentTitle ?? ''}</strong>${p.projectName ? ` in project <strong>${p.projectName}</strong>` : ''} has been uploaded and requires legal review before it is published to the investor.`,
     cta: 'Review now',
   }),
 };

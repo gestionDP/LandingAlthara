@@ -1,4 +1,4 @@
-/** Guía del revisor (abogado/fiscal): cómo dar el visado. Página estática. */
+/** Guía del abogado: cómo dar el visado. Página estática. */
 import Link from 'next/link';
 
 export const metadata = { title: 'Guía — Revisión' };
@@ -24,11 +24,10 @@ export default function ReviewerGuide() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <h1 className="font-playfair text-3xl">Guía de revisión (abogado y fiscal)</h1>
+        <h1 className="font-playfair text-3xl">Guía de revisión (abogado)</h1>
         <p className="mt-2 text-sm text-[#1c3742]/70">
           Su papel es dar el <strong>visado</strong> a la documentación antes de que llegue al inversor.
-          Cada documento necesita la aprobación del <strong>abogado</strong> y la del <strong>fiscal</strong>:
-          solo cuando ambos aprueban, el inversor puede verlo.
+          Cada documento necesita su aprobación: solo cuando usted aprueba, el inversor puede verlo.
         </p>
       </div>
 
@@ -37,8 +36,7 @@ export default function ReviewerGuide() {
         intro="Al entrar va directo a Revisión."
         steps={[
           <>En <Link href="/dataroom/review" className="text-[#c08552] underline">Revisión</Link> verá los documentos que requieren su visado, con el proyecto y la fecha de actualización.</>,
-          <>Arriba se indica su rol: <strong>Abogado</strong>, <strong>Fiscal</strong> o ambos. Si tiene los dos, cada documento le mostrará una acción <strong>«Como Abogado»</strong> y otra <strong>«Como Fiscal»</strong>.</>,
-          <>La <strong>barra de progreso</strong> muestra el estado combinado: p. ej. «Aprobado por abogado · Pendiente de fiscal», «Disponible para inversores» o «Rechazado — requiere corrección».</>,
+          <>La <strong>barra de progreso</strong> muestra el estado: «Pendiente de abogado», «Disponible para inversores» o «Rechazado — requiere corrección».</>,
         ]}
       />
 
@@ -47,15 +45,14 @@ export default function ReviewerGuide() {
         intro="Antes de decidir, ábralo."
         steps={[
           <>Pulse <strong>«Vista previa»</strong> para verlo dentro del portal (PDF, Word, Excel o imagen), sin descargarlo.</>,
-          'Compruebe que el contenido es correcto desde su especialidad (legal o fiscal).',
+          'Compruebe que el contenido es correcto desde el punto de vista legal.',
         ]}
       />
 
       <Card
         title="3. Aprobar o rechazar"
-        intro="Su decisión es por rol."
         steps={[
-          <>Si todo está bien, pulse <strong>«Aprobar»</strong> en su rol. Cuando el otro revisor también apruebe, el documento pasa a estar disponible para el inversor.</>,
+          <>Si todo está bien, pulse <strong>«Aprobar»</strong>. El documento pasa a estar disponible para el inversor.</>,
           <>Si algo no está bien, pulse <strong>«Rechazar»</strong> y escriba el <strong>motivo</strong> (obligatorio, mínimo 3 caracteres). El administrador lo verá para corregirlo.</>,
           <>Un documento <strong>rechazado</strong> sigue visible en su cola con el motivo, en espera de que el administrador suba una versión corregida.</>,
         ]}
