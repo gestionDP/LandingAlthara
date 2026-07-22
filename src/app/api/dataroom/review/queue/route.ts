@@ -1,4 +1,4 @@
-/** REVISOR (abogado/fiscal) — cola de documentos pendientes de su visado. */
+/** REVISOR (abogado) — cola de documentos pendientes de su visado. */
 import { requireReviewer, errorResponse } from '@/dataroom/lib/authz';
 import { listPendingReviews } from '@/dataroom/services/reviews';
 

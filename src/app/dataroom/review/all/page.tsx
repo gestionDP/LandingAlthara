@@ -21,8 +21,6 @@ interface Item {
   updatedAt: string;
   legalStatus: string;
   legalReason: string | null;
-  taxStatus: string;
-  taxReason: string | null;
   projectId: string;
   projectName: string;
   projectStatus: string;
@@ -111,13 +109,10 @@ export default function ReviewAllPage() {
                         {d.categoryName ?? 'Sin carpeta'} · {formatDate(d.updatedAt)}
                       </p>
                       {(d.legalStatus === 'rejected' && d.legalReason) && (
-                        <p className="text-[11px] text-red-600">Motivo (abogado): {d.legalReason}</p>
-                      )}
-                      {(d.taxStatus === 'rejected' && d.taxReason) && (
-                        <p className="text-[11px] text-red-600">Motivo (fiscal): {d.taxReason}</p>
+                        <p className="text-[11px] text-red-600">Motivo: {d.legalReason}</p>
                       )}
                     </div>
-                    <VisadoInline legalStatus={d.legalStatus} taxStatus={d.taxStatus} />
+                    <VisadoInline legalStatus={d.legalStatus} />
                     <button
                       onClick={() => preview(d)}
                       disabled={previewBusy === d.id}

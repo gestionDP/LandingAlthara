@@ -34,7 +34,7 @@ export const investorStatusEnum = dataroom.enum('investor_status', [
   'disabled',
 ]);
 
-/** Estado de un visado (abogado / fiscal) sobre un documento. */
+/** Estado del visado del abogado sobre un documento. */
 export const reviewStatusEnum = dataroom.enum('review_status', ['pending', 'approved', 'rejected']);
 
 export const investorTypeEnum = dataroom.enum('investor_type', [
@@ -264,7 +264,7 @@ export const documents = dataroom.table(
     description: text('description'),
     confidentiality: confidentialityEnum('confidentiality').notNull().default('sensitive'),
     // Doble visado (spec ALT-RM): el documento no está disponible hasta que el
-    // abogado (legal) y el fiscal (tax) lo aprueban. Nueva versión → reinicia ambos.
+    // Solo el abogado (legal) aprueba. Las columnas tax_* se conservan por compatibilidad.
     legalStatus: reviewStatusEnum('legal_status').notNull().default('pending'),
     legalReason: text('legal_reason'),
     legalReviewedBy: text('legal_reviewed_by'),

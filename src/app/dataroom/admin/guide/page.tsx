@@ -26,8 +26,8 @@ export default function AdminGuide() {
       <div>
         <h1 className="font-playfair text-3xl">Guía del backoffice</h1>
         <p className="mt-2 text-sm text-[#1c3742]/70">
-          Cómo gestionar inversores, proyectos, documentos, el doble visado y el NDA del portal. El orden natural es:
-          crear el inversor → validar su KYC → crear el proyecto → subir documentos → pasar el doble visado (abogado + fiscal) → dar acceso → activar.
+          Cómo gestionar inversores, proyectos, documentos, el visado del abogado y el NDA del portal. El orden natural es:
+          crear el inversor → validar su KYC → crear el proyecto → subir documentos → pasar el visado del abogado → dar acceso → activar.
         </p>
       </div>
 
@@ -68,18 +68,18 @@ export default function AdminGuide() {
           <>Elija la <strong>carpeta</strong> (o entre en ella abajo) y suba los archivos ahí. La <strong>confidencialidad y el NDA los define el nivel de la carpeta</strong> — usted no los toca. Solo decide dos cosas: <strong>si se puede descargar</strong> y <strong>para quién</strong> (todos los inversores con acceso, o solo algunos). Una frase le resume qué va a pasar antes de subir.</>,
           <>«Publicar ya» deja el documento listo; «Notificar» avisa por email a los inversores (un solo correo agrupado).</>,
           <>Con el menú <strong>⋮</strong> de cada archivo: Vista previa, Descargar, Compartir, Nueva versión, Archivar o Eliminar.</>,
-          <><strong>Importante:</strong> todo documento subido queda <strong>«En revisión»</strong> e invisible para el inversor hasta pasar el <strong>doble visado</strong> (ver punto 5).</>,
+          <><strong>Importante:</strong> todo documento subido queda <strong>«En revisión»</strong> e invisible para el inversor hasta pasar el <strong>visado del abogado</strong> (ver punto 5).</>,
         ]}
       />
 
       <Card
-        title="5. Doble visado (abogado + fiscal)"
-        intro="Ningún documento llega al inversor sin la aprobación del abogado y del fiscal."
+        title="5. Visado del abogado"
+        intro="Ningún documento llega al inversor sin la aprobación del abogado."
         steps={[
-          <>Al subir o versionar un documento, entra en la cola de los revisores <strong>Abogado</strong> y <strong>Fiscal</strong>. En la lista y en el panel de detalles verá una <strong>barra de progreso</strong> con el estado de cada visado.</>,
-          <>Cuando <strong>ambos aprueban</strong>, el documento pasa a <strong>«Disponible para inversores»</strong>. Si uno rechaza, verá el <strong>motivo</strong> en el panel de detalles del documento.</>,
-          <>Para <strong>corregir un rechazo</strong>: suba una <strong>nueva versión</strong> del documento con el menú ⋮. Esto reinicia ambos visados y vuelve a pedir revisión al abogado y al fiscal.</>,
-          <>Recibirá un <strong>email</strong> cada vez que un revisor apruebe o rechace. Los revisores se dan de alta manualmente (cuentas de abogado y fiscal).</>,
+          <>Al subir o versionar un documento, entra en la cola del <strong>Abogado</strong>. En la lista y en el panel de detalles verá una <strong>barra de progreso</strong> con el estado del visado.</>,
+          <>Cuando el abogado <strong>aprueba</strong>, el documento pasa a <strong>«Disponible para inversores»</strong>. Si rechaza, verá el <strong>motivo</strong> en el panel de detalles del documento.</>,
+          <>Para <strong>corregir un rechazo</strong>: suba una <strong>nueva versión</strong> del documento con el menú ⋮. Esto reinicia el visado y vuelve a pedir revisión al abogado.</>,
+          <>Recibirá un <strong>email</strong> cada vez que el abogado apruebe o rechace. El abogado se da de alta manualmente en Clerk (`dataroom_role: legal`).</>,
         ]}
       />
 
@@ -89,7 +89,7 @@ export default function AdminGuide() {
         steps={[
           <>Al invitar al inversor elige: <strong>«Ve toda la documentación»</strong> (ve todo por defecto) o <strong>«Solo lo que yo le comparta»</strong> (no ve nada hasta que le comparta archivos).</>,
           <>Por archivo, el botón <strong>Compartir</strong> abre un panel con tres estados por inversor: <strong>Compartido</strong> (se lo comparte siempre), <strong>Según su acceso</strong> (sigue su nivel) u <strong>Oculto</strong> (se lo esconde aunque vea toda la documentación).</>,
-          <>Recuerde: aunque el acceso lo permita, los documentos confidenciales requieren <strong>NDA firmado</strong> y todos pasan por el <strong>doble visado</strong> antes de verse.</>,
+          <>Recuerde: aunque el acceso lo permita, los documentos confidenciales requieren <strong>NDA firmado</strong> y todos pasan por el <strong>visado del abogado</strong> antes de verse.</>,
         ]}
       />
 

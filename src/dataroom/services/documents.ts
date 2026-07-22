@@ -107,7 +107,7 @@ export async function uploadDocument(input: UploadDocumentInput, actor: AuditAct
     });
   }
 
-  // Aviso a abogado y fiscal: hay un documento nuevo pendiente de visado.
+  // Aviso al abogado: hay un documento nuevo pendiente de visado.
   await notifyReviewersPendingReview(document.title, project.name);
 
   return { document, version };
@@ -168,7 +168,7 @@ export async function addVersion(
   }
 
   if (versionNumber > 1) {
-    // Nueva versión → se reinicia el doble visado (abogado + fiscal) y se avisa.
+    // Nueva versión → se reinicia el visado del abogado y se avisa.
     await resetReviews(document.id);
     const [proj] = await db().select({ name: schema.projects.name }).from(schema.projects)
       .where(eq(schema.projects.id, document.projectId)).limit(1);
@@ -352,7 +352,7 @@ async function loadAccessContext(investor: Investor, documentId: string) {
     ndaState,
   });
 
-  // Sin doble visado (abogado + fiscal) no hay acceso, aunque el resto permita.
+  // Sin visado del abogado no hay acceso, aunque el resto permita.
   if (!isReviewApproved(document)) {
     return { document, project, decision: { canView: false, canDownload: false, reason: 'document_unavailable' as const } };
   }
@@ -420,8 +420,8 @@ export async function listAuthorizedDocuments(investor: Investor, projectId: str
       folderLevel,
     };
 
-    // Borrador o pendiente de doble visado → placeholder "en revisión"
-    // (visible en el índice, sin acceso hasta que abogado + fiscal aprueben).
+    // Borrador o pendiente de visado → placeholder "en revisión"
+    // (visible en el índice, sin acceso hasta que el abogado apruebe).
     if (doc.status === 'draft' || !isReviewApproved(doc)) {
       result.push({
         ...base, updatedAt: doc.updatedAt, isNew: false,

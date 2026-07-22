@@ -36,13 +36,12 @@ export async function requireAdmin(): Promise<{ userId: string; email: string | 
   return { userId, email: user.primaryEmailAddress?.emailAddress ?? null };
 }
 
-export type ReviewerRole = 'legal' | 'tax';
+export type ReviewerRole = 'legal';
 
 /**
- * Revisor = Clerk user con `publicMetadata.dataroom_role` = 'legal' (abogado),
- * 'tax' (fiscal) o 'both' (ambos, útil para pruebas). También admite un array
- * `dataroom_roles: ['legal','tax']`. Alta manual en Clerk. Aprueba/rechaza el
- * visado de documentos. `only` exige que el usuario tenga ESE rol concreto.
+ * Revisor = Clerk user con `publicMetadata.dataroom_role` = 'legal' (abogado).
+ * También acepta valores legacy `both` / `legal_tax` / `dataroom_roles` que
+ * incluyan legal. Alta manual en Clerk. Solo el abogado visa documentos.
  */
 export async function requireReviewer(only?: ReviewerRole): Promise<{ userId: string; email: string | null; roles: ReviewerRole[] }> {
   const { userId } = await auth();
@@ -53,14 +52,15 @@ export async function requireReviewer(only?: ReviewerRole): Promise<{ userId: st
   const rawList = user.publicMetadata?.dataroom_roles;
   const tenant = (user.publicMetadata?.dataroom_tenant as string | undefined) ?? DATAROOM_TENANT;
 
-  const roles = new Set<ReviewerRole>();
-  if (Array.isArray(rawList)) rawList.forEach((r) => { if (r === 'legal' || r === 'tax') roles.add(r); });
-  if (raw === 'legal' || raw === 'tax') roles.add(raw);
-  if (raw === 'both' || raw === 'legal_tax') { roles.add('legal'); roles.add('tax'); }
+  const hasLegal =
+    raw === 'legal' ||
+    raw === 'both' ||
+    raw === 'legal_tax' ||
+    (Array.isArray(rawList) && rawList.includes('legal'));
 
-  if (roles.size === 0 || tenant !== DATAROOM_TENANT) throw new AuthzError(403, 'forbidden');
-  if (only && !roles.has(only)) throw new AuthzError(403, 'forbidden');
-  return { userId, email: user.primaryEmailAddress?.emailAddress ?? null, roles: [...roles] };
+  if (!hasLegal || tenant !== DATAROOM_TENANT) throw new AuthzError(403, 'forbidden');
+  if (only && only !== 'legal') throw new AuthzError(403, 'forbidden');
+  return { userId, email: user.primaryEmailAddress?.emailAddress ?? null, roles: ['legal'] };
 }
 
 /** Investor = Clerk user linked to an ACTIVE dataroom.investors row in this tenant. */
