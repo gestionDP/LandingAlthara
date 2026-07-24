@@ -41,6 +41,15 @@ export default function Footer() {
 
         <div className="mt-10 flex flex-col gap-2 border-t border-[#e6e2d7]/10 pt-6 text-xs text-[#e6e2d7]/40 md:flex-row md:justify-between">
           <p>© {year} Althara. {t('rights')}</p>
+          <nav
+            aria-label="Enlaces legales"
+            className="flex flex-wrap gap-x-4 gap-y-1"
+          >
+            <Link href="/aviso-legal" className="hover:text-[#e6e2d7]">Aviso Legal</Link>
+            <Link href="/politica-privacidad" className="hover:text-[#e6e2d7]">Política de Privacidad</Link>
+            <Link href="/politica-cookies" className="hover:text-[#e6e2d7]">Política de Cookies</Link>
+            <Link href="/condiciones-uso" className="hover:text-[#e6e2d7]">Condiciones de Uso</Link>
+          </nav>
           <p>{t('confidential')}</p>
         </div>
       </div>
