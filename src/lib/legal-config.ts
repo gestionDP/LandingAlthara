@@ -23,11 +23,11 @@ export const LEGAL = {
   /* ── Titular ─────────────────────────────────────────── */
   companyName: 'Gestión del Papeleo, S.L.',
   cif: 'B42869537',
-  address: '[PENDIENTE — domicilio social]',
-  phone: '[PENDIENTE — teléfono]',
+  address: 'Can Savella 21, bajo',
+  phone: '',
   email: 'info@gestiondelpapeleo.com',
-  registry: '[PENDIENTE — datos de inscripción en el Registro Mercantil]',
-  activity: '[PENDIENTE — descripción de la actividad]',
+  registry: 'Inscrita en el Registro Mercantil de Palma de Mallorca, hoja PM-101496, IRUS 1000380135859, tomo electrónico y folio electrónico. EUID: ES08005.000653140',
+  activity: 'Actividades de programación informática (CNAE 6201); prestación de servicios de estudios de mercado, marketing y comunicación; servicios de publicidad, diseño e imagen corporativa; diseño de páginas web y correo electrónico, y actividades vinculadas a la generación y transmisión de información a través de distintos canales',
 
   /* ── Sitio ───────────────────────────────────────────── */
   siteName: 'Althara',

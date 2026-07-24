@@ -25,7 +25,9 @@ export default function PoliticaPrivacidad() {
         <li><strong>Domicilio:</strong> {LEGAL.address}</li>
         <li><strong>Email de contacto en materia de protección de datos:</strong>{' '}
           <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a></li>
-        <li><strong>Teléfono:</strong> {LEGAL.phone}</li>
+        {LEGAL.phone ? (
+          <li><strong>Teléfono:</strong> {LEGAL.phone}</li>
+        ) : null}
       </ul>
 
       <h2>2. Datos que tratamos y su origen</h2>
