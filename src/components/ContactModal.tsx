@@ -126,6 +126,40 @@ export default function ContactModal({ isOpen, onClose, initialType }: ContactMo
           </select>
         </div>
 
+        <div className="space-y-2">
+          <label
+            htmlFor="privacy-consent"
+            className="flex cursor-pointer items-start gap-2 text-xs font-light text-[#e6e2d7]/70"
+          >
+            <input
+              id="privacy-consent"
+              name="privacyConsent"
+              type="checkbox"
+              required
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[#e6e2d7]"
+            />
+            <span>
+              He leído y acepto la{' '}
+              <a
+                href="/politica-privacidad"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:text-[#e6e2d7]"
+              >
+                Política de Privacidad
+              </a>{' '}
+              *
+            </span>
+          </label>
+          <p className="text-[11px] font-light leading-relaxed text-[#e6e2d7]/45">
+            Información básica sobre protección de datos — Responsable: Gestión del Papeleo,
+            S.L. Finalidad: atender tu solicitud de acceso como inversor y contactarte.
+            Legitimación: tu consentimiento. Derechos: acceso, rectificación, supresión y otros
+            escribiendo a info@gestiondelpapeleo.com. Más información en la Política de
+            Privacidad.
+          </p>
+        </div>
+
         <AnimatePresence mode="wait">
           {submitStatus === 'success' && (
             <motion.div
