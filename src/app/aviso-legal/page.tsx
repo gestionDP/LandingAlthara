@@ -23,9 +23,15 @@ export default function AvisoLegal() {
         <li><strong>NIF:</strong> {LEGAL.cif}</li>
         <li><strong>Domicilio social:</strong> {LEGAL.address}</li>
         <li><strong>Correo electrónico:</strong> <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a></li>
-        <li><strong>Teléfono:</strong> {LEGAL.phone}</li>
-        <li><strong>Datos registrales:</strong> {LEGAL.registry}</li>
-        <li><strong>Actividad:</strong> {LEGAL.activity}</li>
+        {LEGAL.phone ? (
+          <li><strong>Teléfono:</strong> {LEGAL.phone}</li>
+        ) : null}
+        {LEGAL.registry ? (
+          <li><strong>Datos registrales:</strong> {LEGAL.registry}</li>
+        ) : null}
+        {LEGAL.activity ? (
+          <li><strong>Actividad:</strong> {LEGAL.activity}</li>
+        ) : null}
       </ul>
 
       <h2>2. Objeto</h2>
