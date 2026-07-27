@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * Solicitud de acceso — formulario detrás del único botón del site (09 · Acceso).
+ *
+ * ALT-WEB-2026-01 v1.2 §03: se elimina el selector de «tipo de inversión».
+ * Alimentaba los seis perfiles de «Con quién trabajamos», que responden a una
+ * lógica de segmentación de funnel y contradicen la tesis de firma cerrada.
+ *
+ * §08: el copy del modal y el aviso de privacidad se sirven traducidos —
+ * ES y EN con paridad total, sin literales incrustados.
+ */
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
@@ -7,7 +17,7 @@ import { BottomSheet, BottomSheetContent } from '@/components/ui/bottom-sheet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { contactService, ContactFormData } from '@/lib/api';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const inputClass =
@@ -16,26 +26,12 @@ const inputClass =
 interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
-  /** Tipo de inversión preseleccionado (al venir de una tarjeta de segmento) */
-  initialType?: string;
 }
 
-/** Las 6 opciones de tipo de inversión (mismas que la sección de segmentos). */
-export const INVESTOR_TYPES = [0, 1, 2, 3, 4, 5] as const;
-
-export default function ContactModal({ isOpen, onClose, initialType }: ContactModalProps) {
+export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const t = useTranslations('contactModal');
-  const tSeg = useTranslations('landing.segments');
-  const [formData, setFormData] = useState<ContactFormData>({
-    email: '',
-    phone: '',
-    investorType: initialType ?? '',
-  });
-
-  // Si abren el modal desde otra tarjeta, refrescar la preselección.
-  useEffect(() => {
-    if (isOpen) setFormData((f) => ({ ...f, investorType: initialType ?? f.investorType ?? '' }));
-  }, [isOpen, initialType]);
+  const locale = useLocale() as 'es' | 'en';
+  const [formData, setFormData] = useState<ContactFormData>({ email: '', phone: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [isMobile, setIsMobile] = useState(false);
@@ -51,10 +47,10 @@ export default function ContactModal({ isOpen, onClose, initialType }: ContactMo
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus('idle');
-    const result = await contactService.submitContactForm(formData);
+    const result = await contactService.submitContactForm(formData, locale);
     if (result.success) {
       setSubmitStatus('success');
-      setFormData({ email: '', phone: '', investorType: '' });
+      setFormData({ email: '', phone: '' });
       setTimeout(() => {
         onClose();
         setSubmitStatus('idle');
@@ -65,19 +61,15 @@ export default function ContactModal({ isOpen, onClose, initialType }: ContactMo
     setIsSubmitting(false);
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const FormContent = ({ showLogo = false }: { showLogo?: boolean }) => (
+  const FormContent = () => (
     <div className="space-y-8">
-      
-
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-1">
-          <p className="text-xs tracking-[0.28em] text-[#e6e2d7]/50 font-light">
+          <p className="text-xs font-light tracking-[0.28em] text-[#e6e2d7]/50">
             {t('form.email')}
           </p>
           <Input
@@ -86,12 +78,13 @@ export default function ContactModal({ isOpen, onClose, initialType }: ContactMo
             value={formData.email}
             onChange={handleChange}
             required
-            placeholder="nombre@empresa.com"
+            placeholder={t('form.emailPlaceholder')}
             className={inputClass}
           />
         </div>
+
         <div className="space-y-1">
-          <p className="text-xs tracking-[0.28em] text-[#e6e2d7]/50 font-light">
+          <p className="text-xs font-light tracking-[0.28em] text-[#e6e2d7]/50">
             {t('form.phone')}
           </p>
           <Input
@@ -102,28 +95,6 @@ export default function ContactModal({ isOpen, onClose, initialType }: ContactMo
             placeholder="+34 600 00 00 00"
             className={inputClass}
           />
-        </div>
-
-        <div className="space-y-1">
-          <p className="text-xs tracking-[0.28em] text-[#e6e2d7]/50 font-light">
-            {t('form.investorType')}
-          </p>
-          <select
-            name="investorType"
-            value={formData.investorType ?? ''}
-            onChange={handleChange}
-            required
-            className={`${inputClass} appearance-none bg-[#102027] [&>option]:bg-[#102027]`}
-          >
-            <option value="" disabled>
-              {t('form.investorTypePlaceholder')}
-            </option>
-            {INVESTOR_TYPES.map((i) => (
-              <option key={i} value={tSeg(`items.${i}`)}>
-                {tSeg(`items.${i}`)}
-              </option>
-            ))}
-          </select>
         </div>
 
         <div className="space-y-2">
@@ -139,24 +110,20 @@ export default function ContactModal({ isOpen, onClose, initialType }: ContactMo
               className="mt-0.5 h-4 w-4 shrink-0 accent-[#e6e2d7]"
             />
             <span>
-              He leído y acepto la{' '}
+              {t('privacy.consentPre')}{' '}
               <a
                 href="/politica-privacidad"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline underline-offset-2 hover:text-[#e6e2d7]"
               >
-                Política de Privacidad
+                {t('privacy.consentLink')}
               </a>{' '}
               *
             </span>
           </label>
           <p className="text-[11px] font-light leading-relaxed text-[#e6e2d7]/45">
-            Información básica sobre protección de datos — Responsable: Gestión del Papeleo,
-            S.L. Finalidad: atender tu solicitud de acceso como inversor y contactarte.
-            Legitimación: tu consentimiento. Derechos: acceso, rectificación, supresión y otros
-            escribiendo a info@gestiondelpapeleo.com. Más información en la Política de
-            Privacidad.
+            {t('privacy.notice')}
           </p>
         </div>
 
@@ -166,9 +133,9 @@ export default function ContactModal({ isOpen, onClose, initialType }: ContactMo
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="py-3 px-4 border border-[#e6e2d7]/25 bg-[#e6e2d7]/5"
+              className="border border-[#e6e2d7]/25 bg-[#e6e2d7]/5 px-4 py-3"
             >
-              <p className="text-sm text-[#e6e2d7]/90 font-light text-center">
+              <p className="text-center text-sm font-light text-[#e6e2d7]/90">
                 {t('messages.success')}
               </p>
             </motion.div>
@@ -178,9 +145,9 @@ export default function ContactModal({ isOpen, onClose, initialType }: ContactMo
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="py-3 px-4 border border-[#e6e2d7]/20 bg-[#e6e2d7]/5"
+              className="border border-[#e6e2d7]/20 bg-[#e6e2d7]/5 px-4 py-3"
             >
-              <p className="text-sm text-[#e6e2d7]/80 font-light text-center">
+              <p className="text-center text-sm font-light text-[#e6e2d7]/80">
                 {t('messages.error')}
               </p>
             </motion.div>
@@ -191,7 +158,7 @@ export default function ContactModal({ isOpen, onClose, initialType }: ContactMo
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-12 rounded-none font-light tracking-editorial text-sm bg-[#e6e2d7] text-[#102027] hover:bg-[#e6e2d7]/90 border-0 transition-colors"
+            className="tracking-editorial h-12 w-full rounded-none border-0 bg-[#e6e2d7] text-sm font-light text-[#102027] transition-colors hover:bg-[#e6e2d7]/90"
           >
             {isSubmitting ? t('form.submitting') : t('form.submit')}
           </Button>
@@ -203,11 +170,11 @@ export default function ContactModal({ isOpen, onClose, initialType }: ContactMo
   if (isMobile) {
     return (
       <BottomSheet open={isOpen} onOpenChange={onClose}>
-        <BottomSheetContent className="bg-[#102027] border-[#e6e2d7]/10 pb-10 pt-8 px-6">
-          <p className="text-xs tracking-extreme-editorial text-[#e6e2d7]/60 font-light mb-6">
-            SOLICITUD
+        <BottomSheetContent className="border-[#e6e2d7]/10 bg-[#102027] px-6 pb-10 pt-8">
+          <p className="tracking-extreme-editorial mb-6 text-xs font-light text-[#e6e2d7]/60">
+            {t('requestLabel')}
           </p>
-          <FormContent showLogo />
+          <FormContent />
         </BottomSheetContent>
       </BottomSheet>
     );
@@ -216,12 +183,11 @@ export default function ContactModal({ isOpen, onClose, initialType }: ContactMo
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-4xl w-full max-h-[90vh] overflow-hidden p-0 gap-0 border border-[#e6e2d7]/15 bg-[#102027] [&>button]:text-[#e6e2d7] [&>button]:opacity-70 [&>button]:hover:opacity-100 [&>button]:ring-offset-[#102027] [&>button]:focus-visible:ring-[#e6e2d7]/40"
+        className="max-h-[90vh] w-full max-w-4xl gap-0 overflow-hidden border border-[#e6e2d7]/15 bg-[#102027] p-0 [&>button]:text-[#e6e2d7] [&>button]:opacity-70 [&>button]:ring-offset-[#102027] [&>button]:focus-visible:ring-[#e6e2d7]/40 [&>button]:hover:opacity-100"
         aria-describedby={undefined}
       >
         <DialogTitle className="sr-only">{t('title')}</DialogTitle>
-        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[480px]">
-          {/* Panel izquierdo: imagen + copy */}
+        <div className="grid min-h-[480px] grid-cols-1 lg:grid-cols-2">
           <div className="relative min-h-[240px] lg:min-h-0">
             <Image
               src="/jpg/4.jpg"
@@ -233,21 +199,18 @@ export default function ContactModal({ isOpen, onClose, initialType }: ContactMo
             <div className="absolute inset-0 bg-gradient-to-t from-[#102027]/90 via-[#102027]/40 to-[#102027]/20" />
             <div className="absolute inset-0 flex items-end p-8 lg:p-10">
               <div className="space-y-3">
-              
-                <h2 className="text-2xl lg:text-3xl font-playfair font-normal text-[#e6e2d7] leading-tight max-w-sm">
+                <h2 className="max-w-sm font-playfair text-2xl font-normal leading-tight text-[#e6e2d7] lg:text-3xl">
                   {t('joinTitle')}
                 </h2>
-                <p className="text-sm lg:text-base text-[#e6e2d7]/80 font-light leading-relaxed max-w-sm">
+                <p className="max-w-sm text-sm font-light leading-relaxed text-[#e6e2d7]/80 lg:text-base">
                   {t('description')}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Panel derecho: formulario */}
-          <div className="flex flex-col justify-center p-8 lg:p-10 lg:pl-12 bg-[#102027] border-t lg:border-t-0 lg:border-l border-[#e6e2d7]/10">
-          
-            <FormContent showLogo />
+          <div className="flex flex-col justify-center border-t border-[#e6e2d7]/10 bg-[#102027] p-8 lg:border-l lg:border-t-0 lg:p-10 lg:pl-12">
+            <FormContent />
           </div>
         </div>
       </DialogContent>

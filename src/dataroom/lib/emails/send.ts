@@ -31,6 +31,8 @@ export async function sendTransactionalEmail(input: {
     documentTitle?: string;
     reviewRole?: string;
     reviewDecision?: string;
+    documentRef?: string;
+    documentVersion?: string;
   };
 }): Promise<{ ok: boolean; error?: string }> {
   const { subject, html } = renderEmail(input.template, input.locale, input.params);

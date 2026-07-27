@@ -11,6 +11,8 @@ interface Detail {
     id: string; email: string; firstName: string | null; lastName: string | null;
     company: string | null; phone: string | null; country: string | null;
     investorType: string | null; language: string; status: string;
+    /** L4 · cartera completa (matriz de accesos §07). */
+    globalAccess: boolean;
     internalNotes: string | null; invitedAt: string | null; activatedAt: string | null;
     lastAccessAt: string | null; termsVersion: string | null;
   };
@@ -214,6 +216,32 @@ export default function AdminInvestorDetail({ params }: { params: Promise<{ id: 
 
         <section className={section}>
           <h2 className={h}>Proyectos asignados</h2>
+
+          {/* L4 · cartera completa — «inversor global» de la matriz de accesos.
+              Ve todos los proyectos sin asignarlos uno a uno; las revocaciones
+              expresas de abajo siguen mandando sobre este permiso. */}
+          <div className="mb-4 flex items-start justify-between gap-3 border border-[#c08552]/40 bg-[#c08552]/[0.06] px-3 py-2.5 rounded-md">
+            <div>
+              <p className="text-sm font-medium">Cartera completa (inversor global)</p>
+              <p className="mt-0.5 text-xs text-[#1c3742]/60">
+                Ve todos los proyectos del tenant sin asignación individual. El NDA y las
+                revocaciones por proyecto se siguen aplicando.
+              </p>
+            </div>
+            <button
+              onClick={() =>
+                action('set_global_access', {
+                  action: 'set_global_access',
+                  data: { globalAccess: !inv.globalAccess },
+                })
+              }
+              disabled={!!busy}
+              className={btn}
+            >
+              {inv.globalAccess ? 'Quitar' : 'Conceder'}
+            </button>
+          </div>
+
           <div className="mb-3 flex gap-2">
             <select value={grantProject} onChange={(e) => setGrantProject(e.target.value)}
               className="flex-1 border border-[#1c3742]/25 bg-[#faf9f5] px-2 py-1.5 text-xs rounded-md">

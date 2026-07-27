@@ -18,6 +18,13 @@ import {
 export interface AccessInput {
   sameTenant: boolean;
   investorStatus: InvestorStatus;
+  /**
+   * L4 · cartera completa (ALT-WEB-2026-01 §07). El inversor global ve todos
+   * los proyectos del tenant sin necesidad de una fila de asignación por
+   * proyecto. NO anula una asignación existente: si un administrador la ha
+   * suspendido o revocado, esa decisión expresa manda.
+   */
+  globalAccess?: boolean;
   projectStatus: ProjectStatus;
   /** null = project never assigned to this investor */
   assignment: { status: AccessStatus; accessLevel: 'generic' | 'full' } | null;
@@ -55,12 +62,30 @@ const DENY = (reason: DenyReason): AccessDecision => ({
   reason,
 });
 
+/**
+ * Asignación efectiva: la fila explícita si existe, y si no, la que otorga el
+ * acceso global. El orden importa — una revocación expresa nunca se pisa.
+ */
+function effectiveAssignment<T extends { status: AccessStatus }>(
+  assignment: T | null,
+  globalAccess: boolean | undefined,
+  fallback: T,
+): T | null {
+  if (assignment) return assignment;
+  return globalAccess ? fallback : null;
+}
+
 export function computeDocumentAccess(i: AccessInput): AccessDecision {
   if (!i.sameTenant) return DENY('tenant_mismatch');
   if (!investorCanAccessPortal(i.investorStatus)) return DENY('account_inactive');
   if (!projectDocumentsAvailable(i.projectStatus)) return DENY('project_unavailable');
-  if (!i.assignment) return DENY('not_assigned');
-  if (i.assignment.status !== 'active') return DENY('assignment_inactive');
+
+  const assignment = effectiveAssignment(i.assignment, i.globalAccess, {
+    status: 'active' as AccessStatus,
+    accessLevel: 'full' as const,
+  });
+  if (!assignment) return DENY('not_assigned');
+  if (assignment.status !== 'active') return DENY('assignment_inactive');
   if (i.document.status !== 'published') return DENY('document_unavailable');
   if (i.permission?.effect === 'deny') return DENY('explicit_deny');
 
@@ -70,7 +95,7 @@ export function computeDocumentAccess(i: AccessInput): AccessDecision {
   // inversor solo ve los documentos que se le han compartido explícitamente
   // (permiso 'allow'). Sin permiso explícito no ve NADA, sea general o
   // confidencial. El "acceso completo" ('full') ve todo por defecto.
-  if (i.assignment.accessLevel === 'generic' && i.permission?.effect !== 'allow') {
+  if (assignment.accessLevel === 'generic' && i.permission?.effect !== 'allow') {
     return DENY('level_insufficient');
   }
 
@@ -91,12 +116,17 @@ export function computeProjectVisibility(i: {
   investorStatus: InvestorStatus;
   projectStatus: ProjectStatus;
   assignment: { status: AccessStatus } | null;
+  /** L4 · cartera completa: ve todos los proyectos del tenant. */
+  globalAccess?: boolean;
 }): boolean {
   if (!i.sameTenant) return false;
   if (!investorCanAccessPortal(i.investorStatus)) return false;
+  const assignment = effectiveAssignment(i.assignment, i.globalAccess, {
+    status: 'active' as AccessStatus,
+  });
   // Solo un acceso ACTIVO muestra el proyecto. 'pending' (invitación sin
   // aceptar), 'suspended' o 'revoked' no lo muestran.
-  if (!i.assignment || i.assignment.status !== 'active') return false;
+  if (!assignment || assignment.status !== 'active') return false;
   if (i.projectStatus === 'draft' || i.projectStatus === 'archived') return false;
   return true;
 }

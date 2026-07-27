@@ -28,6 +28,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
       investorStatus: investor.status,
       projectStatus: project.status,
       assignment: assignment ? { status: assignment.status } : null,
+      globalAccess: investor.globalAccess,
     });
     // Same 404 as nonexistent: never reveal that the project exists.
     if (!visible) throw new AuthzError(404, 'not_found');

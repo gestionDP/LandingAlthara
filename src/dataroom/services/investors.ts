@@ -463,9 +463,23 @@ export async function updateInvestorAdminData(
   if (patch.email && investor.status === 'active') throw new AuthzError(409, 'email_locked_after_activation');
   const email = patch.email?.trim().toLowerCase();
 
+  /**
+   * Lista blanca explícita: esto son datos de PERFIL. Nunca se propaga aquí
+   * un campo de permisos (globalAccess) aunque venga en el cuerpo de la
+   * petición — para eso está `setInvestorGlobalAccess`, que además lo audita
+   * como cambio de permisos.
+   */
+  const EDITABLE = [
+    'firstName', 'lastName', 'company', 'phone', 'investorType', 'language', 'internalNotes',
+  ] as const;
+  const profile: Record<string, unknown> = {};
+  for (const field of EDITABLE) {
+    if (patch[field] !== undefined) profile[field] = patch[field];
+  }
+
   await db().update(schema.investors)
     .set({
-      ...patch,
+      ...profile,
       email: email ?? investor.email,
       updatedAt: new Date(),
     })
@@ -473,8 +487,44 @@ export async function updateInvestorAdminData(
 
   await writeAudit({
     tenant: T, actor, action: 'investor.updated', entityType: 'investor', entityId: investorId,
-    metadata: { fields: Object.keys(patch) },
+    metadata: { fields: Object.keys(profile) },
   });
+  return { ok: true };
+}
+
+/**
+ * L4 · cartera completa — «inversor global» de la matriz de accesos
+ * (ALT-WEB-2026-01 v1.2 §07).
+ *
+ * Es un cambio de permisos, no de perfil: va por su propia acción para que
+ * quede en la auditoría como tal (quién lo concedió y cuándo). No toca las
+ * asignaciones existentes: una revocación expresa sobre un proyecto sigue
+ * mandando sobre el acceso global.
+ */
+export async function setInvestorGlobalAccess(
+  investorId: string,
+  globalAccess: boolean,
+  actor: AuditActor,
+) {
+  const [investor] = await db()
+    .select().from(schema.investors)
+    .where(and(eq(schema.investors.id, investorId), eq(schema.investors.tenant, T)))
+    .limit(1);
+  if (!investor) throw new AuthzError(404, 'investor_not_found');
+
+  await db().update(schema.investors)
+    .set({ globalAccess, updatedAt: new Date() })
+    .where(eq(schema.investors.id, investorId));
+
+  await writeAudit({
+    tenant: T,
+    actor,
+    action: 'permission.changed',
+    entityType: 'investor',
+    entityId: investorId,
+    metadata: { globalAccess, previous: investor.globalAccess, scope: 'portfolio_l4' },
+  });
+
   return { ok: true };
 }
 

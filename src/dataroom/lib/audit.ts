@@ -46,7 +46,14 @@ export type AuditAction =
   | 'permission.changed'
   | 'email.sent'
   | 'email.failed'
-  | 'notification.sent';
+  | 'notification.sent'
+  // Capa 1 — documento de verificación (ALT-WEB-2026-01 §06)
+  | 'verification.requested'
+  | 'verification.confirmed'
+  | 'verification.downloaded'
+  | 'verification.denied'
+  // Sección 09 · Acceso (§04.I)
+  | 'access_request.received';
 
 export interface AuditActor {
   type: 'admin' | 'investor' | 'system' | 'reviewer';
