@@ -36,7 +36,8 @@ export default function Thesis() {
   if (horizon) buys.push({ label: t('horizonLabel'), value: horizon });
 
   return (
-    <section id="tesis" className="container-site scroll-mt-24 py-24 md:py-36">
+    <section id="tesis" className="landing-surface scroll-mt-24">
+      <div className="container-site py-24 md:py-36">
       <Reveal>
         <p className="label-mono text-[#c08552]">{t('label')}</p>
       </Reveal>
@@ -92,6 +93,7 @@ export default function Thesis() {
             </dl>
           </div>
         </div>
+      </div>
       </div>
     </section>
   );

@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Franja editorial de transición (tesis → qué hacemos): imagen a sangre de
+ * Franja editorial de transición (Colaboración → Análisis): imagen a sangre de
  * fondo con las palabras clave en modo "fantasma" (semitransparentes y en
  * contorno) desplazándose en direcciones opuestas por encima.
  */

@@ -1,46 +1,49 @@
 'use client';
 
 /**
- * 07 · Colaboración — ALT-WEB-2026-01 §04.G. Sección nueva.
- *
- * Marca blanca y originadores. Es la única sección donde la voz admite
- * primera persona del plural; el resto del site es institucional impersonal.
+ * 07 · Colaboración — ALT-WEB-2026-01 §04.G.
+ * Split asimétrico: título a la izquierda, tipos + cuerpo a la derecha.
  */
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { MaskReveal, Reveal } from './motion';
+
+const TYPE_KEYS = [0, 1, 2] as const;
 
 export default function Partnerships() {
   const t = useTranslations('landing.partnerships');
 
   return (
-    <section id="colaboracion" className="relative scroll-mt-24 overflow-hidden bg-[#102027]">
-      <Image
-        src="/png/banner2.png"
-        alt=""
-        fill
-        aria-hidden
-        sizes="100vw"
-        className="object-cover object-center"
-      />
-      <div className="absolute inset-0 bg-[#102027]/80" />
+    <section id="colaboracion" className="landing-surface scroll-mt-24">
+      <div className="container-site py-24 md:py-32">
+        <div className="grid gap-12 md:grid-cols-12 md:gap-10 md:items-start">
+          <div className="md:col-span-7">
+            <Reveal>
+              <p className="label-mono text-[#c08552]">{t('label')}</p>
+            </Reveal>
+            <h2 className="display-xl mt-8 text-3xl text-[#1c3742] md:text-5xl lg:text-6xl">
+              <MaskReveal>
+                <span className="block">{t('title')}</span>
+              </MaskReveal>
+            </h2>
+          </div>
 
-      <div className="container-site relative z-10 py-24 md:py-32">
-        <Reveal>
-          <p className="label-mono text-[#c08552]">{t('label')}</p>
-        </Reveal>
-
-        <div className="mt-8 grid gap-10 md:grid-cols-12 md:gap-8">
-          <h2 className="display-xl text-3xl text-[#e6e2d7] md:col-span-7 md:text-5xl lg:text-6xl">
-            <MaskReveal><span className="block">{t('title')}</span></MaskReveal>
-          </h2>
-
-          <div className="flex flex-col gap-6 md:col-span-5 md:pt-2">
-            <Reveal delay={0.12}>
-              <p className="text-base leading-relaxed text-[#e6e2d7]/75 md:text-lg">{t('p1')}</p>
+          <div className="flex flex-col gap-8 md:col-span-5 md:pt-10">
+            <Reveal delay={0.08}>
+              <ul className="space-y-3">
+                {TYPE_KEYS.map((i) => (
+                  <li key={i} className="label-mono text-[#1c3742]/55">
+                    {t(`types.${i}.title`)}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+            <Reveal delay={0.14}>
+              <p className="text-base leading-relaxed text-[#1c3742]/75 md:text-lg">
+                {t('p1')}
+              </p>
             </Reveal>
             <Reveal delay={0.2}>
-              <p className="border-t border-[#e6e2d7]/15 pt-6 text-base leading-relaxed text-[#e6e2d7]/55">
+              <p className="text-base font-medium leading-relaxed text-[#c08552] md:text-lg">
                 {t('p2')}
               </p>
             </Reveal>

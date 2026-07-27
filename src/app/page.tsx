@@ -32,11 +32,11 @@ export default function Home() {
       {/* 01 */} <Hero />
       {/* 02 */} <Position />
       {/* 03 */} <Thesis />
-      <Marquee />
       {/* 04 */} <Process />
       {/* 05 · Cartera — pendiente de datos */}
       {/* 06 */} <Infrastructure />
       {/* 07 */} <Partnerships />
+      <Marquee />
       {/* 08 */} <Research />
       {/* 09 */} <Access />
       <Footer />
