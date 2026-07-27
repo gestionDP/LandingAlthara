@@ -1,0 +1,96 @@
+{
+  "_doc": "ALT-WEB-2026-01 v1.2 — Capa 0. Única fuente de las cifras públicas. Editable sin tocar componentes ni traducciones. Regla de versión: ningún cambio se edita en caliente; toda actualización sube methodologyVersion y asOf, y el histórico permanece accesible. Ninguna cifra de rentabilidad puede vivir en este fichero: el retorno reside en el documento de verificación (Capa 1).",
+
+  "asOf": "2026-07-26",
+  "asOfLabel": {
+    "es": "26 de julio de 2026",
+    "en": "26 July 2026"
+  },
+  "methodologyVersion": "v1.0",
+  "verificationDocument": {
+    "ref": "ALT-TR-2026-01",
+    "version": "v1.0",
+    "date": "2026-07-26",
+    "available": false,
+    "_note": "Informativo. La comprobación que manda es la de dataroom/services/verification.ts: mira si el PDF firmado está cargado en el almacén (verification/ALT-TR-2026-01-v1.0-{es|en}.pdf) en el momento de la descarga. Poner true cuando el administrador haya firmado y se haya subido."
+  },
+
+  "figures": [
+    {
+      "id": "aum",
+      "value": { "es": "22,8 M€", "en": "€22.8M" },
+      "label": {
+        "es": "Valor de activos bajo gestión de proyecto",
+        "en": "Value of assets under project management"
+      },
+      "scope": {
+        "es": "A 26 de julio de 2026. Siete operaciones en Baleares, Cataluña y Andalucía. No incluye operaciones en fase de incorporación.",
+        "en": "As at 26 July 2026. Seven operations across the Balearics, Catalonia and Andalusia. Excludes operations in the process of incorporation."
+      }
+    },
+    {
+      "id": "units",
+      "value": { "es": "117", "en": "117" },
+      "label": {
+        "es": "Activos en gestión de proyecto",
+        "en": "Assets under project management"
+      },
+      "scope": {
+        "es": "Unidades registrales correspondientes a las siete operaciones del perímetro, a 26 de julio de 2026.",
+        "en": "Registered units across the seven perimeter operations, as at 26 July 2026."
+      }
+    }
+  ],
+
+  "perimeter": {
+    "operations": 7,
+    "units": 117,
+    "composition": [
+      { "place": { "es": "Mallorca", "en": "Mallorca" }, "operations": 4, "units": 108 },
+      { "place": { "es": "Cádiz", "en": "Cádiz" }, "operations": 1, "units": 7 },
+      { "place": { "es": "Barcelona", "en": "Barcelona" }, "operations": 1, "units": 1 },
+      { "place": { "es": "Plaça Mercat", "en": "Plaça Mercat" }, "operations": 1, "units": 1 }
+    ]
+  },
+
+  "thesis": {
+    "ticket": null,
+    "horizon": null,
+    "_note": "PENDIENTE CATALINA (ALT-WEB-2026-01 §09). Las filas con valor null no se renderizan."
+  },
+
+  "portfolio": {
+    "published": false,
+    "_note": "published: false hasta que Catalina entregue las filas C-01, C-02 y D-02. Coherencia obligatoria: las dos cerradas deben pertenecer al universo del 35% del documento de verificación. Sin direcciones, sin importes, sin retornos.",
+    "operations": [
+      {
+        "ref": "C-01",
+        "typology": null,
+        "region": null,
+        "year": null,
+        "status": { "es": "Cerrada · escriturada", "en": "Closed · deeded" }
+      },
+      {
+        "ref": "C-02",
+        "typology": null,
+        "region": null,
+        "year": null,
+        "status": { "es": "Cerrada · escriturada", "en": "Closed · deeded" }
+      },
+      {
+        "ref": "D-01",
+        "typology": { "es": "Residencial", "en": "Residential" },
+        "region": { "es": "Baleares", "en": "Balearic Islands" },
+        "year": "2026",
+        "status": { "es": "Disponible · comercialización", "en": "Available · sales" }
+      },
+      {
+        "ref": "D-02",
+        "typology": null,
+        "region": null,
+        "year": "2026",
+        "status": { "es": "Disponible", "en": "Available" }
+      }
+    ]
+  }
+}

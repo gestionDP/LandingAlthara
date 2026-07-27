@@ -20,7 +20,13 @@ export type EmailTemplate =
   | 'kyc_rejected'
   | 'kyc_submitted_admin'
   | 'document_reviewed_admin'
-  | 'document_pending_review';
+  | 'document_pending_review'
+  // Capa 1 — documento de verificación (ALT-WEB-2026-01 §06)
+  | 'verification_confirm'
+  | 'verification_requested_admin'
+  // Sección 09 · Acceso (§04.I)
+  | 'access_request_ack'
+  | 'access_request_admin';
 
 export type EmailLocale = 'es' | 'en';
 
@@ -44,6 +50,9 @@ interface TemplateParams {
   documentTitle?: string;
   reviewRole?: string;
   reviewDecision?: string;
+  /** Referencia y versión del documento de verificación (Capa 1). */
+  documentRef?: string;
+  documentVersion?: string;
 }
 
 const BRAND = {
@@ -174,6 +183,27 @@ const es: Dict = {
     body: `Se ha subido el documento <strong>${p.documentTitle ?? ''}</strong>${p.projectName ? ` en el proyecto <strong>${p.projectName}</strong>` : ''} y requiere su visado de abogado antes de publicarse al inversor.`,
     cta: 'Revisar ahora',
   }),
+  verification_confirm: (p) => ({
+    subject: 'Confirme su solicitud del documento de verificación',
+    title: 'Confirme su dirección para recibir el documento',
+    body: `Hola${p.investorName ? ` ${p.investorName}` : ''},<br/><br/>Ha solicitado el documento de verificación de cifras de Althara (<strong>${p.documentRef ?? ''} ${p.documentVersion ?? ''}</strong>), firmado por el administrador. Confirme esta dirección de correo para acceder a la descarga.<br/><br/>El enlace es personal y caduca en ${p.expiresHours ?? 720} horas. Si no ha realizado esta solicitud, ignore este mensaje.`,
+    cta: 'Confirmar y descargar',
+  }),
+  verification_requested_admin: (p) => ({
+    subject: `Nueva solicitud del documento de verificación — ${p.investorEmail ?? ''}`,
+    title: 'Solicitud del documento de verificación',
+    body: `<strong>${p.investorName ?? ''}</strong> (${p.investorEmail ?? ''}) ha solicitado el documento de verificación <strong>${p.documentRef ?? ''} ${p.documentVersion ?? ''}</strong>. La solicitud queda pendiente de que confirme su dirección de correo.`,
+  }),
+  access_request_ack: () => ({
+    subject: 'Hemos recibido su solicitud de acceso',
+    title: 'Solicitud recibida',
+    body: 'Hemos registrado su solicitud de acceso a la documentación de las operaciones. Recibirá respuesta en 24 horas, en un sentido u otro.',
+  }),
+  access_request_admin: (p) => ({
+    subject: `Nueva solicitud de acceso — ${p.investorEmail ?? ''}`,
+    title: 'Solicitud de acceso desde la web',
+    body: `<strong>${p.investorEmail ?? ''}</strong>${p.reason ? ` · teléfono ${p.reason}` : ''} ha solicitado acceso desde althara.es. Compromiso público: respuesta en 24 horas, en un sentido u otro.`,
+  }),
 };
 
 const en: Dict = {
@@ -268,6 +298,27 @@ const en: Dict = {
     title: 'You have a document pending review',
     body: `The document <strong>${p.documentTitle ?? ''}</strong>${p.projectName ? ` in project <strong>${p.projectName}</strong>` : ''} has been uploaded and requires legal review before it is published to the investor.`,
     cta: 'Review now',
+  }),
+  verification_confirm: (p) => ({
+    subject: 'Confirm your verification document request',
+    title: 'Confirm your address to receive the document',
+    body: `Hello${p.investorName ? ` ${p.investorName}` : ''},<br/><br/>You have requested Althara's figures verification document (<strong>${p.documentRef ?? ''} ${p.documentVersion ?? ''}</strong>), signed by the sole director. Confirm this email address to access the download.<br/><br/>The link is personal and expires in ${p.expiresHours ?? 720} hours. If you did not make this request, please ignore this message.`,
+    cta: 'Confirm and download',
+  }),
+  verification_requested_admin: (p) => ({
+    subject: `New verification document request — ${p.investorEmail ?? ''}`,
+    title: 'Verification document request',
+    body: `<strong>${p.investorName ?? ''}</strong> (${p.investorEmail ?? ''}) has requested verification document <strong>${p.documentRef ?? ''} ${p.documentVersion ?? ''}</strong>. The request is pending email confirmation.`,
+  }),
+  access_request_ack: () => ({
+    subject: 'We have received your access request',
+    title: 'Request received',
+    body: 'We have recorded your request for access to the operation documentation. You will receive an answer within 24 hours, one way or the other.',
+  }),
+  access_request_admin: (p) => ({
+    subject: `New access request — ${p.investorEmail ?? ''}`,
+    title: 'Access request from the website',
+    body: `<strong>${p.investorEmail ?? ''}</strong>${p.reason ? ` · phone ${p.reason}` : ''} has requested access from althara.es. Public commitment: an answer within 24 hours, one way or the other.`,
   }),
 };
 

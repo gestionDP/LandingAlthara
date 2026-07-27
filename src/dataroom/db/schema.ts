@@ -107,6 +107,12 @@ export const investors = dataroom.table(
     investorType: investorTypeEnum('investor_type'),
     language: text('language').notNull().default('es'),
     status: investorStatusEnum('status').notNull().default('draft'),
+    /**
+     * L4 · cartera completa (§07). Ve todos los proyectos del tenant sin fila
+     * en project_access. Una asignación explícita suspendida o revocada sigue
+     * mandando sobre este acceso.
+     */
+    globalAccess: boolean('global_access').notNull().default(false),
     rejectionReason: text('rejection_reason'),
     privacyAcceptedAt: timestamp('privacy_accepted_at', { withTimezone: true }),
     termsAcceptedAt: timestamp('terms_accepted_at', { withTimezone: true }),
@@ -452,4 +458,102 @@ export const notifications = dataroom.table(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index('ix_notifications_investor').on(t.investorId, t.readAt)],
+);
+
+/* ------------------ Capa 1: documento de verificación --------------------- */
+/**
+ * ALT-WEB-2026-01 v1.2 §06. Solicitud del documento de verificación firmado
+ * (ALT-TR-2026-01) mediante doble opt-in de email. El token en crudo se envía
+ * una sola vez por correo y NUNCA se almacena: solo su hash SHA-256.
+ */
+export const verificationRequestStatusEnum = dataroom.enum('verification_request_status', [
+  'pending_confirmation',
+  'confirmed',
+  'revoked',
+  'expired',
+]);
+
+export const verificationRequests = dataroom.table(
+  'verification_requests',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    tenant: text('tenant').notNull(),
+    name: text('name').notNull(),
+    email: text('email').notNull(),
+    phone: text('phone'),
+    locale: text('locale').notNull().default('es'),
+    status: verificationRequestStatusEnum('status').notNull().default('pending_confirmation'),
+    tokenHash: text('token_hash').notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    confirmedAt: timestamp('confirmed_at', { withTimezone: true }),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+    /** Versión del texto de consentimiento aceptado (finalidad declarada). */
+    consentVersion: text('consent_version').notNull(),
+    consentAt: timestamp('consent_at', { withTimezone: true }).notNull().defaultNow(),
+    /** Versión del documento vigente cuando se solicitó. */
+    documentRef: text('document_ref').notNull(),
+    documentVersion: text('document_version').notNull(),
+    ip: text('ip'),
+    userAgent: text('user_agent'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex('uq_verification_requests_token_hash').on(t.tokenHash),
+    index('ix_verification_requests_email').on(t.email, t.createdAt),
+  ],
+);
+
+/** Append-only: cada descarga queda registrada (quién, cuándo, qué versión). */
+export const verificationDownloads = dataroom.table(
+  'verification_downloads',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    tenant: text('tenant').notNull(),
+    requestId: uuid('request_id')
+      .notNull()
+      .references(() => verificationRequests.id),
+    documentRef: text('document_ref').notNull(),
+    documentVersion: text('document_version').notNull(),
+    ip: text('ip'),
+    userAgent: text('user_agent'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('ix_verification_downloads_request').on(t.requestId, t.createdAt)],
+);
+
+/* ------------- Sección 09 · Acceso: solicitudes del sitio público --------- */
+/**
+ * ALT-WEB-2026-01 v1.2 §04.I. Lo que entra por el único botón del site.
+ * Sustituye al formulario externo (Formspree): misma base de datos y misma
+ * auditoría que el resto, y así el compromiso de «respuesta en 24 horas» es
+ * comprobable.
+ */
+export const accessRequestStatusEnum = dataroom.enum('access_request_status', [
+  'new',
+  'answered',
+  'discarded',
+]);
+
+export const accessRequests = dataroom.table(
+  'access_requests',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    tenant: text('tenant').notNull(),
+    email: text('email').notNull(),
+    phone: text('phone'),
+    locale: text('locale').notNull().default('es'),
+    status: accessRequestStatusEnum('status').notNull().default('new'),
+    consentVersion: text('consent_version').notNull(),
+    consentAt: timestamp('consent_at', { withTimezone: true }).notNull().defaultNow(),
+    answeredAt: timestamp('answered_at', { withTimezone: true }),
+    answeredBy: text('answered_by'),
+    internalNotes: text('internal_notes'),
+    ip: text('ip'),
+    userAgent: text('user_agent'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index('ix_access_requests_status').on(t.tenant, t.status, t.createdAt),
+    index('ix_access_requests_email').on(t.email, t.createdAt),
+  ],
 );

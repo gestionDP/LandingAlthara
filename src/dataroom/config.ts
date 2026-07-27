@@ -21,6 +21,27 @@ export type NdaPolicy = (typeof NDA_POLICIES)[number];
 /** Version of legal texts accepted at registration. Bump when texts change. */
 export const LEGAL_TERMS_VERSION = process.env.DATAROOM_TERMS_VERSION ?? '2026-07-v1';
 
+/* ---------- Capa 1: documento de verificación (ALT-WEB-2026-01 §06) -------- */
+
+/**
+ * Documento firmado por el administrador. Disciplina de versión: el documento
+ * firmado se congela; cualquier cambio de cifras obliga a emitir una nueva
+ * referencia (ALT-TR-2026-02) con nueva fecha y firma. Nunca dos versiones
+ * firmadas en circulación simultánea.
+ */
+export const VERIFICATION_DOC_REF = process.env.VERIFICATION_DOC_REF ?? 'ALT-TR-2026-01';
+export const VERIFICATION_DOC_VERSION = process.env.VERIFICATION_DOC_VERSION ?? 'v1.0';
+
+/** Ruta del PDF en el almacén (GCS en producción, disco local en desarrollo). */
+export const VERIFICATION_DOC_PATH = (locale: 'es' | 'en'): string =>
+  process.env.VERIFICATION_DOC_PATH ??
+  `verification/${VERIFICATION_DOC_REF}-${VERIFICATION_DOC_VERSION}-${locale}.pdf`;
+
+/** Validez del enlace de confirmación y descarga, en horas. */
+export const VERIFICATION_TOKEN_TTL_HOURS = Number(
+  process.env.VERIFICATION_TOKEN_TTL_HOURS ?? 720, // 30 días
+);
+
 export function requiredEnv(name: string): string {
   const v = process.env[name];
   if (!v) throw new Error(`Missing required env var: ${name}`);

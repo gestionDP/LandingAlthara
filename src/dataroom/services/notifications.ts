@@ -33,15 +33,28 @@ export async function notifyNewDocuments(
   ));
   if (docs.length === 0) return { notified: 0 };
 
-  const assignments = await db()
+  /**
+   * L4 · cartera completa (§07): el inversor global también debe enterarse de
+   * los documentos nuevos de un proyecto al que no tiene fila de asignación.
+   * Se parte de los inversores activos del tenant con su asignación adjunta si
+   * existe, y se descarta a quien no tenga ni asignación activa ni acceso
+   * global — una asignación suspendida o revocada sigue mandando.
+   */
+  const candidates = await db()
     .select({ access: schema.projectAccess, investor: schema.investors })
-    .from(schema.projectAccess)
-    .innerJoin(schema.investors, eq(schema.projectAccess.investorId, schema.investors.id))
-    .where(and(
-      eq(schema.projectAccess.projectId, input.projectId),
-      eq(schema.projectAccess.status, 'active'),
-      eq(schema.investors.status, 'active'),
-    ));
+    .from(schema.investors)
+    .leftJoin(
+      schema.projectAccess,
+      and(
+        eq(schema.projectAccess.investorId, schema.investors.id),
+        eq(schema.projectAccess.projectId, input.projectId),
+      ),
+    )
+    .where(and(eq(schema.investors.tenant, T), eq(schema.investors.status, 'active')));
+
+  const assignments = candidates.filter(
+    ({ access, investor }) => access?.status === 'active' || (!access && investor.globalAccess),
+  );
 
   let notified = 0;
   for (const { access, investor } of assignments) {
@@ -59,7 +72,8 @@ export async function notifyNewDocuments(
           sameTenant: true,
           investorStatus: investor.status,
           projectStatus: project.status,
-          assignment: { status: access.status, accessLevel: access.accessLevel },
+          globalAccess: investor.globalAccess,
+          assignment: access ? { status: access.status, accessLevel: access.accessLevel } : null,
           document: {
             status: doc.status, confidentiality: doc.confidentiality,
             downloadable: doc.downloadable, requiresNda: doc.requiresNda,

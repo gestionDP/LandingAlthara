@@ -1,398 +1,91 @@
 {
-  "metadata": {
-    "title": "Althara — Private intelligence for operators",
-    "description": "Signals · Dossiers · Action routes · Operational privacy",
-    "keywords": "private intelligence, operators, signals, dossiers, action routes, decision-making, privacy"
-  },
-  "navbar": {
-    "menu": {
-      "dossiers": "D O S S I E R S",
-      "signals": "S I G N A L S",
-      "method": "M E T H O D",
-      "access": "A C C E S S"
-    },
-    "requestAccess": "Request access",
-    "microcopy": {
-      "private": "Private channel",
-      "curated": "Curated access"
-    },
-    "portal": "Investor portal"
-  },
-  "hero": {
-    "title": "We operate in the non-visible layer",
-    "subtitle": "Private intelligence for operators",
-    "ctaPrimary": "Request access",
-    "ctaSecondary": "See how we work",
-    "microcopy": "By invitation · Limited intake",
-    "ctaPortal": "Investor portal"
-  },
-  "editorialCollage": {
-    "label": "SELECTED FRAGMENTS",
-    "caption": {
-      "line1": "What you see is not the work · It's the surface",
-      "line2": "The value sits beneath: context, timing, execution"
-    },
-    "tiles": [
-      {
-        "alt": "Fragment 1",
-        "phrase": "We read signals",
-        "tag": "SIGNAL"
-      },
-      {
-        "alt": "Fragment 2",
-        "phrase": "We design private routes",
-        "tag": "ROUTE"
-      },
-      {
-        "alt": "Fragment 3",
-        "phrase": "We protect the edge",
-        "tag": "EDGE"
-      },
-      {
-        "alt": "Fragment 4",
-        "phrase": "Privacy is operational",
-        "tag": "PRIVACY"
-      },
-      {
-        "alt": "Fragment 5",
-        "phrase": "From insight to action",
-        "tag": "EXECUTION"
-      },
-      {
-        "alt": "Fragment 6",
-        "phrase": "Timing > narrative",
-        "tag": "TIMING"
-      },
-      {
-        "alt": "Fragment 7",
-        "phrase": "We filter noise · Keep patterns",
-        "tag": "FILTER"
-      },
-      {
-        "alt": "Fragment 8",
-        "phrase": "What matters isn't announced",
-        "tag": "DISCRETION"
-      }
-    ]
-  },
-  "cursor": {
-    "view": "VIEW",
-    "open": "OPEN"
-  },
-  "position": {
-    "label": "POSITION",
-    "title": "We read signals. We design routes. We protect the edge.",
-    "statement": "Althara is a private intelligence channel for operators. We deliver dossiers and action routes so you can decide earlier—under minimal exposure.",
-    "line1": "Signals",
-    "line2": "Dossiers",
-    "line3": "Action routes",
-    "paragraph": "Althara turns weak signals into clear decisions: context, constraints, and timing windows. Everything runs through a private channel with curated access.",
-    "tab1_title": "Dossiers",
-    "tab1_body": "Compressed intelligence for operating: what shifts, why it matters, and when it activates",
-    "tab1_item1": "Signal map (macro → micro) with implications",
-    "tab1_item2": "Second-order effects and friction points",
-    "tab1_item3": "Timing windows, triggers, and constraints",
-    "tab2_title": "Action routes",
-    "tab2_body": "From intent to execution: sequence, actors, access, discretion",
-    "tab2_item1": "Sequencing: what moves first",
-    "tab2_item2": "Route: dependencies, actors, access's levers",
-    "tab2_item3": "Execution cadence with minimal exposure",
-    "tab3_title": "Decision framework",
-    "tab3_body": "A framework for ambiguity: thresholds, risks, next step",
-    "tab3_item1": "Decision trees and go/no-go criteria",
-    "tab3_item2": "Downside-first: limits and protections",
-    "tab3_item3": "Operator checklist to execute",
-    "inPracticeTitle": "In practice",
-    "inPracticeExample": "An operator used our route to act before the narrative turned: clear trigger, defined sequence, minimal exposure.",
-    "outputLabel": "DELIVERABLES",
-    "progress": {
-      "paused": "Paused",
-      "autoplay": "Autoplay · Tap or swipe to navigate"
-    }
-  },
-  "trackRecord": {
-    "label": "TRACK RECORD (SELECTED)",
-    "metric1": {
-      "value": "50+",
-      "label": "Markets analyzed"
-    },
-    "metric2": {
-      "value": "200+",
-      "label": "Signals tracked"
-    },
-    "metric3": {
-      "value": "150+",
-      "label": "Dossiers & briefings"
-    },
-    "metric4": {
-      "value": "30+",
-      "label": "Operators supported"
-    },
-    "footnote": "We don't publish what we protect"
-  },
-  "manifesto": {
-    "statement": "Privacy is operational",
-    "subline": "From context to execution"
-  },
-  "featuredDossiers": {
-    "label": "FEATURED DOSSIERS",
-    "title": "Private dossiers to decide earlier",
-    "ctaCard": "View dossier →",
-    "tapToSwitch": "SWIPE TO SEE MORE",
-    "dossierTag": "DOSSIER",
-    "dossier1": {
-      "title": "The Quiet Shift",
-      "year": "2026",
-      "description": "Where incentives move before the narrative"
-    },
-    "dossier2": {
-      "title": "Capital Gravity",
-      "year": "2025",
-      "description": "Why flows concentrate—and then rewrite markets"
-    },
-    "dossier3": {
-      "title": "Second-Order Demand",
-      "year": "2025",
-      "description": "When the real buyer isn't the user"
-    },
-    "cta": "Request a context note",
-    "microcopy": "Shared under curated access"
-  },
-  "method": {
-    "label": "METHOD",
-    "phase1": {
-      "title": "CAPTURE",
-      "bullet1": "We collect weak signals across systems",
-      "bullet2": "We filter noise · Keep patterns"
-    },
-    "phase2": {
-      "title": "FILTER",
-      "bullet1": "We separate narrative from mechanics",
-      "bullet2": "We stress-test assumptions"
-    },
-    "phase3": {
-      "title": "MODEL",
-      "bullet1": "We map causality and second-order effects",
-      "bullet2": "We look for timing, not opinions"
-    },
-    "phase4": {
-      "title": "ROUTE",
-      "bullet1": "We turn insight into actionable steps",
-      "bullet2": "Clear decisions · Minimal exposure"
-    },
-    "phase5": {
-      "title": "REVIEW",
-      "bullet1": "We update the model as reality moves",
-      "bullet2": "Continuous refinement"
-    },
-    "finalLine": "We don't sell certainty · We build operational edge",
-    "statusLabel": "STATUS",
-    "activeWindow": "Active window",
-    "outputLabel": "DELIVERABLES",
-    "outputs": [
-      "Dossier",
-      "Briefing",
-      "Action route",
-      "Model",
-      "Review loop"
-    ],
-    "mode": {
-      "manual": "MANUAL",
-      "autoplay": "AUTOPLAY"
-    },
-    "controls": {
-      "navigate": "Tap or swipe to navigate",
-      "autoplay": "Auto scan"
-    }
-  },
-  "selectedEnvironments": {
-    "label": "SELECTED ENVIRONMENTS",
-    "environment1": "Hospitality groups",
-    "environment2": "Real estate operators",
-    "environment3": "Consumer brands",
-    "environment4": "Private investment",
-    "environment5": "Agency networks",
-    "footnote": "Names are shared privately"
-  },
-  "extracts": {
-    "label": "EXTRACTS",
-    "quote1": {
-      "text": "They didn't give us answers. They gave us a map.",
-      "attribution": "Operator — Southern Europe"
-    },
-    "quote2": {
-      "text": "The value was timing, not information.",
-      "attribution": "Founder — Consumer"
-    },
-    "quote3": {
-      "text": "Finally, a framework that respects privacy.",
-      "attribution": "Partner — Investment"
-    }
-  },
-  "briefingNote": {
-    "label": "BRIEFING NOTE",
-    "title": "Signals that don't trend (yet)",
-    "extract": {
-      "line1": "A short list of quiet shifts that precede demand",
-      "line2": "Updated monthly · Shared privately"
-    },
-    "cta": "Request access to notes",
-    "stamp": "Updated monthly"
-  },
-  "finalCta": {
-    "title": "Access is curated",
-    "subcopy": {
-      "line1": "If you operate where timing matters, request entry",
-      "line2": "Limited intake · Private channel"
-    },
-    "cta": "Request access",
-    "microcopy": "No spam · No public list · No noise",
-    "portal": "Already an investor? Access your private portal"
-  },
-  "footer": {
-    "mantra": "Great things aren't announced · They're coordinated",
-    "quickLinks": {
-      "title": "Quick Links",
-      "system": "System",
-      "process": "Process",
-      "access": "Access",
-      "portal": "Investor portal"
-    },
-    "contact": {
-      "title": "Contact",
-      "email": "info@althara.com",
-      "phone": "+34 695 09 33 33",
-      "location": "Mallorca, Spain"
-    },
-    "copyright": "© 2025 Althara. All rights reserved.",
-    "backedBy": "Backed by GDP"
-  },
-  "contactModal": {
-    "title": "Contact Althara",
-    "joinTitle": "Request access",
-    "description": "Private access to dossiers, signals, and action routes for operators. Send your request and we'll reply privately.",
-    "form": {
-      "name": "Name *",
-      "email": "Email *",
-      "phone": "Phone",
-      "message": "Message",
-      "userType": "User type",
-      "submit": "Submit request",
-      "submitting": "Submitting...",
-      "investorType": "INVESTMENT TYPE",
-      "investorTypePlaceholder": "Select your profile…"
-    },
-    "messages": {
-      "success": "Got it. We'll contact you privately.",
-      "error": "Error sending. Please try again."
-    }
-  },
-  "common": {
-    "learnMore": "Learn more",
-    "getStarted": "Get started",
-    "contactUs": "Contact us",
-    "readMore": "Read more"
-  },
   "landing": {
     "nav": {
       "thesis": "Thesis",
-      "layers": "What we do",
-      "method": "Method",
-      "portal": "Portal",
-      "portalCta": "Investor portal",
-      "access": "Request access"
+      "process": "Process",
+      "infrastructure": "Infrastructure",
+      "partnerships": "Partnerships",
+      "research": "Research",
+      "access": "Access",
+      "menu": "Menu"
     },
     "hero": {
-      "wordmarkSub": "Off-market real estate investment",
-      "tagline": "The best assets never reach the portals.",
-      "sub": "Private access, verified analysis and full confidentiality.",
-      "cta1": "Request access",
-      "cta2": "Investor portal",
-      "stats": [
-        {
-          "k": "Business pipeline · last 24 months",
-          "v": "+€20M"
-        },
-        {
-          "k": "Assets under project management",
-          "v": "108"
-        },
-        {
-          "k": "Average annualised ROI per deal",
-          "v": "35%"
-        }
-      ]
+      "wordmarkSub": "Off-market real estate investment.",
+      "lead": "Proprietary origination, documentary verification and end-to-end management of each asset through to exit.",
+      "location": "Palma de Mallorca · Operations across the Balearic Islands, Catalonia, Cantabria and Andalusia."
+    },
+    "position": {
+      "label": "Position",
+      "trackRecordTitle": "Closed-operation track record",
+      "trackRecordText": "— bought and sold, with deeds. Its detail and return metrics are set out in the verification document, available upon identification.",
+      "methodologyLink": "Calculation methodology",
+      "verificationLink": "Verification document",
+      "verificationMeta": "signed by the sole director"
+    },
+    "thesis": {
+      "label": "Thesis",
+      "line1": "The operations with the most upside",
+      "line2": "change hands before",
+      "line3": "reaching any listing portal",
+      "sub": "Discretion is not opacity. It is method.",
+      "buysTitle": "What the firm buys",
+      "situationsLabel": "Situations",
+      "situations": "debt, successions, portfolio divestments and land with planning management pending.",
+      "assetsLabel": "Assets",
+      "assets": "residential for repositioning, fully zoned land and entire buildings.",
+      "ticketLabel": "Ticket per operation",
+      "horizonLabel": "Rotation horizon"
     },
     "marquee": {
       "w1": "OFF-MARKET",
-      "w2": "CONFIDENTIAL",
-      "w3": "SIGNALS",
-      "w4": "DATA ROOM",
-      "w5": "INVESTMENT"
+      "w2": "ORIGINATION",
+      "w3": "VERIFICATION",
+      "w4": "VALUATION",
+      "w5": "TRACEABILITY"
     },
-    "thesis": {
-      "label": "The thesis",
-      "line1": "The good ones aren't listed",
-      "line2": "they're shared",
-      "line3": "in private",
-      "p1": "The deals with real upside change hands before reaching any portal.",
-      "p2": "Our job is to put you in that conversation.",
-      "quote": "Discretion is not opacity. It is method."
-    },
-    "layers": {
-      "title": "What we do",
-      "intro": "Four steps between a signal and a signature.",
-      "items": [
-        {
-          "title": "Signals",
-          "text": "Debt, inheritances and portfolios that demand silence. We detect the opportunity at source."
-        },
-        {
-          "title": "Analysis",
-          "text": "Registry, market and real comparables. A verifiable dossier."
-        },
-        {
-          "title": "Access",
-          "text": "Each asset, only in front of the mandates that fit."
-        },
-        {
-          "title": "Closing",
-          "text": "NDA, due diligence and signing. We stay until the end."
-        }
-      ]
-    },
-    "method": {
-      "title": "Method",
-      "intro": "Slow to announce. Fast to execute.",
+    "process": {
+      "label": "Process",
+      "title": "Process",
       "steps": [
         {
           "title": "Origination",
-          "text": "The signal arrives through our own network, never a portal."
+          "text": "Deal flow arrives through our own network, never through a listing."
         },
         {
           "title": "Verification",
-          "text": "Ownership, encumbrances and real condition, checked against official sources."
+          "text": "Title, charges and actual condition, checked against official sources."
         },
         {
           "title": "Valuation",
-          "text": "The price is defended with transaction data, not adjectives."
+          "text": "Price is defended with transaction data, not adjectives."
         },
         {
-          "title": "Matching",
-          "text": "Fewer eyes on the asset, higher chance of closing."
+          "title": "Allocation",
+          "text": "Each asset is shown only to mandates where it fits."
         },
         {
           "title": "Execution",
-          "text": "Data room, NDA and signing. Fully traced."
+          "text": "NDA, due diligence and completion, fully traceable."
         }
-      ],
-      "cta": "Request access"
+      ]
     },
-    "portal": {
-      "label": "Private portal",
-      "title1": "Your investment",
-      "title2": "data room",
-      "intro": "Every project has its own library of verified documents, protected by NDA and fully traceable.",
+    "portfolio": {
+      "label": "Portfolio",
+      "title": "Two closed. Two available.",
+      "intro": "The two most recently closed operations — bought and sold, with deeds — and the two currently available to mandates. The full perimeter under management (seven operations · 117 registered units) is documented in the data room, under NDA.",
+      "col": {
+        "op": "Op.",
+        "typology": "Typology",
+        "region": "Region",
+        "year": "Year",
+        "status": "Status"
+      },
+      "pending": "Pending"
+    },
+    "infrastructure": {
+      "label": "Infrastructure",
+      "title": "A proprietary platform, in development for over seven years.",
+      "intro": "It connects origination, analysis and document access. Each project has its own library of verified documents, protected and fully traceable.",
       "features": [
         {
           "title": "Invitation only",
@@ -400,57 +93,150 @@
         },
         {
           "title": "Digital NDA",
-          "text": "One signature unlocks all confidential documentation."
+          "text": "One signature unlocks the confidential documentation."
         },
         {
           "title": "Protected documents",
-          "text": "Short-lived links and a personal watermark on every download."
+          "text": "Time-limited links and a personal watermark on every download."
         },
         {
           "title": "Fully traced",
-          "text": "Every view and download is recorded."
+          "text": "Every view and download is logged."
         }
-      ],
-      "cta": "Enter the portal",
-      "note": "No invitation? Request access and we will assess your mandate.",
-      "cardLabel": "Confidential project",
-      "cardTitle": "Dossier · Due diligence · NDA"
+      ]
     },
-    "finalCta": {
+    "partnerships": {
+      "label": "Partnerships",
+      "title": "Althara also operates as infrastructure for third parties.",
+      "p1": "Originators, agencies and wealth advisers access Althara's analysis, documentation and process under their own brand. The client relationship remains with the partner.",
+      "p2": "Each partner's access runs on isolated infrastructure."
+    },
+    "research": {
+      "label": "Research",
+      "researchTitle": "Research",
+      "researchText": "Proprietary research on the regulatory framework and the markets in which the firm operates. Launch pieces: the price-limited housing framework in the Balearics, in its public version, with no project references or internal figures.",
+      "verificationTitle": "Verification",
+      "verificationText": "Every figure the firm publishes is defined, dated and signed. The verification document — issued by the sole director — specifies what each figure measures and how it is evidenced. It can be requested from any page of the site.",
+      "governanceTitle": "Governance",
+      "governanceText1": "Investment management, financial management and the tax and legal functions are integrated into the firm's operations, each with over thirty years of track record in its discipline.",
+      "governanceText2": "Published figures are reviewed every six months and accompanied by versioned methodology."
+    },
+    "access": {
       "label": "Access",
-      "line1": "Let's talk",
-      "line2": "in private",
-      "sub": "Tell us your mandate. If there is a fit, we open the door.",
-      "cta1": "Request access",
-      "cta2": "I'm an investor"
+      "line1": "Access to operation",
+      "line2": "documentation",
+      "line3": "is by invitation",
+      "sub": "Every request receives an answer within 24 hours, one way or the other.",
+      "cta": "Request access",
+      "email": "info@althara.es"
     },
     "footer": {
-      "mantra": "The visible market is the tip of the iceberg.",
+      "sections": "Sections",
       "thesis": "Thesis",
-      "layers": "What we do",
-      "method": "Method",
-      "portal": "Investor portal",
+      "process": "Process",
+      "infrastructure": "Infrastructure",
+      "research": "Research",
+      "methodology": "Methodology",
+      "investorAccess": "Investor access → crm.althara.es",
       "rights": "All rights reserved.",
-      "confidential": "Private channel · Invitation only"
+      "legalNotice": "Legal notice",
+      "privacy": "Privacy policy",
+      "cookies": "Cookie policy",
+      "terms": "Terms of use",
+      "verification": "Verification"
     },
-    "divider": {
-      "line1": "Privacy is operational",
-      "line2": "From context to execution"
+    "methodology": {
+      "back": "← Back to home",
+      "title": "Methodology",
+      "header": "Methodology {version} — {date}",
+      "intro": "This page defines the figures the firm publishes in its visible layer. It covers those figures only. No return figures are published on this site.",
+      "s1title": "What each figure measures",
+      "s2title": "Universe included",
+      "s2intro": "The figures correspond to a perimeter of {operations} operations and {units} registered units, with the following composition:",
+      "s2col": {
+        "place": "Location",
+        "operations": "Operations",
+        "units": "Registered units"
+      },
+      "s2note": "The firm operates in Cantabria; the figures on this page exclude Santander as it is not counted in the perimeter. Counted perimeter: {operations} operations.",
+      "s3title": "Valuation criterion",
+      "s3text": "The value of assets under project management is calculated on acquisition value plus investment executed on the asset. It does not incorporate unrealised market revaluation or any leverage effect.",
+      "s4title": "Return",
+      "s4text": "The return methodology lives in the verification document, with the explicit clarification that the asset universe (live operations) and the return universe (closed operations) are not the same. The per-operation breakdown, including the worst performer, lives in the data room.",
+      "s5title": "Version rule",
+      "s5text": "No change is edited in place. Every update produces a new dated version — v1.1, v2.0… — and the history remains accessible.",
+      "verificationCta": "Verification document",
+      "s2total": "Total"
+    }
+  },
+  "contactModal": {
+    "title": "Access request",
+    "joinTitle": "Request access",
+    "description": "Access to operation documentation is by invitation. Every request receives an answer within 24 hours, one way or the other.",
+    "requestLabel": "REQUEST",
+    "form": {
+      "email": "EMAIL *",
+      "emailPlaceholder": "name@company.com",
+      "phone": "PHONE",
+      "submit": "Send request",
+      "submitting": "Sending…"
     },
-    "segments": {
-      "label": "Selected environments",
-      "title": "Who we work with",
-      "intro": "Six investment profiles we work with. Pick yours and tell us your mandate.",
-      "cta": "Request access",
-      "footnote": "Names are shared in private.",
-      "items": [
-        "Hospitality groups",
-        "Real estate operators",
-        "Consumer brands",
-        "Private investment",
-        "Agency networks",
-        "Family offices"
-      ]
+    "privacy": {
+      "consentPre": "I have read and accept the",
+      "consentLink": "Privacy Policy",
+      "notice": "Basic data protection information — Controller: Gestión del Papeleo, S.L. Purpose: to handle the access request and contact the applicant. Legal basis: the data subject's consent. Rights: access, rectification, erasure and others by writing to info@gestiondelpapeleo.com. Further information in the Privacy Policy."
+    },
+    "messages": {
+      "success": "Request received. You will receive an answer within 24 hours.",
+      "error": "The request could not be sent. Please try again."
+    }
+  },
+  "verification": {
+    "back": "← Back to home",
+    "label": "Verification document",
+    "title": "Every published figure is defined, dated and signed.",
+    "intro": "The verification document is issued by the sole director and sets out, for each figure published on this site, what it measures precisely, the universe it is calculated on, and the documentary support with which it would be evidenced on request.",
+    "containsTitle": "What it contains",
+    "contains": [
+      "Definition of each published figure and its cut-off date.",
+      "Calculation universe for each one, including the return methodology.",
+      "How each is evidenced: deeds, registry extracts, accounts and certificates.",
+      "Signature of the sole director."
+    ],
+    "form": {
+      "title": "Request the document",
+      "name": "NAME *",
+      "namePlaceholder": "Full name",
+      "email": "EMAIL *",
+      "emailPlaceholder": "name@company.com",
+      "phone": "PHONE",
+      "submit": "Request document",
+      "submitting": "Sending…"
+    },
+    "consent": {
+      "text": "I agree that Althara may use my data to deliver this document and for possible subsequent commercial contact, in accordance with the",
+      "link": "Privacy Policy",
+      "notice": "Basic data protection information — Controller: Gestión del Papeleo, S.L. Purpose: delivery of the verification document and subsequent commercial contact. Legal basis: the data subject's consent. Every access and download of the document is logged. Rights: access, rectification, erasure and others by writing to info@gestiondelpapeleo.com."
+    },
+    "sent": {
+      "title": "Check your inbox",
+      "text": "We have sent you a confirmation link. Once confirmed, you will be able to download the document."
+    },
+    "download": {
+      "title": "Verification document",
+      "text": "Your address has been confirmed. You can download the signed document.",
+      "cta": "Download PDF",
+      "logged": "Every download is recorded: who, when and which version was delivered.",
+      "notReady": "The signed document is not available yet. Your request has been recorded and we will let you know as soon as it is published."
+    },
+    "errors": {
+      "invalid_token": "This link is not valid.",
+      "not_found": "This link is not valid.",
+      "expired": "This link has expired. Please request the document again.",
+      "revoked": "This link has been revoked.",
+      "not_confirmed": "Please confirm your email address first, using the link we sent you.",
+      "document_not_ready": "The signed document is not available yet.",
+      "generic": "The request could not be completed. Please try again."
     }
   }
 }

@@ -12,7 +12,7 @@
     "start": "next start",
     "lint": "eslint",
     "dataroom:migrate": "node scripts/dataroom-migrate.mjs",
-    "test:dataroom": "node --experimental-strip-types --test src/dataroom/__tests__/"
+    "test:dataroom": "node --experimental-strip-types --test src/dataroom/__tests__/*.test.ts"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",

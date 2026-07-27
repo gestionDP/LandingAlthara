@@ -292,18 +292,33 @@ export async function ndaStateFor(investor: Investor, project: typeof schema.pro
 
 /** Projects visible to an investor, with per-project NDA state + doc counts. */
 export async function listAuthorizedProjects(investor: Investor) {
-  const rows = await db()
-    .select({
-      project: schema.projects,
-      access: schema.projectAccess,
-    })
-    .from(schema.projectAccess)
-    .innerJoin(schema.projects, eq(schema.projectAccess.projectId, schema.projects.id))
-    .where(and(
-      eq(schema.projectAccess.investorId, investor.id),
-      eq(schema.projectAccess.tenant, T),
-      eq(schema.projects.tenant, T),
-    ));
+  /**
+   * L4 · cartera completa (§07): el inversor global parte de TODOS los
+   * proyectos del tenant y se le adjunta su fila de asignación si la tiene
+   * — así una revocación expresa sigue ocultándole el proyecto. El resto
+   * parte únicamente de sus asignaciones.
+   */
+  const rows = investor.globalAccess
+    ? await db()
+        .select({ project: schema.projects, access: schema.projectAccess })
+        .from(schema.projects)
+        .leftJoin(
+          schema.projectAccess,
+          and(
+            eq(schema.projectAccess.projectId, schema.projects.id),
+            eq(schema.projectAccess.investorId, investor.id),
+          ),
+        )
+        .where(eq(schema.projects.tenant, T))
+    : await db()
+        .select({ project: schema.projects, access: schema.projectAccess })
+        .from(schema.projectAccess)
+        .innerJoin(schema.projects, eq(schema.projectAccess.projectId, schema.projects.id))
+        .where(and(
+          eq(schema.projectAccess.investorId, investor.id),
+          eq(schema.projectAccess.tenant, T),
+          eq(schema.projects.tenant, T),
+        ));
 
   const visible = rows.filter((r) =>
     !r.project.deletedAt &&
@@ -311,7 +326,8 @@ export async function listAuthorizedProjects(investor: Investor) {
       sameTenant: true,
       investorStatus: investor.status,
       projectStatus: r.project.status,
-      assignment: { status: r.access.status },
+      assignment: r.access ? { status: r.access.status } : null,
+      globalAccess: investor.globalAccess,
     }),
   );
 
@@ -342,8 +358,9 @@ export async function listAuthorizedProjects(investor: Investor) {
       status: r.project.status,
       investmentType: r.project.investmentType,
       updatedAt: r.project.updatedAt,
-      accessStatus: r.access.status,
-      accessLevel: r.access.accessLevel,
+      // Sin fila de asignación solo se llega aquí con acceso global (L4).
+      accessStatus: r.access?.status ?? ('active' as const),
+      accessLevel: r.access?.accessLevel ?? ('full' as const),
       documentCount: countMap.get(r.project.id)?.total ?? 0,
       newDocumentCount: countMap.get(r.project.id)?.fresh ?? 0,
       ndaState: await ndaStateFor(investor, r.project),

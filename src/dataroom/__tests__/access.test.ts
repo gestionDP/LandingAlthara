@@ -129,3 +129,92 @@ describe('computeProjectVisibility', () => {
     );
   });
 });
+
+/**
+ * L4 · cartera completa — «inversor global» de la matriz de accesos
+ * (ALT-WEB-2026-01 v1.2 §07). Ve todos los proyectos del tenant sin fila de
+ * asignación, pero ninguna otra puerta se relaja.
+ */
+describe('acceso global (L4 · cartera completa)', () => {
+  const globalNoRow: AccessInput = { ...allowed, assignment: null, globalAccess: true };
+
+  it('sustituye la asignación ausente por un acceso completo activo', () => {
+    assert.deepEqual(computeDocumentAccess(globalNoRow), {
+      canView: true,
+      canDownload: true,
+      reason: null,
+    });
+  });
+
+  it('no anula una asignación revocada o suspendida por un administrador', () => {
+    for (const s of ['revoked', 'suspended'] as const)
+      assert.equal(
+        computeDocumentAccess({
+          ...globalNoRow,
+          assignment: { status: s, accessLevel: 'full' },
+        }).reason,
+        'assignment_inactive',
+      );
+  });
+
+  it('respeta la asignación limitada existente en lugar de ampliarla', () => {
+    assert.equal(
+      computeDocumentAccess({
+        ...globalNoRow,
+        assignment: { status: 'active', accessLevel: 'generic' },
+      }).reason,
+      'level_insufficient',
+    );
+  });
+
+  it('sigue exigiendo NDA firmado para documentos sensibles', () => {
+    assert.equal(
+      computeDocumentAccess({ ...globalNoRow, ndaState: 'pending_signature' }).reason,
+      'nda_required',
+    );
+  });
+
+  it('sigue respetando la denegación explícita sobre un documento', () => {
+    assert.equal(
+      computeDocumentAccess({
+        ...globalNoRow,
+        permission: { effect: 'deny', canDownload: false },
+      }).reason,
+      'explicit_deny',
+    );
+  });
+
+  it('no cruza el tenant ni resucita una cuenta inactiva', () => {
+    assert.equal(computeDocumentAccess({ ...globalNoRow, sameTenant: false }).reason, 'tenant_mismatch');
+    assert.equal(
+      computeDocumentAccess({ ...globalNoRow, investorStatus: 'suspended' }).reason,
+      'account_inactive',
+    );
+  });
+
+  it('hace visible un proyecto activo sin asignación, pero no uno en borrador', () => {
+    const base = {
+      sameTenant: true,
+      investorStatus: 'active' as const,
+      assignment: null,
+      globalAccess: true,
+    };
+    assert.ok(computeProjectVisibility({ ...base, projectStatus: 'active' }));
+    assert.ok(!computeProjectVisibility({ ...base, projectStatus: 'draft' }));
+    assert.ok(!computeProjectVisibility({ ...base, projectStatus: 'archived' }));
+    assert.ok(
+      !computeProjectVisibility({
+        ...base,
+        projectStatus: 'active',
+        assignment: { status: 'revoked' },
+      }),
+    );
+  });
+
+  it('sin acceso global, la ausencia de asignación sigue denegando', () => {
+    assert.equal(
+      computeDocumentAccess({ ...allowed, assignment: null, globalAccess: false }).reason,
+      'not_assigned',
+    );
+  });
+});

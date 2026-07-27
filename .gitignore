@@ -162,3 +162,6 @@ docs/dist/
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# Componentes retirados en ALT-WEB-2026-01 v1.2, pendientes de borrado manual
+/_to_delete/

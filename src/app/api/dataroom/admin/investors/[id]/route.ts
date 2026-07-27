@@ -4,7 +4,7 @@ import { and, desc, eq } from 'drizzle-orm';
 import { requireAdmin, errorResponse, AuthzError } from '@/dataroom/lib/authz';
 import {
   inviteInvestor, revokeInvitation, setInvestorStatus, updateInvestorAdminData, listInvitations,
-  softDeleteInvestor,
+  softDeleteInvestor, setInvestorGlobalAccess,
 } from '@/dataroom/services/investors';
 import { db, schema } from '@/dataroom/db/client';
 import { DATAROOM_TENANT } from '@/dataroom/config';
@@ -55,7 +55,12 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
 }
 
 const PatchBody = z.object({
-  action: z.enum(['update', 'invite', 'resend_invitation', 'revoke_invitation', 'suspend', 'reactivate', 'disable']),
+  action: z.enum([
+    'update', 'invite', 'resend_invitation', 'revoke_invitation', 'suspend', 'reactivate',
+    'disable',
+    // L4 · cartera completa (§07)
+    'set_global_access',
+  ]),
   data: z.object({
     firstName: z.string().max(100).optional(),
     lastName: z.string().max(100).optional(),
@@ -65,6 +70,7 @@ const PatchBody = z.object({
     investorType: z.enum(['individual', 'legal_entity', 'professional', 'institutional']).optional(),
     language: z.enum(['es', 'en']).optional(),
     internalNotes: z.string().max(5000).optional(),
+    globalAccess: z.boolean().optional(),
   }).optional(),
 });
 
@@ -99,6 +105,12 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
         break;
       case 'disable':
         await setInvestorStatus(id, 'disabled', actor);
+        break;
+      case 'set_global_access':
+        if (typeof data?.globalAccess !== 'boolean') {
+          return Response.json({ error: 'invalid_request' }, { status: 400 });
+        }
+        await setInvestorGlobalAccess(id, data.globalAccess, actor);
         break;
     }
     return Response.json({ ok: true });

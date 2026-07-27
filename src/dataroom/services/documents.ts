@@ -345,6 +345,7 @@ async function loadAccessContext(investor: Investor, documentId: string) {
   const decision = computeDocumentAccess({
     sameTenant: investor.tenant === document.tenant && document.tenant === T,
     investorStatus: investor.status,
+    globalAccess: investor.globalAccess,
     projectStatus: project.status,
     assignment: assignment ? { status: assignment.status, accessLevel: assignment.accessLevel } : null,
     document: docInput,
@@ -438,6 +439,7 @@ export async function listAuthorizedDocuments(investor: Investor, projectId: str
     const decision: AccessDecision = computeDocumentAccess({
       sameTenant: investor.tenant === doc.tenant && doc.tenant === T,
       investorStatus: investor.status,
+      globalAccess: investor.globalAccess,
       projectStatus: project.status,
       assignment: assignment ? { status: assignment.status, accessLevel: assignment.accessLevel } : null,
       document: docInput,
