@@ -72,6 +72,14 @@ select:-webkit-autofill {
   }
 }
 
+/* Fondos intercalados de la landing (crema base ↔ banda más cálida). */
+.landing-surface {
+  background-color: #f4f2ec;
+}
+.landing-band {
+  background-color: #e8e2d4;
+}
+
 /* Tipografía de Althara: Montserrat medium, no black; tamaños originales */
 .display-xl {
   font-family: var(--font-montserrat), sans-serif;

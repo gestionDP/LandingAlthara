@@ -19,7 +19,8 @@ export default function Infrastructure() {
   const reduce = useReducedMotion();
 
   return (
-    <section id="infraestructura" className="container-site scroll-mt-24 py-24 md:py-36">
+    <section id="infraestructura" className="landing-band scroll-mt-24">
+      <div className="container-site py-24 md:py-36">
       <div className="grid gap-12 md:grid-cols-12 md:gap-8">
         <div className="md:col-span-6">
           <Reveal>
@@ -72,6 +73,7 @@ export default function Infrastructure() {
             <div className="pointer-events-none absolute inset-0 bg-[#102027]/5" />
           </motion.div>
         </div>
+      </div>
       </div>
     </section>
   );

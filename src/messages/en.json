@@ -16,8 +16,8 @@
     },
     "position": {
       "label": "Position",
-      "trackRecordTitle": "Closed-operation track record",
-      "trackRecordText": "— bought and sold, with deeds. Its detail and return metrics are set out in the verification document, available upon identification.",
+      "trackRecordTitle": "Track record",
+      "trackRecordText": "Closed operations with deeds; detail and returns in the verification document.",
       "methodologyLink": "Calculation methodology",
       "verificationLink": "Verification document",
       "verificationMeta": "signed by the sole director"
@@ -108,18 +108,23 @@
     "partnerships": {
       "label": "Partnerships",
       "title": "Althara also operates as infrastructure for third parties.",
-      "p1": "Originators, agencies and wealth advisers access Althara's analysis, documentation and process under their own brand. The client relationship remains with the partner.",
-      "p2": "Each partner's access runs on isolated infrastructure."
+      "p1": "Originators, agencies and wealth advisers use analysis, documentation and process under their own brand. The client stays with the partner.",
+      "p2": "Each access runs on isolated infrastructure.",
+      "types": [
+        { "title": "Originators", "text": "" },
+        { "title": "Agencies", "text": "" },
+        { "title": "Wealth advisers", "text": "" }
+      ]
     },
     "research": {
       "label": "Research",
       "researchTitle": "Research",
-      "researchText": "Proprietary research on the regulatory framework and the markets in which the firm operates. Launch pieces: the price-limited housing framework in the Balearics, in its public version, with no project references or internal figures.",
+      "researchText": "Proprietary research on regulation and markets. Launch piece: price-limited housing in the Balearics, public version only.",
       "verificationTitle": "Verification",
-      "verificationText": "Every figure the firm publishes is defined, dated and signed. The verification document — issued by the sole director — specifies what each figure measures and how it is evidenced. It can be requested from any page of the site.",
+      "verificationText": "Every published figure is defined, dated and signed. The closed track record — with deeds — and its returns sit in the verification document.",
       "governanceTitle": "Governance",
-      "governanceText1": "Investment management, financial management and the tax and legal functions are integrated into the firm's operations, each with over thirty years of track record in its discipline.",
-      "governanceText2": "Published figures are reviewed every six months and accompanied by versioned methodology."
+      "governanceText1": "Investment, finance, tax and legal integrated into operations, each with over thirty years of track record. Semi-annual review and versioned methodology.",
+      "governanceText2": ""
     },
     "access": {
       "label": "Access",

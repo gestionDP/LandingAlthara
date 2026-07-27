@@ -16,8 +16,8 @@
     },
     "position": {
       "label": "Posición",
-      "trackRecordTitle": "Track record de operaciones cerradas",
-      "trackRecordText": "— compradas y vendidas, con escritura. Su detalle y métricas de retorno se recogen en el documento de verificación, disponible previa identificación.",
+      "trackRecordTitle": "Track record",
+      "trackRecordText": "Operaciones cerradas con escritura; detalle y retorno en el documento de verificación.",
       "methodologyLink": "Metodología de cálculo",
       "verificationLink": "Documento de verificación",
       "verificationMeta": "firmado por el administrador"
@@ -108,18 +108,23 @@
     "partnerships": {
       "label": "Colaboración",
       "title": "Althara opera también como infraestructura para terceros.",
-      "p1": "Originadores, agencias y asesores patrimoniales acceden al análisis, la documentación y el proceso de Althara bajo su propia marca. La relación con el cliente permanece en el colaborador.",
-      "p2": "El acceso de cada colaborador opera sobre infraestructura aislada."
+      "p1": "Originadores, agencias y asesores patrimoniales usan análisis, documentación y proceso bajo su marca. El cliente permanece con el colaborador.",
+      "p2": "Cada acceso opera sobre infraestructura aislada.",
+      "types": [
+        { "title": "Originadores", "text": "" },
+        { "title": "Agencias", "text": "" },
+        { "title": "Asesores patrimoniales", "text": "" }
+      ]
     },
     "research": {
       "label": "Análisis",
       "researchTitle": "Análisis",
-      "researchText": "Investigación propia sobre el marco regulatorio y los mercados en los que opera la firma. Piezas de lanzamiento: el marco de la vivienda de precio limitado en Baleares, en su versión pública, sin referencias de proyecto ni cifras internas.",
+      "researchText": "Investigación propia sobre regulación y mercados. Pieza de lanzamiento: vivienda de precio limitado en Baleares, en versión pública.",
       "verificationTitle": "Verificación",
-      "verificationText": "Toda cifra publicada por la firma está definida, fechada y firmada. El documento de verificación —emitido por el administrador— especifica qué mide cada cifra y cómo se acredita. Puede solicitarse desde cualquier página del site.",
+      "verificationText": "Cada cifra publicada está definida, fechada y firmada. El track record cerrado —con escritura— y su retorno constan en el documento de verificación.",
       "governanceTitle": "Gobernanza",
-      "governanceText1": "Dirección de inversión, dirección financiera y las áreas fiscal y jurídica están integradas en la operativa de la firma, con más de treinta años de trayectoria en cada disciplina.",
-      "governanceText2": "Las cifras publicadas se revisan semestralmente y se acompañan de metodología versionada."
+      "governanceText1": "Inversión, finanzas, fiscal y jurídico integrados en la operativa, con más de treinta años de trayectoria por disciplina. Revisión semestral y metodología versionada.",
+      "governanceText2": ""
     },
     "access": {
       "label": "Acceso",
